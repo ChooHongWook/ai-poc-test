@@ -9,12 +9,13 @@ import { InputDataSection } from "./components/InputDataSection";
 import { OutputDataSection, AIOutput } from "./components/OutputDataSection";
 import { FileUploadSection } from "./components/FileUploadSection";
 import { Button } from "./components/ui/button";
-import { Sparkles, Loader2 } from "lucide-react";
+import { Sparkles, Loader2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "./components/ui/sonner";
 import type { GenerateRequestConfig, GenerateResponse } from "@/lib/types";
 import { useProviderConfig } from "@/hooks/useProviderConfig";
 import { usePromptConfig } from "@/hooks/usePromptConfig";
+import { useStreamGenerate } from "@/hooks/useStreamGenerate";
 
 export default function App() {
   // AI 프로바이더 상태 - localStorage에 enabled/model 영속화 (API Key는 메모리만)
@@ -24,39 +25,64 @@ export default function App() {
   const { systemPrompt, userPrompt, schema, setSystemPrompt, setUserPrompt, setSchema } =
     usePromptConfig();
 
-  // Input data state
+  // 입력 필드 상태
   const [inputFields, setInputFields] = useState<
     { id: string; label: string; value: string }[]
   >([]);
 
-  // File upload state
+  // 파일 업로드 상태
   const [uploadedFiles, setUploadedFiles] = useState<
     { id: string; file: File; name: string; size: string; type: string }[]
   >([]);
 
-  // Output data state
-  const [chatgptOutput, setChatGPTOutput] = useState<AIOutput>({
-    data: {},
-    generated: false,
-  });
-  const [geminiOutput, setGeminiOutput] = useState<AIOutput>({
-    data: {},
-    generated: false,
-  });
-  const [claudeOutput, setClaudeOutput] = useState<AIOutput>({
-    data: {},
-    generated: false,
-  });
-  const [isGenerating, setIsGenerating] = useState(false);
+  // 스트리밍 훅 - 실시간 AI 응답 처리
+  const {
+    outputs: streamOutputs,
+    isGenerating: isStreamGenerating,
+    startStreaming,
+    cancelStreaming,
+  } = useStreamGenerate();
 
-  const handleGenerate = async () => {
-    // 유효성 검사
+  // 스트리밍 출력을 OutputDataSection의 AIOutput 형식으로 매핑
+  const chatgptOutput: AIOutput = {
+    data: streamOutputs.chatgpt.generated
+      ? streamOutputs.chatgpt.data
+      : streamOutputs.chatgpt.streaming
+        ? { result: streamOutputs.chatgpt.rawText }
+        : {},
+    generated: streamOutputs.chatgpt.generated,
+  };
+
+  const geminiOutput: AIOutput = {
+    data: streamOutputs.gemini.generated
+      ? streamOutputs.gemini.data
+      : streamOutputs.gemini.streaming
+        ? { result: streamOutputs.gemini.rawText }
+        : {},
+    generated: streamOutputs.gemini.generated,
+  };
+
+  const claudeOutput: AIOutput = {
+    data: streamOutputs.claude.generated
+      ? streamOutputs.claude.data
+      : streamOutputs.claude.streaming
+        ? { result: streamOutputs.claude.rawText }
+        : {},
+    generated: streamOutputs.claude.generated,
+  };
+
+  // 전체 생성 중 여부 (스트리밍 기준)
+  const isGenerating = isStreamGenerating;
+
+  /**
+   * 공통 유효성 검사 및 요청 구성 헬퍼
+   */
+  const buildConfig = (): GenerateRequestConfig | null => {
     if (!chatgpt.enabled && !gemini.enabled && !claude.enabled) {
       toast.error("AI 모델을 선택해주세요");
-      return;
+      return null;
     }
 
-    // 활성화된 프로바이더의 API Key 검사
     const enabledProviders = [
       { name: "ChatGPT", config: chatgpt },
       { name: "Gemini", config: gemini },
@@ -66,37 +92,76 @@ export default function App() {
     const missingKeys = enabledProviders.filter((p) => !p.config.apiKey.trim());
     if (missingKeys.length > 0) {
       toast.error(`${missingKeys.map((p) => p.name).join(", ")}의 API Key를 입력해주세요`);
-      return;
+      return null;
     }
 
     if (!systemPrompt.trim() || !userPrompt.trim()) {
       toast.error("System Prompt와 User Prompt를 입력해주세요");
-      return;
+      return null;
     }
 
-    setIsGenerating(true);
+    return {
+      systemPrompt,
+      userPrompt,
+      schema: schema || undefined,
+      inputFields: inputFields.length > 0 ? inputFields : undefined,
+      providers: {
+        chatgpt: { enabled: chatgpt.enabled, apiKey: chatgpt.apiKey, model: chatgpt.model },
+        gemini: { enabled: gemini.enabled, apiKey: gemini.apiKey, model: gemini.model },
+        claude: { enabled: claude.enabled, apiKey: claude.apiKey, model: claude.model },
+      },
+    };
+  };
+
+  /**
+   * 스트리밍 방식으로 문서 생성 (기본)
+   */
+  const handleGenerateStream = async () => {
+    const config = buildConfig();
+    if (!config) return;
 
     try {
-      // API 요청 구성
-      const config: GenerateRequestConfig = {
-        systemPrompt,
-        userPrompt,
-        schema: schema || undefined,
-        inputFields: inputFields.length > 0 ? inputFields : undefined,
-        providers: {
-          chatgpt: { enabled: chatgpt.enabled, apiKey: chatgpt.apiKey, model: chatgpt.model },
-          gemini: { enabled: gemini.enabled, apiKey: gemini.apiKey, model: gemini.model },
-          claude: { enabled: claude.enabled, apiKey: claude.apiKey, model: claude.model },
-        },
-      };
+      const files = uploadedFiles.map(({ file }) => file);
+      await startStreaming(config, files);
 
+      // 스트리밍 완료 후 성공 여부 확인
+      const hasSuccess =
+        (chatgpt.enabled && streamOutputs.chatgpt.generated) ||
+        (gemini.enabled && streamOutputs.gemini.generated) ||
+        (claude.enabled && streamOutputs.claude.generated);
+
+      // 에러 알림
+      const providers: Array<{ name: string; key: "chatgpt" | "gemini" | "claude" }> = [
+        { name: "ChatGPT", key: "chatgpt" },
+        { name: "Gemini", key: "gemini" },
+        { name: "Claude", key: "claude" },
+      ];
+      providers.forEach(({ name, key }) => {
+        if (streamOutputs[key].error) {
+          toast.error(`${name}: ${streamOutputs[key].error}`);
+        }
+      });
+
+      if (hasSuccess) {
+        toast.success("문서가 성공적으로 생성되었습니다!");
+      }
+    } catch {
+      // 스트리밍 실패 시 폴백으로 동기 방식 시도
+      await handleGenerateSync();
+    }
+  };
+
+  /**
+   * 동기(비스트리밍) 방식 폴백 - 스트리밍 실패 시 사용
+   */
+  const handleGenerateSync = async () => {
+    const config = buildConfig();
+    if (!config) return;
+
+    try {
       const formData = new FormData();
       formData.append("config", JSON.stringify(config));
-
-      // 업로드된 파일 첨부
-      uploadedFiles.forEach(({ file }) => {
-        formData.append("files", file);
-      });
+      uploadedFiles.forEach(({ file }) => formData.append("files", file));
 
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -104,17 +169,6 @@ export default function App() {
       });
 
       const data: GenerateResponse = await response.json();
-
-      // 프로바이더별 결과 처리
-      if (data.results.chatgpt) {
-        setChatGPTOutput({ data: data.results.chatgpt.data as Record<string, string>, generated: true });
-      }
-      if (data.results.gemini) {
-        setGeminiOutput({ data: data.results.gemini.data as Record<string, string>, generated: true });
-      }
-      if (data.results.claude) {
-        setClaudeOutput({ data: data.results.claude.data as Record<string, string>, generated: true });
-      }
 
       // 에러 처리
       if (data.errors) {
@@ -126,20 +180,21 @@ export default function App() {
       }
 
       if (data.success) {
-        toast.success("문서가 성공적으로 생성되었습니다!");
+        toast.success("문서가 성공적으로 생성되었습니다! (폴백 모드)");
       }
     } catch (error) {
       toast.error("문서 생성 중 오류가 발생했습니다. 네트워크를 확인해주세요.");
       console.error(error);
-    } finally {
-      setIsGenerating(false);
     }
   };
+
+  // 메인 핸들러 - 스트리밍 방식 사용
+  const handleGenerate = handleGenerateStream;
 
   return (
     <div className="min-h-screen bg-background">
       <Toaster />
-      
+
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-6">
@@ -194,25 +249,40 @@ export default function App() {
               onFilesChange={setUploadedFiles}
             />
 
-            {/* Generate Button */}
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating}
-              size="lg"
-              className="w-full"
-            >
-              {isGenerating ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  문서 생성 중...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  문서 생성하기
-                </>
+            {/* 생성 버튼 및 취소 버튼 영역 */}
+            <div className="flex gap-2">
+              <Button
+                onClick={handleGenerate}
+                disabled={isGenerating}
+                size="lg"
+                className="flex-1"
+              >
+                {isGenerating ? (
+                  <>
+                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    스트리밍 중...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5 mr-2" />
+                    문서 생성하기
+                  </>
+                )}
+              </Button>
+
+              {/* 스트리밍 취소 버튼 - 생성 중에만 표시 */}
+              {isGenerating && (
+                <Button
+                  onClick={() => cancelStreaming()}
+                  variant="outline"
+                  size="lg"
+                  className="shrink-0"
+                  title="스트리밍 취소"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
               )}
-            </Button>
+            </div>
           </div>
 
           {/* Right Column - Output */}
