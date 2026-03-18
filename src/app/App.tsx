@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ConfigurationPanel, AIProvider } from "./components/ConfigurationPanel";
+import { ConfigurationPanel } from "./components/ConfigurationPanel";
 import { SystemPromptSection } from "./components/SystemPromptSection";
 import { UserPromptSection } from "./components/UserPromptSection";
 import { SchemaSection } from "./components/SchemaSection";
@@ -13,29 +13,16 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "./components/ui/sonner";
 import type { GenerateRequestConfig, GenerateResponse } from "@/lib/types";
+import { useProviderConfig } from "@/hooks/useProviderConfig";
+import { usePromptConfig } from "@/hooks/usePromptConfig";
 
 export default function App() {
-  // AI Provider state
-  const [chatgpt, setChatGPT] = useState<AIProvider>({
-    enabled: false,
-    apiKey: "",
-    model: "",
-  });
-  const [gemini, setGemini] = useState<AIProvider>({
-    enabled: false,
-    apiKey: "",
-    model: "",
-  });
-  const [claude, setClaude] = useState<AIProvider>({
-    enabled: false,
-    apiKey: "",
-    model: "",
-  });
+  // AI 프로바이더 상태 - localStorage에 enabled/model 영속화 (API Key는 메모리만)
+  const { chatgpt, gemini, claude, setChatGPT, setGemini, setClaude } = useProviderConfig();
 
-  // Configuration state
-  const [systemPrompt, setSystemPrompt] = useState("");
-  const [userPrompt, setUserPrompt] = useState("");
-  const [schema, setSchema] = useState("");
+  // 프롬프트 설정 상태 - localStorage에 자동 저장
+  const { systemPrompt, userPrompt, schema, setSystemPrompt, setUserPrompt, setSchema } =
+    usePromptConfig();
 
   // Input data state
   const [inputFields, setInputFields] = useState<
