@@ -1,6 +1,7 @@
 // Google Gemini 프로바이더 클라이언트 구현
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { Part, TextPart, InlineDataPart } from "@google/generative-ai";
 import type { AIProviderClient, ProviderRequest, ProviderResponse } from "@/lib/ai/types";
 
 // @MX:NOTE: Gemini 프로바이더 - @google/generative-ai SDK를 사용하여 content 생성 API를 호출
@@ -43,7 +44,7 @@ export class GeminiProvider implements AIProviderClient {
     });
 
     // 사용자 콘텐츠 파트 배열 구성 (텍스트 + 인라인 이미지)
-    const parts: Array<Record<string, unknown>> = [];
+    const parts: Part[] = [];
 
     // 기본 텍스트 파트 구성
     let textContent = request.userPrompt;
@@ -61,19 +62,21 @@ export class GeminiProvider implements AIProviderClient {
       textContent += `\n\n출력 형식: 다음 JSON 스키마에 맞는 유효한 JSON으로만 응답해주세요:\n${JSON.stringify(request.schema, null, 2)}`;
     }
 
-    parts.push({ text: textContent });
+    const textPart: TextPart = { text: textContent };
+    parts.push(textPart);
 
     // 이미지 파일이 있으면 inlineData 파트로 추가
     if (request.files && request.files.length > 0) {
       for (const file of request.files) {
         if (file.mimeType.startsWith("image/")) {
           // Gemini는 inlineData 방식으로 이미지를 처리
-          parts.push({
+          const inlineDataPart: InlineDataPart = {
             inlineData: {
               mimeType: file.mimeType,
               data: file.base64Data,
             },
-          });
+          };
+          parts.push(inlineDataPart);
         }
       }
     }
