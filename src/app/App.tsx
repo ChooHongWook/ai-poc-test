@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import { ConfigurationPanel, AIProvider } from "./components/ConfigurationPanel";
 import { SystemPromptSection } from "./components/SystemPromptSection";
