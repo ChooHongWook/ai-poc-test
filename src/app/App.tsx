@@ -115,6 +115,7 @@ export default function App() {
 
   /**
    * 스트리밍 방식으로 문서 생성 (기본)
+   * startStreaming은 완료될 때까지 대기하며, 완료 후 상태는 React 렌더링 사이클로 반영됨
    */
   const handleGenerateStream = async () => {
     const config = buildConfig();
@@ -123,30 +124,12 @@ export default function App() {
     try {
       const files = uploadedFiles.map(({ file }) => file);
       await startStreaming(config, files);
-
-      // 스트리밍 완료 후 성공 여부 확인
-      const hasSuccess =
-        (chatgpt.enabled && streamOutputs.chatgpt.generated) ||
-        (gemini.enabled && streamOutputs.gemini.generated) ||
-        (claude.enabled && streamOutputs.claude.generated);
-
-      // 에러 알림
-      const providers: Array<{ name: string; key: "chatgpt" | "gemini" | "claude" }> = [
-        { name: "ChatGPT", key: "chatgpt" },
-        { name: "Gemini", key: "gemini" },
-        { name: "Claude", key: "claude" },
-      ];
-      providers.forEach(({ name, key }) => {
-        if (streamOutputs[key].error) {
-          toast.error(`${name}: ${streamOutputs[key].error}`);
-        }
-      });
-
-      if (hasSuccess) {
-        toast.success("문서가 성공적으로 생성되었습니다!");
-      }
+      // 스트리밍 완료 - 성공/오류 알림은 상태 업데이트 이후 effect에서 처리하거나
+      // 여기서는 단순히 완료 메시지만 표시 (실제 결과는 outputs 상태에 반영됨)
+      toast.success("스트리밍이 완료되었습니다!");
     } catch {
       // 스트리밍 실패 시 폴백으로 동기 방식 시도
+      toast.error("스트리밍 실패 - 동기 모드로 재시도합니다");
       await handleGenerateSync();
     }
   };

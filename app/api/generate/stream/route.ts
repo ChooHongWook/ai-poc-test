@@ -205,8 +205,12 @@ async function streamGemini(
     textContent += `\n\n입력 데이터:\n${fieldsText}`;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const parts: any[] = [{ text: textContent }];
+  // Gemini SDK의 Part 타입을 사용하여 타입 안전하게 구성
+  type GeminiPart =
+    | { text: string }
+    | { inlineData: { mimeType: string; data: string } };
+
+  const parts: GeminiPart[] = [{ text: textContent }];
 
   // 이미지 파일 첨부
   for (const file of files) {
