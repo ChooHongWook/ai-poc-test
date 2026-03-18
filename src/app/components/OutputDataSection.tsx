@@ -4,8 +4,17 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { FileOutput, CheckCircle2, Bot } from "lucide-react";
+import { FileOutput, CheckCircle2, Bot, Copy, Download, FileJson, FileSpreadsheet, FileText } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { toast } from "sonner";
+import { copyToClipboard, downloadJSON, downloadCSV, downloadMarkdown, type ExportData } from "@/lib/export-utils";
 
 export interface AIOutput {
   data: Record<string, string>;
@@ -21,6 +30,8 @@ interface OutputDataSectionProps {
     gemini: boolean;
     claude: boolean;
   };
+  systemPrompt?: string;
+  userPrompt?: string;
 }
 
 interface SingleOutputCardProps {
@@ -37,6 +48,16 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
   };
 
   const outputKeys = Object.keys(output.data);
+
+  // 해당 프로바이더의 결과를 클립보드에 복사
+  const handleCopySingle = async () => {
+    const success = await copyToClipboard(output.data);
+    if (success) {
+      toast.success(`${title} 결과가 클립보드에 복사되었습니다`);
+    } else {
+      toast.error("클립보드 복사에 실패했습니다");
+    }
+  };
 
   if (!enabled) {
     return (
@@ -70,6 +91,19 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
               생성 완료
             </Badge>
           )}
+          {/* 단일 프로바이더 복사 버튼 */}
+          {output.generated && outputKeys.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 ml-1"
+              onClick={handleCopySingle}
+              title={`${title} 결과 복사`}
+            >
+              <Copy className="w-3.5 h-3.5 mr-1" />
+              복사
+            </Button>
+          )}
         </CardTitle>
         <CardDescription>{title} 모델의 출력 결과</CardDescription>
       </CardHeader>
@@ -79,7 +113,7 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
             <TabsTrigger value="fields">필드 보기</TabsTrigger>
             <TabsTrigger value="json">JSON 보기</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="fields" className="space-y-4">
             {!output.generated || outputKeys.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
@@ -102,7 +136,7 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
               </div>
             )}
           </TabsContent>
-          
+
           <TabsContent value="json">
             {!output.generated || outputKeys.length === 0 ? (
               <div className="bg-muted p-4 rounded-lg text-center py-12 text-muted-foreground">
@@ -120,14 +154,109 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
   );
 }
 
-export function OutputDataSection({ 
-  chatgptOutput, 
-  geminiOutput, 
+export function OutputDataSection({
+  chatgptOutput,
+  geminiOutput,
   claudeOutput,
-  enabledProviders 
+  enabledProviders,
+  systemPrompt,
+  userPrompt,
 }: OutputDataSectionProps) {
+  // 하나라도 생성된 결과가 있는지 확인
+  const hasAnyOutput =
+    (enabledProviders.chatgpt && chatgptOutput.generated && Object.keys(chatgptOutput.data).length > 0) ||
+    (enabledProviders.gemini && geminiOutput.generated && Object.keys(geminiOutput.data).length > 0) ||
+    (enabledProviders.claude && claudeOutput.generated && Object.keys(claudeOutput.data).length > 0);
+
+  // ExportData 빌드 헬퍼
+  const buildExportData = (): ExportData => {
+    const exportData: ExportData = {
+      metadata: {
+        generatedAt: new Date().toISOString(),
+        systemPrompt,
+        userPrompt,
+      },
+    };
+
+    if (enabledProviders.chatgpt && chatgptOutput.generated && Object.keys(chatgptOutput.data).length > 0) {
+      exportData.chatgpt = chatgptOutput.data;
+    }
+    if (enabledProviders.gemini && geminiOutput.generated && Object.keys(geminiOutput.data).length > 0) {
+      exportData.gemini = geminiOutput.data;
+    }
+    if (enabledProviders.claude && claudeOutput.generated && Object.keys(claudeOutput.data).length > 0) {
+      exportData.claude = claudeOutput.data;
+    }
+
+    return exportData;
+  };
+
+  // 전체 JSON 클립보드 복사
+  const handleCopyAll = async () => {
+    const exportData = buildExportData();
+    const success = await copyToClipboard(exportData);
+    if (success) {
+      toast.success("전체 결과가 클립보드에 복사되었습니다");
+    } else {
+      toast.error("클립보드 복사에 실패했습니다");
+    }
+  };
+
+  // JSON 다운로드
+  const handleDownloadJSON = () => {
+    downloadJSON(buildExportData());
+    toast.success("JSON 파일이 다운로드되었습니다");
+  };
+
+  // CSV 다운로드
+  const handleDownloadCSV = () => {
+    downloadCSV(buildExportData());
+    toast.success("CSV 파일이 다운로드되었습니다");
+  };
+
+  // 마크다운 다운로드
+  const handleDownloadMarkdown = () => {
+    downloadMarkdown(buildExportData());
+    toast.success("마크다운 파일이 다운로드되었습니다");
+  };
+
   return (
     <div className="space-y-6">
+      {/* 내보내기 액션 바 */}
+      <div className="flex justify-end gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleCopyAll}
+          disabled={!hasAnyOutput}
+        >
+          <Copy className="w-4 h-4 mr-1" />
+          전체 JSON 복사
+        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" disabled={!hasAnyOutput}>
+              <Download className="w-4 h-4 mr-1" />
+              다운로드
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleDownloadJSON}>
+              <FileJson className="w-4 h-4 mr-2" />
+              JSON
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDownloadCSV}>
+              <FileSpreadsheet className="w-4 h-4 mr-2" />
+              CSV
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleDownloadMarkdown}>
+              <FileText className="w-4 h-4 mr-2" />
+              마크다운
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       {/* ChatGPT Output */}
       <SingleOutputCard
         title="ChatGPT"
