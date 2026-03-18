@@ -5,6 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Button } from "./ui/button";
 import { Upload, File, X, FileText, Image as ImageIcon } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { toast } from "sonner";
+import { validateFile } from "@/lib/file-processor";
 
 interface UploadedFile {
   id: string;
@@ -34,15 +36,44 @@ export function FileUploadSection({ files, onFilesChange }: FileUploadSectionPro
   const handleFileSelect = (selectedFiles: FileList | null) => {
     if (!selectedFiles) return;
 
-    const newFiles: UploadedFile[] = Array.from(selectedFiles).map((file) => ({
-      id: Date.now().toString() + Math.random().toString(),
-      file,
-      name: file.name,
-      size: formatFileSize(file.size),
-      type: file.type,
-    }));
+    // 최대 파일 개수 제한 (10개)
+    const MAX_FILE_COUNT = 10;
+    const selectedArray = Array.from(selectedFiles);
 
-    onFilesChange([...files, ...newFiles]);
+    if (files.length >= MAX_FILE_COUNT) {
+      toast.error(`파일은 최대 ${MAX_FILE_COUNT}개까지 업로드할 수 있습니다`);
+      return;
+    }
+
+    // 유효성 검사 통과한 파일만 처리
+    const validFiles: UploadedFile[] = [];
+
+    for (const file of selectedArray) {
+      // 최대 파일 개수 초과 여부 확인
+      if (files.length + validFiles.length >= MAX_FILE_COUNT) {
+        toast.error(`파일은 최대 ${MAX_FILE_COUNT}개까지 업로드할 수 있습니다. 일부 파일이 추가되지 않았습니다.`);
+        break;
+      }
+
+      // 개별 파일 유효성 검사
+      const validation = validateFile(file);
+      if (!validation.valid) {
+        toast.error(validation.error ?? `파일 검증 실패: ${file.name}`);
+        continue;
+      }
+
+      validFiles.push({
+        id: Date.now().toString() + Math.random().toString(),
+        file,
+        name: file.name,
+        size: formatFileSize(file.size),
+        type: file.type,
+      });
+    }
+
+    if (validFiles.length > 0) {
+      onFilesChange([...files, ...validFiles]);
+    }
   };
 
   const handleButtonClick = () => {
