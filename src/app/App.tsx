@@ -12,6 +12,7 @@ import { Button } from "./components/ui/button";
 import { Sparkles, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "./components/ui/sonner";
+import type { GenerateRequestConfig, GenerateResponse } from "@/lib/types";
 
 export default function App() {
   // AI Provider state
@@ -62,16 +63,26 @@ export default function App() {
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleGenerate = async () => {
-    // Validation
+    // 유효성 검사
     if (!chatgpt.enabled && !gemini.enabled && !claude.enabled) {
       toast.error("AI 모델을 선택해주세요");
       return;
     }
-    if (!chatgpt.apiKey && !gemini.apiKey && !claude.apiKey) {
-      toast.error("API Key를 입력해주세요");
+
+    // 활성화된 프로바이더의 API Key 검사
+    const enabledProviders = [
+      { name: "ChatGPT", config: chatgpt },
+      { name: "Gemini", config: gemini },
+      { name: "Claude", config: claude },
+    ].filter((p) => p.config.enabled);
+
+    const missingKeys = enabledProviders.filter((p) => !p.config.apiKey.trim());
+    if (missingKeys.length > 0) {
+      toast.error(`${missingKeys.map((p) => p.name).join(", ")}의 API Key를 입력해주세요`);
       return;
     }
-    if (!systemPrompt || !userPrompt) {
+
+    if (!systemPrompt.trim() || !userPrompt.trim()) {
       toast.error("System Prompt와 User Prompt를 입력해주세요");
       return;
     }
@@ -79,57 +90,59 @@ export default function App() {
     setIsGenerating(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // API 요청 구성
+      const config: GenerateRequestConfig = {
+        systemPrompt,
+        userPrompt,
+        schema: schema || undefined,
+        inputFields: inputFields.length > 0 ? inputFields : undefined,
+        providers: {
+          chatgpt: { enabled: chatgpt.enabled, apiKey: chatgpt.apiKey, model: chatgpt.model },
+          gemini: { enabled: gemini.enabled, apiKey: gemini.apiKey, model: gemini.model },
+          claude: { enabled: claude.enabled, apiKey: claude.apiKey, model: claude.model },
+        },
+      };
 
-      // Base data from input fields
-      const baseData: Record<string, string> = {};
-      inputFields.forEach((field) => {
-        if (field.value) {
-          baseData[field.label] = field.value;
-        }
+      const formData = new FormData();
+      formData.append("config", JSON.stringify(config));
+
+      // 업로드된 파일 첨부
+      uploadedFiles.forEach(({ file }) => {
+        formData.append("files", file);
       });
 
-      // Generate different outputs for each AI provider
-      if (chatgpt.enabled) {
-        const chatgptData: Record<string, string> = {
-          "문서 제목": "ChatGPT 생성 문서",
-          "작성일": new Date().toLocaleDateString("ko-KR"),
-          "요약": "ChatGPT를 활용하여 생성한 전문적인 문서입니다.",
-          "주요 내용": "사용자 프롬프트를 기반으로 구조화된 내용을 작성했습니다.",
-          "결론": "ChatGPT 모델을 통한 문서 생성이 완료되었습니다.",
-          ...baseData,
-        };
-        setChatGPTOutput({ data: chatgptData, generated: true });
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data: GenerateResponse = await response.json();
+
+      // 프로바이더별 결과 처리
+      if (data.results.chatgpt) {
+        setChatGPTOutput({ data: data.results.chatgpt.data as Record<string, string>, generated: true });
+      }
+      if (data.results.gemini) {
+        setGeminiOutput({ data: data.results.gemini.data as Record<string, string>, generated: true });
+      }
+      if (data.results.claude) {
+        setClaudeOutput({ data: data.results.claude.data as Record<string, string>, generated: true });
       }
 
-      if (gemini.enabled) {
-        const geminiData: Record<string, string> = {
-          "문서 제목": "Gemini 생성 문서",
-          "작성일": new Date().toLocaleDateString("ko-KR"),
-          "요약": "Google Gemini로 작성한 혁신적인 문서입니다.",
-          "주요 내용": "멀티모달 능력을 활용한 풍부한 컨텐츠를 제공합니다.",
-          "결론": "Gemini 모델의 강력한 성능이 입증되었습니다.",
-          ...baseData,
-        };
-        setGeminiOutput({ data: geminiData, generated: true });
+      // 에러 처리
+      if (data.errors) {
+        for (const [provider, error] of Object.entries(data.errors)) {
+          if (error) {
+            toast.error(`${provider}: ${error.message}`);
+          }
+        }
       }
 
-      if (claude.enabled) {
-        const claudeData: Record<string, string> = {
-          "문서 제목": "Claude 생성 문서",
-          "작성일": new Date().toLocaleDateString("ko-KR"),
-          "요약": "Anthropic Claude가 작성한 상세하고 정확한 문서입니다.",
-          "주요 내용": "윤리적이고 안전한 AI 원칙에 따라 신중하게 작성되었습니다.",
-          "결론": "Claude 모델의 신뢰성과 품질이 돋보입니다.",
-          ...baseData,
-        };
-        setClaudeOutput({ data: claudeData, generated: true });
+      if (data.success) {
+        toast.success("문서가 성공적으로 생성되었습니다!");
       }
-
-      toast.success("문서가 성공적으로 생성되었습니다!");
     } catch (error) {
-      toast.error("문서 생성 중 오류가 발생했습니다");
+      toast.error("문서 생성 중 오류가 발생했습니다. 네트워크를 확인해주세요.");
       console.error(error);
     } finally {
       setIsGenerating(false);
