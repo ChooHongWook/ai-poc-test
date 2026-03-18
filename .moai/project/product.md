@@ -46,6 +46,8 @@ AI 문서 생성 시스템 (AI Document Generation System)
 ## 현재 상태
 - POC 단계 (더미 출력, 실제 AI API 미연동)
 - UI/UX 프로토타입 완성
+- Next.js App Router로 마이그레이션 완료 (2026-03-18)
+- 테마 시스템 활성화 (next-themes ThemeProvider)
 - 프로덕션 제품으로 발전 계획 중
 
 ## UI 언어

@@ -1,7 +1,7 @@
 ---
 id: SPEC-REFACTOR-001
 version: "1.0.0"
-status: draft
+status: completed
 created: "2026-03-18"
 updated: "2026-03-18"
 author: hw
@@ -13,7 +13,7 @@ issue_number: 0
 
 | 버전 | 날짜 | 작성자 | 변경 내용 |
 |------|------|--------|-----------|
-| 1.0.0 | 2026-03-18 | hw | 초안 작성 |
+| 1.0.0 | 2026-03-18 | hw | 마이그레이션 완료 |
 
 ---
 
@@ -199,3 +199,64 @@ issue_number: 0
 | REQ-CLIENT-001~003 | Phase 2 | AC-PHASE2-* |
 | REQ-THEME-001~002 | Phase 2 | AC-PHASE2-* |
 | REQ-OPT-001~002 | Phase 3 | AC-PHASE3-* |
+
+---
+
+## 6. 구현 노트 (Implementation Notes)
+
+### 마이그레이션 완료 현황
+
+**2026-03-18 완료 (commit 6ef028b)**
+
+#### 빌드 시스템
+- Vite 6.3.5 → Next.js 15.3.3 전환 완료
+- vite.config.ts, index.html, src/main.tsx 삭제
+- next.config.mjs, postcss.config.cjs 생성
+- @tailwindcss/vite → @tailwindcss/postcss 교체
+
+#### App Router 구조
+- app/layout.tsx (루트 레이아웃) 생성
+- app/page.tsx (메인 페이지) 생성
+- app/providers.tsx (ThemeProvider) 생성
+- src/app/App.tsx → src/app/components/로 컴포넌트 구조 정리
+
+#### 클라이언트 컴포넌트
+- 8개 비즈니스 컴포넌트에 "use client" 디렉티브 추가
+  - ConfigurationPanel.tsx
+  - FileUploadSection.tsx
+  - InputDataSection.tsx
+  - OutputDataSection.tsx
+  - SchemaSection.tsx
+  - SystemPromptSection.tsx
+  - UserPromptSection.tsx
+  - App.tsx
+
+#### 테마 시스템
+- next-themes ThemeProvider 활성화
+- CSS 변수 기반 테마 시스템 유지 (theme.css)
+- 라이트/다크 모드 지원
+
+#### 의존성 정리
+- 제거된 미사용 의존성 (12개):
+  - react-router, react-dnd, @mui/material, @mui/icons-material
+  - @emotion/react, @emotion/styled
+  - canvas-confetti, recharts, react-responsive-masonry
+  - react-slick, @popperjs/core, react-popper
+- react/react-dom peerDependencies → dependencies 변경
+
+#### 설정 파일 업데이트
+- tsconfig.json: paths 설정 유지 (@ → ./src)
+- package.json: scripts 업데이트 (dev, build, start)
+- next-env.d.ts: Next.js 타입 정의 자동 생성
+
+### 검증 결과
+- 모든 REQ-BUILD-* 요구사항 충족
+- 모든 REQ-APPROUTER-* 요구사항 충족
+- 모든 REQ-CLIENT-* 요구사항 충족
+- 모든 REQ-THEME-* 요구사항 충족
+- REQ-OPT-001~002 완료
+
+### 후속 작업
+- 개발 서버 포트: 5173 → 3000 변경 (next dev)
+- 프로덕션 빌드 및 배포 테스트 권장
+- 실제 AI API 연동 (별도 SPEC)

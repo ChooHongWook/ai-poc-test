@@ -4,29 +4,33 @@
 
 ```
 ai_poc/
-├── index.html                    # Vite 진입점 HTML
 ├── package.json                  # 의존성 및 스크립트
-├── vite.config.ts                # Vite 빌드 설정 (@ 별칭 → ./src)
-├── postcss.config.mjs            # PostCSS 설정
+├── next.config.mjs               # Next.js 빌드 설정
+├── postcss.config.cjs            # PostCSS + Tailwind 설정
+├── tsconfig.json                 # TypeScript 설정 (@ 별칭 → ./src)
+├── next-env.d.ts                 # Next.js 타입 정의
 ├── guidelines/                   # 프로젝트 가이드라인
+├── app/
+│   ├── layout.tsx                # 루트 레이아웃 (HTML, 폰트, ThemeProvider)
+│   ├── page.tsx                  # 메인 페이지
+│   ├── providers.tsx             # next-themes ThemeProvider
+│   └── (components 폴더는 src/app/components로 이동)
 ├── src/
-│   ├── main.tsx                  # React 앱 진입점 (createRoot)
 │   ├── app/
-│   │   ├── App.tsx               # 메인 앱 컴포넌트 (242줄)
 │   │   └── components/
-│   │       ├── ConfigurationPanel.tsx    # AI 제공자 설정 패널 (204줄)
-│   │       ├── FileUploadSection.tsx     # 파일 업로드 (158줄)
-│   │       ├── InputDataSection.tsx      # 입력 데이터 관리 (116줄)
-│   │       ├── OutputDataSection.tsx     # AI 출력 결과 (157줄)
-│   │       ├── SchemaSection.tsx         # JSON 스키마 (56줄)
-│   │       ├── SystemPromptSection.tsx   # 시스템 프롬프트 (35줄)
-│   │       ├── UserPromptSection.tsx     # 유저 프롬프트 (35줄)
+│   │       ├── ConfigurationPanel.tsx    # AI 제공자 설정 패널 (use client)
+│   │       ├── FileUploadSection.tsx     # 파일 업로드 (use client)
+│   │       ├── InputDataSection.tsx      # 입력 데이터 관리 (use client)
+│   │       ├── OutputDataSection.tsx     # AI 출력 결과 (use client)
+│   │       ├── SchemaSection.tsx         # JSON 스키마 (use client)
+│   │       ├── SystemPromptSection.tsx   # 시스템 프롬프트 (use client)
+│   │       ├── UserPromptSection.tsx     # 유저 프롬프트 (use client)
 │   │       ├── figma/
 │   │       │   └── ImageWithFallback.tsx # 이미지 폴백 컴포넌트
 │   │       └── ui/                      # Radix UI 래퍼 (50+ 컴포넌트)
 │   └── styles/
 │       ├── fonts.css             # 커스텀 폰트
-│       ├── index.css             # 기본 스타일 임포트
+│       ├── globals.css           # 글로벌 스타일 (layout.tsx에서 임포트)
 │       ├── tailwind.css          # Tailwind 지시문
 │       └── theme.css             # 테마 색상/변수
 ├── .claude/                      # Claude Code 설정
@@ -37,8 +41,8 @@ ai_poc/
 ## 아키텍처 패턴
 
 ### 빌드 시스템
-- **Vite** 기반 SPA (Single Page Application)
-- 경로 별칭: `@` → `./src`
+- **Next.js 15.3.3** App Router SPA (Single Page Application)
+- 경로 별칭: `@` → `./src` (tsconfig.json)
 
 ### 컴포넌트 구조
 - **React 함수형 컴포넌트** (클래스 컴포넌트 없음)
@@ -50,12 +54,14 @@ ai_poc/
 - 전역 상태 관리 라이브러리 없음 (App.tsx에서 최상위 상태 관리)
 
 ### 스타일링
-- **Tailwind CSS v4** (유틸리티 우선)
+- **Tailwind CSS v4.1.12** with @tailwindcss/postcss (유틸리티 우선)
 - **class-variance-authority** (CVA) + **clsx** + **tailwind-merge** 조합
 - CSS 변수 기반 테마 시스템 (`theme.css`)
+- **next-themes ThemeProvider** 활성화 (라이트/다크 모드)
 
 ### 라우팅
-- **React Router v7** 포함되어 있으나 현재 단일 페이지
+- **Next.js App Router** (자동 파일 기반 라우팅)
+- 현재 단일 페이지 구조 (app/page.tsx가 메인)
 
 ## 파일 수 요약
 - 비즈니스 컴포넌트: 8개
