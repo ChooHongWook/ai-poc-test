@@ -204,3 +204,6 @@ dist-ssr/
 .vercel/
 .netlify/
 .firebase/
+
+# User Custom Patterns (preserved by moai update)
+coverage/
