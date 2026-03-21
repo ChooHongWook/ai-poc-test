@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTheme } from "next-themes";
 import { ConfigurationPanel } from "./components/ConfigurationPanel";
 import { SystemPromptSection } from "./components/SystemPromptSection";
 import { UserPromptSection } from "./components/UserPromptSection";
@@ -9,7 +10,7 @@ import { InputDataSection } from "./components/InputDataSection";
 import { OutputDataSection, AIOutput } from "./components/OutputDataSection";
 import { FileUploadSection } from "./components/FileUploadSection";
 import { Button } from "./components/ui/button";
-import { Sparkles, Loader2, X } from "lucide-react";
+import { Sparkles, Loader2, X, Sun, Moon } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "./components/ui/sonner";
 import type { GenerateRequestConfig, GenerateResponse } from "@/lib/types";
@@ -19,6 +20,7 @@ import { useStreamGenerate } from "@/hooks/useStreamGenerate";
 
 export default function App() {
   // AI 프로바이더 상태 - localStorage에 enabled/model 영속화 (API Key는 메모리만)
+  const { theme, setTheme } = useTheme();
   const { chatgpt, gemini, claude, setChatGPT, setGemini, setClaude } = useProviderConfig();
 
   // 프롬프트 설정 상태 - localStorage에 자동 저장
@@ -181,14 +183,25 @@ export default function App() {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <Sparkles className="w-8 h-8 text-primary" />
-            <div>
-              <h1 className="text-2xl font-bold">AI 문서 생성 POC</h1>
-              <p className="text-sm text-muted-foreground">
-                AI 기반 자동 문서 생성 시스템 개념 검증
-              </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Sparkles className="w-8 h-8 text-primary" />
+              <div>
+                <h1 className="text-2xl font-bold">AI 문서 생성 POC</h1>
+                <p className="text-sm text-muted-foreground">
+                  AI 기반 자동 문서 생성 시스템 개념 검증
+                </p>
+              </div>
             </div>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              aria-label="다크모드 전환"
+            >
+              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            </Button>
           </div>
         </div>
       </header>
