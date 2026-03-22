@@ -9,7 +9,8 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { Settings, Zap } from 'lucide-react'
+import { Settings, Zap, Loader2 } from 'lucide-react'
+import { useState } from 'react'
 import { Separator } from '@/components/ui/separator'
 import {
   AIProviderConfigItem,
@@ -54,23 +55,28 @@ export function ConfigurationPanel({
   onGeminiChange,
   onClaudeChange,
 }: ConfigurationPanelProps) {
-  const handleApplyDefaultKeys = () => {
-    // 기본값 API Key 적용
-    onChatGPTChange({
-      enabled: true,
-      apiKey: 'sk-proj-demo-chatgpt-api-key-1234567890',
-      model: 'gpt-4o',
-    })
-    onGeminiChange({
-      enabled: true,
-      apiKey: 'AIzaSy-demo-gemini-api-key-1234567890',
-      model: 'gemini-pro',
-    })
-    onClaudeChange({
-      enabled: true,
-      apiKey: 'sk-ant-demo-claude-api-key-1234567890',
-      model: 'claude-3-sonnet',
-    })
+  const [isLoadingKeys, setIsLoadingKeys] = useState(false)
+
+  const handleApplyDefaultKeys = async () => {
+    setIsLoadingKeys(true)
+    try {
+      const res = await fetch('/api/env-keys')
+      const keys = await res.json()
+
+      if (keys.openai) {
+        onChatGPTChange({ enabled: true, apiKey: keys.openai, model: 'gpt-4o' })
+      }
+      if (keys.gemini) {
+        onGeminiChange({ enabled: true, apiKey: keys.gemini, model: 'gemini-pro' })
+      }
+      if (keys.claude) {
+        onClaudeChange({ enabled: true, apiKey: keys.claude, model: 'claude-3-sonnet' })
+      }
+    } catch {
+      // API 호출 실패 시 무시
+    } finally {
+      setIsLoadingKeys(false)
+    }
   }
 
   return (
@@ -98,7 +104,7 @@ export function ConfigurationPanel({
             <div className="flex-1">
               <p className="mb-1 text-sm font-medium">빠른 설정</p>
               <p className="text-muted-foreground text-xs">
-                테스트용 기본 API Key를 모든 제공자에 적용합니다
+                .env에 설정된 API Key를 자동으로 적용합니다
               </p>
             </div>
             <Button
@@ -106,8 +112,13 @@ export function ConfigurationPanel({
               variant="default"
               size="sm"
               className="flex-shrink-0"
+              disabled={isLoadingKeys}
             >
-              <Zap className="mr-2 h-4 w-4" />
+              {isLoadingKeys ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Zap className="mr-2 h-4 w-4" />
+              )}
               기본값 적용
             </Button>
           </div>
