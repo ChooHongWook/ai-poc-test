@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Button } from "./ui/button";
 import { Upload, File, X, FileText, Image as ImageIcon } from "lucide-react";
 import { Badge } from "./ui/badge";
+import { cn } from "./ui/utils";
 import { toast } from "sonner";
 import { validateFile } from "@/lib/file-processor";
 
@@ -125,11 +126,18 @@ export function FileUploadSection({ files, onFilesChange }: FileUploadSectionPro
       <CardContent className="space-y-4">
         {/* Upload Area */}
         <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
+          className={cn(
+            // 레이아웃 / 크기
+            "rounded-lg p-8 text-center",
+            // 테두리
+            "border-2 border-dashed",
+            // 인터랙션
+            "cursor-pointer transition-colors",
+            // 상태: 드래그 여부
             isDragging
               ? "border-primary bg-primary/5"
-              : "border-muted-foreground/25 hover:border-primary/50"
-          }`}
+              : "border-muted-foreground/25 hover:border-primary/50",
+          )}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -162,7 +170,14 @@ export function FileUploadSection({ files, onFilesChange }: FileUploadSectionPro
               {files.map((file) => (
                 <div
                   key={file.id}
-                  className="flex items-center gap-3 p-3 bg-muted rounded-lg group hover:bg-muted/80 transition-colors"
+                  className={cn(
+                    // 레이아웃 / 크기
+                    "flex items-center gap-3 p-3",
+                    // 색상 / 배경
+                    "bg-muted rounded-lg",
+                    // 인터랙션
+                    "group hover:bg-muted/80 transition-colors",
+                  )}
                 >
                   <div className="flex-shrink-0">{getFileIcon(file.type)}</div>
                   <div className="flex-1 min-w-0">
@@ -172,7 +187,12 @@ export function FileUploadSection({ files, onFilesChange }: FileUploadSectionPro
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className={cn(
+                      // 레이아웃
+                      "flex-shrink-0",
+                      // 인터랙션 / 상태
+                      "opacity-0 group-hover:opacity-100 transition-opacity",
+                    )}
                     onClick={(e) => {
                       e.stopPropagation();
                       removeFile(file.id);

@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { FileOutput, CheckCircle2, Bot, Copy, Download, FileJson, FileSpreadsheet, FileText } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { cn } from "./ui/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +34,13 @@ interface OutputDataSectionProps {
   systemPrompt?: string;
   userPrompt?: string;
 }
+
+// 색상별 border 클래스 맵 (Tailwind 정적 분석을 위해 하드코딩)
+const colorBorderMap: Record<string, string> = {
+  green: "border-green-200",
+  blue: "border-blue-200",
+  purple: "border-purple-200",
+};
 
 interface SingleOutputCardProps {
   title: string;
@@ -70,7 +78,12 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
+          <div className={cn(
+            // 레이아웃 / 간격
+            "text-center py-12",
+            // 색상
+            "text-muted-foreground",
+          )}>
             <Bot className="w-12 h-12 mx-auto mb-3 opacity-50" />
             <p>{title}가 비활성화되어 있습니다</p>
           </div>
@@ -80,7 +93,7 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
   }
 
   return (
-    <Card className={`border-${color}-200`}>
+    <Card className={cn(colorBorderMap[color])}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {icon}
@@ -96,7 +109,12 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2 ml-1"
+              className={cn(
+                // 크기
+                "h-7 px-2",
+                // 간격
+                "ml-1",
+              )}
               onClick={handleCopySingle}
               title={`${title} 결과 복사`}
             >
@@ -116,7 +134,12 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
 
           <TabsContent value="fields" className="space-y-4">
             {!output.generated || outputKeys.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
+              <div className={cn(
+                // 레이아웃 / 간격
+                "text-center py-12",
+                // 색상
+                "text-muted-foreground",
+              )}>
                 <FileOutput className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>{title} 결과를 기다리는 중입니다</p>
               </div>
@@ -139,11 +162,25 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
 
           <TabsContent value="json">
             {!output.generated || outputKeys.length === 0 ? (
-              <div className="bg-muted p-4 rounded-lg text-center py-12 text-muted-foreground">
+              <div className={cn(
+                // 색상 / 배경
+                "bg-muted rounded-lg",
+                // 레이아웃 / 간격
+                "p-4 text-center py-12",
+                // 색상
+                "text-muted-foreground",
+              )}>
                 결과가 없습니다
               </div>
             ) : (
-              <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-96 text-sm font-mono">
+              <pre className={cn(
+                // 색상 / 배경
+                "bg-muted rounded-lg",
+                // 레이아웃 / 크기
+                "p-4 overflow-auto max-h-96",
+                // 타이포그래피
+                "text-sm font-mono",
+              )}>
                 {getOutputDataJSON(output.data)}
               </pre>
             )}

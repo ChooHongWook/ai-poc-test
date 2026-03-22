@@ -5,6 +5,7 @@ import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Code, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription } from "./ui/alert";
+import { cn } from "./ui/utils";
 
 interface SchemaSectionProps {
   value: string;
@@ -40,10 +41,13 @@ export function SchemaSection({ value, onChange }: SchemaSectionProps) {
             value={value}
             onChange={(e) => onChange(e.target.value)}
             rows={8}
-            className="font-mono text-sm"
+            className={cn(
+              // 타이포그래피
+              "font-mono text-sm",
+            )}
           />
         </div>
-        
+
         {value && !isValidJSON() && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />

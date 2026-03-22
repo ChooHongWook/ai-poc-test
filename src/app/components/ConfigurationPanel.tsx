@@ -19,6 +19,7 @@ import {
 } from "./ui/select";
 import { Settings, Bot } from "lucide-react";
 import { Separator } from "./ui/separator";
+import { cn } from "./ui/utils";
 
 export interface AIProvider {
   enabled: boolean;
@@ -69,7 +70,12 @@ export function ConfigurationPanel({
               <Bot className="w-5 h-5 text-green-600" />
               <Label
                 htmlFor="chatgpt-enabled"
-                className="text-base font-semibold cursor-pointer"
+                className={cn(
+                  // 타이포그래피
+                  "text-base font-semibold",
+                  // 인터랙션
+                  "cursor-pointer",
+                )}
               >
                 ChatGPT (OpenAI)
               </Label>
@@ -77,7 +83,12 @@ export function ConfigurationPanel({
           </div>
 
           {chatgpt.enabled && (
-            <div className="ml-8 space-y-3 p-4 border rounded-lg bg-muted/30">
+            <div className={cn(
+              // 레이아웃 / 간격
+              "ml-8 space-y-3 p-4",
+              // 색상 / 테두리
+              "border rounded-lg bg-muted/30",
+            )}>
               <div className="space-y-2">
                 <Label htmlFor="chatgpt-model">모델 선택</Label>
                 <Select
@@ -130,7 +141,12 @@ export function ConfigurationPanel({
               <Bot className="w-5 h-5 text-blue-600" />
               <Label
                 htmlFor="gemini-enabled"
-                className="text-base font-semibold cursor-pointer"
+                className={cn(
+                  // 타이포그래피
+                  "text-base font-semibold",
+                  // 인터랙션
+                  "cursor-pointer",
+                )}
               >
                 Gemini (Google)
               </Label>
@@ -138,7 +154,12 @@ export function ConfigurationPanel({
           </div>
 
           {gemini.enabled && (
-            <div className="ml-8 space-y-3 p-4 border rounded-lg bg-muted/30">
+            <div className={cn(
+              // 레이아웃 / 간격
+              "ml-8 space-y-3 p-4",
+              // 색상 / 테두리
+              "border rounded-lg bg-muted/30",
+            )}>
               <div className="space-y-2">
                 <Label htmlFor="gemini-model">모델 선택</Label>
                 <Select
@@ -192,7 +213,12 @@ export function ConfigurationPanel({
               <Bot className="w-5 h-5 text-purple-600" />
               <Label
                 htmlFor="claude-enabled"
-                className="text-base font-semibold cursor-pointer"
+                className={cn(
+                  // 타이포그래피
+                  "text-base font-semibold",
+                  // 인터랙션
+                  "cursor-pointer",
+                )}
               >
                 Claude (Anthropic)
               </Label>
@@ -200,7 +226,12 @@ export function ConfigurationPanel({
           </div>
 
           {claude.enabled && (
-            <div className="ml-8 space-y-3 p-4 border rounded-lg bg-muted/30">
+            <div className={cn(
+              // 레이아웃 / 간격
+              "ml-8 space-y-3 p-4",
+              // 색상 / 테두리
+              "border rounded-lg bg-muted/30",
+            )}>
               <div className="space-y-2">
                 <Label htmlFor="claude-model">모델 선택</Label>
                 <Select

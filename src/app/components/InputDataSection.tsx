@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Button } from "./ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Plus, Trash2, Database } from "lucide-react";
+import { cn } from "./ui/utils";
 
 interface InputDataSectionProps {
   inputFields: { id: string; label: string; value: string }[];
@@ -61,7 +62,7 @@ export function InputDataSection({ inputFields, onInputFieldsChange }: InputData
             <TabsTrigger value="fields">필드 입력</TabsTrigger>
             <TabsTrigger value="json">JSON 보기</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="fields" className="space-y-4">
             <div className="flex gap-2">
               <Input
@@ -76,7 +77,12 @@ export function InputDataSection({ inputFields, onInputFieldsChange }: InputData
             </div>
 
             {inputFields.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className={cn(
+                // 레이아웃 / 간격
+                "text-center py-8",
+                // 색상
+                "text-muted-foreground",
+              )}>
                 위에서 필드를 추가해주세요
               </div>
             ) : (
@@ -105,9 +111,16 @@ export function InputDataSection({ inputFields, onInputFieldsChange }: InputData
               </div>
             )}
           </TabsContent>
-          
+
           <TabsContent value="json">
-            <pre className="bg-muted p-4 rounded-lg overflow-auto max-h-96 text-sm font-mono">
+            <pre className={cn(
+              // 색상 / 배경
+              "bg-muted rounded-lg",
+              // 레이아웃 / 크기
+              "p-4 overflow-auto max-h-96",
+              // 타이포그래피
+              "text-sm font-mono",
+            )}>
               {getInputDataJSON()}
             </pre>
           </TabsContent>

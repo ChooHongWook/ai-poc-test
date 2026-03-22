@@ -17,6 +17,7 @@ import type { GenerateRequestConfig, GenerateResponse } from "@/lib/types";
 import { useProviderConfig } from "@/hooks/useProviderConfig";
 import { usePromptConfig } from "@/hooks/usePromptConfig";
 import { useStreamGenerate } from "@/hooks/useStreamGenerate";
+import { cn } from "./components/ui/utils";
 
 export default function App() {
   // AI 프로바이더 상태 - localStorage에 enabled/model 영속화 (API Key는 메모리만)
@@ -199,8 +200,18 @@ export default function App() {
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               aria-label="다크모드 전환"
             >
-              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <Sun className={cn(
+                // 크기
+                "h-5 w-5",
+                // 인터랙션 / 상태
+                "rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0",
+              )} />
+              <Moon className={cn(
+                // 위치 / 크기
+                "absolute h-5 w-5",
+                // 인터랙션 / 상태
+                "rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100",
+              )} />
             </Button>
           </div>
         </div>
@@ -208,7 +219,12 @@ export default function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className={cn(
+          // 레이아웃 / 반응형
+          "grid grid-cols-1 lg:grid-cols-2",
+          // 간격
+          "gap-6",
+        )}>
           {/* Left Column - Configuration */}
           <div className="space-y-6">
             <ConfigurationPanel
@@ -300,7 +316,12 @@ export default function App() {
       {/* Footer */}
       <footer className="border-t mt-12">
         <div className="container mx-auto px-4 py-6">
-          <p className="text-center text-sm text-muted-foreground">
+          <p className={cn(
+            // 레이아웃
+            "text-center",
+            // 색상 / 타이포그래피
+            "text-sm text-muted-foreground",
+          )}>
             © 2026 AI 문서 생성 POC | Proof of Concept Application
           </p>
         </div>
