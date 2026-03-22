@@ -207,15 +207,13 @@ export default function UploadTestPage() {
 
     try {
       const result = await analyzeUpload({
+        files: uploadedFiles.map((f) => f.file),
         chatgpt,
         gemini,
         claude,
         systemPrompt,
         userPrompt,
         schema,
-        fileNames: uploadedFiles.map((f) => f.name),
-        fileSizes: uploadedFiles.map((f) => f.size),
-        fileTypes: uploadedFiles.map((f) => f.type),
       })
 
       if (result.chatgptOutput) setChatGPTOutput(result.chatgptOutput)

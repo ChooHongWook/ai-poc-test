@@ -22,7 +22,21 @@ export const handlers = [
   // @MX:ANCHOR: POST /api/upload-analyze의 MSW 핸들러 - 파일 업로드 분석 테스트
   // @MX:REASON: fetch('/api/upload-analyze') 호출의 단일 인터셉트 포인트
   http.post('*/api/upload-analyze', async ({ request }) => {
-    const params = (await request.json()) as UploadAnalyzeParams
+    // FormData로 전송된 파일과 설정을 파싱
+    const formData = await request.formData()
+    const files = formData.getAll('files') as File[]
+    const configRaw = formData.get('config')
+    const config = JSON.parse(
+      typeof configRaw === 'string' ? configRaw : '{}',
+    ) as Omit<UploadAnalyzeParams, 'fileNames' | 'fileSizes' | 'fileTypes'>
+
+    // File 객체에서 메타데이터 추출하여 기존 mock 함수에 전달
+    const params: UploadAnalyzeParams = {
+      ...config,
+      fileNames: files.map((f) => f.name),
+      fileSizes: files.map((f) => `${(f.size / 1024).toFixed(1)}KB`),
+      fileTypes: files.map((f) => f.type),
+    }
 
     const result = await analyzeUploadedFiles(params)
 
