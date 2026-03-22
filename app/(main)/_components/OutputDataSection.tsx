@@ -293,19 +293,23 @@ export function OutputDataSection({
                             </div>
 
                             {/* Schema */}
-                            {selectedHistory.schema && (
-                              <div className="space-y-2">
-                                <Label>AI 스키마</Label>
+                            <div className="space-y-2">
+                              <Label>AI 스키마</Label>
+                              {selectedHistory.schema ? (
                                 <CodeBlock className="max-h-32">
                                   {selectedHistory.schema}
                                 </CodeBlock>
-                              </div>
-                            )}
+                              ) : (
+                                <p className="text-muted-foreground text-sm">
+                                  없음
+                                </p>
+                              )}
+                            </div>
 
                             {/* Input Fields */}
-                            {selectedHistory.inputFields.length > 0 && (
-                              <div className="space-y-2">
-                                <Label>입력 데이터</Label>
+                            <div className="space-y-2">
+                              <Label>입력 데이터</Label>
+                              {selectedHistory.inputFields.length > 0 ? (
                                 <div className="space-y-2">
                                   {selectedHistory.inputFields.map((field) => (
                                     <div
@@ -328,38 +332,58 @@ export function OutputDataSection({
                                     </div>
                                   ))}
                                 </div>
-                              </div>
-                            )}
+                              ) : (
+                                <p className="text-muted-foreground text-sm">
+                                  없음
+                                </p>
+                              )}
+                            </div>
 
                             {/* AI Outputs */}
                             <div className="space-y-3">
                               <Label>AI 출력 결과</Label>
 
-                              {selectedHistory.chatgptOutput && (
-                                <AIOutputPreview
-                                  providerName="ChatGPT"
-                                  color="green"
-                                  output={selectedHistory.chatgptOutput}
-                                  modelName={selectedHistory.models?.chatgpt}
-                                />
-                              )}
+                              {!selectedHistory.chatgptOutput &&
+                              !selectedHistory.geminiOutput &&
+                              !selectedHistory.claudeOutput ? (
+                                <p className="text-muted-foreground text-sm">
+                                  없음
+                                </p>
+                              ) : (
+                                <>
+                                  {selectedHistory.chatgptOutput && (
+                                    <AIOutputPreview
+                                      providerName="ChatGPT"
+                                      color="green"
+                                      output={selectedHistory.chatgptOutput}
+                                      modelName={
+                                        selectedHistory.models?.chatgpt
+                                      }
+                                    />
+                                  )}
 
-                              {selectedHistory.geminiOutput && (
-                                <AIOutputPreview
-                                  providerName="Gemini"
-                                  color="blue"
-                                  output={selectedHistory.geminiOutput}
-                                  modelName={selectedHistory.models?.gemini}
-                                />
-                              )}
+                                  {selectedHistory.geminiOutput && (
+                                    <AIOutputPreview
+                                      providerName="Gemini"
+                                      color="blue"
+                                      output={selectedHistory.geminiOutput}
+                                      modelName={
+                                        selectedHistory.models?.gemini
+                                      }
+                                    />
+                                  )}
 
-                              {selectedHistory.claudeOutput && (
-                                <AIOutputPreview
-                                  providerName="Claude"
-                                  color="purple"
-                                  output={selectedHistory.claudeOutput}
-                                  modelName={selectedHistory.models?.claude}
-                                />
+                                  {selectedHistory.claudeOutput && (
+                                    <AIOutputPreview
+                                      providerName="Claude"
+                                      color="purple"
+                                      output={selectedHistory.claudeOutput}
+                                      modelName={
+                                        selectedHistory.models?.claude
+                                      }
+                                    />
+                                  )}
+                                </>
                               )}
                             </div>
                           </div>
