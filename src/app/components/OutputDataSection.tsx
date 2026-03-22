@@ -1,9 +1,28 @@
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import { Button } from "./ui/button";
 import { cn } from "./ui/utils";
 import { FileOutput, CheckCircle2, Bot, History, Eye } from "lucide-react";
@@ -36,7 +55,13 @@ interface SingleOutputCardProps {
   color: string;
 }
 
-function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputCardProps) {
+function SingleOutputCard({
+  title,
+  icon,
+  output,
+  enabled,
+  color,
+}: SingleOutputCardProps) {
   const getOutputDataJSON = (data: Record<string, string>) => {
     return JSON.stringify(data, null, 2);
   };
@@ -50,7 +75,9 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
           <CardTitle className="flex items-center gap-2">
             {icon}
             {title}
-            <Badge variant="secondary" className="ml-auto">비활성화</Badge>
+            <Badge variant="secondary" className="ml-auto">
+              비활성화
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -84,7 +111,7 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
             <TabsTrigger value="fields">필드 보기</TabsTrigger>
             <TabsTrigger value="json">JSON 보기</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="fields" className="space-y-4">
             {!output.generated || outputKeys.length === 0 ? (
               <div className="text-center py-12 text-muted-foreground">
@@ -107,28 +134,32 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
               </div>
             )}
           </TabsContent>
-          
+
           <TabsContent value="json">
             {!output.generated || outputKeys.length === 0 ? (
-              <div className={cn(
-                // 크기/간격
-                "p-4 rounded-lg py-12",
-                // 색상/배경
-                "bg-muted text-muted-foreground",
-                // 레이아웃
-                "text-center"
-              )}>
+              <div
+                className={cn(
+                  // 크기/간격
+                  "p-4 rounded-lg py-12",
+                  // 색상/배경
+                  "bg-muted text-muted-foreground",
+                  // 레이아웃
+                  "text-center",
+                )}
+              >
                 결과가 없습니다
               </div>
             ) : (
-              <pre className={cn(
-                // 크기/간격
-                "p-4 rounded-lg max-h-96",
-                // 색상/배경
-                "bg-muted",
-                // 레이아웃
-                "overflow-auto text-sm font-mono"
-              )}>
+              <pre
+                className={cn(
+                  // 크기/간격
+                  "p-4 rounded-lg max-h-96",
+                  // 색상/배경
+                  "bg-muted",
+                  // 레이아웃
+                  "overflow-auto text-sm font-mono",
+                )}
+              >
                 {getOutputDataJSON(output.data)}
               </pre>
             )}
@@ -139,17 +170,17 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
   );
 }
 
-export function OutputDataSection({ 
-  chatgptOutput, 
-  geminiOutput, 
+export function OutputDataSection({
+  chatgptOutput,
+  geminiOutput,
   claudeOutput,
   enabledProviders,
-  history
+  history,
 }: OutputDataSectionProps) {
   const [selectedHistoryId, setSelectedHistoryId] = useState<string>("");
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
-  const selectedHistory = history.find(h => h.id === selectedHistoryId);
+  const selectedHistory = history.find((h) => h.id === selectedHistoryId);
 
   const formatDateTime = (date: Date) => {
     return new Date(date).toLocaleString("ko-KR", {
@@ -167,26 +198,34 @@ export function OutputDataSection({
       {history.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className={cn(
-              // 레이아웃
-              "flex items-center gap-2"
-            )}>
+            <CardTitle
+              className={cn(
+                // 레이아웃
+                "flex items-center gap-2",
+              )}
+            >
               <History className="w-5 h-5" />
               생성 기록
             </CardTitle>
-            <CardDescription>이전 생성 결과를 확인할 수 있습니다</CardDescription>
+            <CardDescription>
+              이전 생성 결과를 확인할 수 있습니다
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="history-select">기록 선택</Label>
-              <Select value={selectedHistoryId} onValueChange={setSelectedHistoryId}>
+              <Select
+                value={selectedHistoryId}
+                onValueChange={setSelectedHistoryId}
+              >
                 <SelectTrigger id="history-select">
                   <SelectValue placeholder="기록을 선택하세요" />
                 </SelectTrigger>
                 <SelectContent>
                   {history.map((item) => (
                     <SelectItem key={item.id} value={item.id}>
-                      {formatDateTime(item.timestamp)} - {item.userPrompt.substring(0, 30)}...
+                      {formatDateTime(item.timestamp)} -{" "}
+                      {item.userPrompt.substring(0, 30)}...
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -194,16 +233,21 @@ export function OutputDataSection({
             </div>
 
             {selectedHistory && (
-              <div className={cn(
-                // 크기/간격
-                "p-4 rounded-lg space-y-3",
-                // 색상/배경
-                "bg-muted/50 border"
-              )}>
+              <div
+                className={cn(
+                  // 크기/간격
+                  "p-4 rounded-lg space-y-3",
+                  // 색상/배경
+                  "bg-muted/50 border",
+                )}
+              >
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">선택된 기록</p>
-                    <Dialog open={detailDialogOpen} onOpenChange={setDetailDialogOpen}>
+                    <Dialog
+                      open={detailDialogOpen}
+                      onOpenChange={setDetailDialogOpen}
+                    >
                       <DialogTrigger asChild>
                         <Button variant="outline" size="sm">
                           <Eye className="w-4 h-4 mr-2" />
@@ -221,14 +265,16 @@ export function OutputDataSection({
                           {/* System Prompt */}
                           <div className="space-y-2">
                             <Label>System Prompt</Label>
-                            <div className={cn(
-                              // 크기/간격
-                              "p-3 rounded-md max-h-32",
-                              // 색상/배경
-                              "bg-muted",
-                              // 레이아웃
-                              "overflow-auto text-sm"
-                            )}>
+                            <div
+                              className={cn(
+                                // 크기/간격
+                                "p-3 rounded-md max-h-32",
+                                // 색상/배경
+                                "bg-muted",
+                                // 레이아웃
+                                "overflow-auto text-sm",
+                              )}
+                            >
                               {selectedHistory.systemPrompt || "없음"}
                             </div>
                           </div>
@@ -236,14 +282,16 @@ export function OutputDataSection({
                           {/* User Prompt */}
                           <div className="space-y-2">
                             <Label>User Prompt</Label>
-                            <div className={cn(
-                              // 크기/간격
-                              "p-3 rounded-md max-h-32",
-                              // 색상/배경
-                              "bg-muted",
-                              // 레이아웃
-                              "overflow-auto text-sm"
-                            )}>
+                            <div
+                              className={cn(
+                                // 크기/간격
+                                "p-3 rounded-md max-h-32",
+                                // 색상/배경
+                                "bg-muted",
+                                // 레이아웃
+                                "overflow-auto text-sm",
+                              )}
+                            >
                               {selectedHistory.userPrompt || "없음"}
                             </div>
                           </div>
@@ -252,14 +300,16 @@ export function OutputDataSection({
                           {selectedHistory.schema && (
                             <div className="space-y-2">
                               <Label>AI 스키마</Label>
-                              <pre className={cn(
-                                // 크기/간격
-                                "p-3 rounded-md max-h-32",
-                                // 색상/배경
-                                "bg-muted",
-                                // 레이아웃
-                                "overflow-auto text-sm font-mono"
-                              )}>
+                              <pre
+                                className={cn(
+                                  // 크기/간격
+                                  "p-3 rounded-md max-h-32",
+                                  // 색상/배경
+                                  "bg-muted",
+                                  // 레이아웃
+                                  "overflow-auto text-sm font-mono",
+                                )}
+                              >
                                 {selectedHistory.schema}
                               </pre>
                             </div>
@@ -271,16 +321,23 @@ export function OutputDataSection({
                               <Label>입력 데이터</Label>
                               <div className="space-y-2">
                                 {selectedHistory.inputFields.map((field) => (
-                                  <div key={field.id} className={cn(
-                                    // 레이아웃
-                                    "flex items-center gap-2",
-                                    // 크기/간격
-                                    "p-2 rounded-md",
-                                    // 색상/배경
-                                    "bg-muted"
-                                  )}>
-                                    <span className="text-sm font-medium">{field.label}:</span>
-                                    <span className="text-sm">{field.value}</span>
+                                  <div
+                                    key={field.id}
+                                    className={cn(
+                                      // 레이아웃
+                                      "flex items-center gap-2",
+                                      // 크기/간격
+                                      "p-2 rounded-md",
+                                      // 색상/배경
+                                      "bg-muted",
+                                    )}
+                                  >
+                                    <span className="text-sm font-medium">
+                                      {field.label}:
+                                    </span>
+                                    <span className="text-sm">
+                                      {field.value}
+                                    </span>
                                   </div>
                                 ))}
                               </div>
@@ -290,22 +347,30 @@ export function OutputDataSection({
                           {/* AI Outputs */}
                           <div className="space-y-3">
                             <Label>AI 출력 결과</Label>
-                            
+
                             {selectedHistory.chatgptOutput && (
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                   <Bot className="w-4 h-4 text-green-600" />
-                                  <span className="text-sm font-medium">ChatGPT</span>
+                                  <span className="text-sm font-medium">
+                                    ChatGPT
+                                  </span>
                                 </div>
-                                <pre className={cn(
-                                  // 크기/간격
-                                  "p-3 rounded-md max-h-48",
-                                  // 색상/배경
-                                  "bg-muted",
-                                  // 레이아웃
-                                  "overflow-auto text-xs font-mono"
-                                )}>
-                                  {JSON.stringify(selectedHistory.chatgptOutput.data, null, 2)}
+                                <pre
+                                  className={cn(
+                                    // 크기/간격
+                                    "p-3 rounded-md max-h-48",
+                                    // 색상/배경
+                                    "bg-muted",
+                                    // 레이아웃
+                                    "overflow-auto text-xs font-mono",
+                                  )}
+                                >
+                                  {JSON.stringify(
+                                    selectedHistory.chatgptOutput.data,
+                                    null,
+                                    2,
+                                  )}
                                 </pre>
                               </div>
                             )}
@@ -314,17 +379,25 @@ export function OutputDataSection({
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                   <Bot className="w-4 h-4 text-blue-600" />
-                                  <span className="text-sm font-medium">Gemini</span>
+                                  <span className="text-sm font-medium">
+                                    Gemini
+                                  </span>
                                 </div>
-                                <pre className={cn(
-                                  // 크기/간격
-                                  "p-3 rounded-md max-h-48",
-                                  // 색상/배경
-                                  "bg-muted",
-                                  // 레이아웃
-                                  "overflow-auto text-xs font-mono"
-                                )}>
-                                  {JSON.stringify(selectedHistory.geminiOutput.data, null, 2)}
+                                <pre
+                                  className={cn(
+                                    // 크기/간격
+                                    "p-3 rounded-md max-h-48",
+                                    // 색상/배경
+                                    "bg-muted",
+                                    // 레이아웃
+                                    "overflow-auto text-xs font-mono",
+                                  )}
+                                >
+                                  {JSON.stringify(
+                                    selectedHistory.geminiOutput.data,
+                                    null,
+                                    2,
+                                  )}
                                 </pre>
                               </div>
                             )}
@@ -333,17 +406,25 @@ export function OutputDataSection({
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2">
                                   <Bot className="w-4 h-4 text-purple-600" />
-                                  <span className="text-sm font-medium">Claude</span>
+                                  <span className="text-sm font-medium">
+                                    Claude
+                                  </span>
                                 </div>
-                                <pre className={cn(
-                                  // 크기/간격
-                                  "p-3 rounded-md max-h-48",
-                                  // 색상/배경
-                                  "bg-muted",
-                                  // 레이아웃
-                                  "overflow-auto text-xs font-mono"
-                                )}>
-                                  {JSON.stringify(selectedHistory.claudeOutput.data, null, 2)}
+                                <pre
+                                  className={cn(
+                                    // 크기/간격
+                                    "p-3 rounded-md max-h-48",
+                                    // 색상/배경
+                                    "bg-muted",
+                                    // 레이아웃
+                                    "overflow-auto text-xs font-mono",
+                                  )}
+                                >
+                                  {JSON.stringify(
+                                    selectedHistory.claudeOutput.data,
+                                    null,
+                                    2,
+                                  )}
                                 </pre>
                               </div>
                             )}
@@ -357,7 +438,8 @@ export function OutputDataSection({
                       생성 시간: {formatDateTime(selectedHistory.timestamp)}
                     </p>
                     <p className="text-sm">
-                      User Prompt: {selectedHistory.userPrompt.substring(0, 50)}...
+                      User Prompt: {selectedHistory.userPrompt.substring(0, 50)}
+                      ...
                     </p>
                   </div>
                 </div>
