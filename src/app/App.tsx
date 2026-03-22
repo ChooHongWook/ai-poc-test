@@ -224,6 +224,26 @@ export default function App() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Left Column - Configuration */}
           <div className="space-y-6">
+            {/* Generate Button - Top */}
+            <Button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              size="lg"
+              className="w-full"
+            >
+              {isGenerating ? (
+                <>
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                  문서 생성 중...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-5 w-5" />
+                  문서 생성하기
+                </>
+              )}
+            </Button>
+
             <ConfigurationPanel
               chatgpt={chatgpt}
               gemini={gemini}
