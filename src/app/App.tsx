@@ -1,7 +1,12 @@
+import { useState } from "react";
 import { OutputDataSection, AIOutput } from "./components/OutputDataSection";
 import { FileUploadSection } from "./components/FileUploadSection";
+import { ConfigurationPanel, AIProvider } from "./components/ConfigurationPanel";
+import { SystemPromptSection } from "./components/SystemPromptSection";
+import { UserPromptSection } from "./components/UserPromptSection";
+import { SchemaSection } from "./components/SchemaSection";
+import { InputDataSection } from "./components/InputDataSection";
 import { Button } from "./components/ui/button";
-import { cn } from "./components/ui/utils";
 import { Sparkles, Loader2, Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
 import { Toaster } from "./components/ui/sonner";
