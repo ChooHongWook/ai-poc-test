@@ -219,7 +219,13 @@ For Go development:
 
 ---
 
-## 8. User Interaction Architecture
+## 8. UI Guidelines
+
+Tailwind styling, design system, and component rules are defined in docs/guide/ui-guidelines.md.
+
+---
+
+## 9. User Interaction Architecture
 
 ### Critical Constraint
 
@@ -250,7 +256,7 @@ In team mode, MoAI bridges user interaction and teammate coordination:
 
 ---
 
-## 9. Configuration Reference
+## 10. Configuration Reference
 
 User and language configuration:
 
@@ -275,7 +281,7 @@ MoAI-ADK uses Claude Code's official rules system at `.claude/rules/moai/`:
 
 ---
 
-## 10. Web Search Protocol
+## 11. Web Search Protocol
 
 For anti-hallucination policy, see .claude/rules/moai/core/moai-constitution.md
 
@@ -293,7 +299,7 @@ For anti-hallucination policy, see .claude/rules/moai/core/moai-constitution.md
 
 ---
 
-## 11. Error Handling
+## 12. Error Handling
 
 ### Error Recovery
 
@@ -311,7 +317,7 @@ Resume interrupted agent work using agentId:
 
 ---
 
-## 12. MCP Servers & UltraThink
+## 13. MCP Servers & UltraThink
 
 MoAI-ADK integrates multiple MCP servers for specialized capabilities:
 
@@ -324,7 +330,7 @@ For MCP configuration and usage patterns, see .claude/rules/moai/core/settings-m
 
 ---
 
-## 13. Progressive Disclosure System
+## 14. Progressive Disclosure System
 
 MoAI-ADK implements a 3-level Progressive Disclosure system:
 
@@ -340,7 +346,7 @@ MoAI-ADK implements a 3-level Progressive Disclosure system:
 
 ---
 
-## 14. Parallel Execution Safeguards
+## 15. Parallel Execution Safeguards
 
 For core parallel execution principles, see .claude/rules/moai/core/moai-constitution.md.
 
@@ -361,7 +367,7 @@ For the complete worktree selection decision tree, see .claude/rules/moai/workfl
 
 ---
 
-## 15. Agent Teams (Experimental)
+## 16. Agent Teams (Experimental)
 
 MoAI supports optional Agent Teams mode for parallel phase execution.
 
@@ -425,7 +431,7 @@ MoAI-ADK supports CG Mode for 60-70% cost reduction on implementation-heavy task
 
 ---
 
-## 16. Context Search Protocol
+## 17. Context Search Protocol
 
 MoAI searches previous Claude Code sessions when context is needed to continue work on existing tasks or discussions.
 
