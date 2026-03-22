@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 // 헤더 네비게이션 링크 목록
 const navLinks = [
   { href: '/', label: '홈' },
+  { href: '/upload-test', label: '파일 분석 테스트' },
   { href: '/history', label: '히스토리' },
   { href: '/settings', label: '설정' },
 ]
