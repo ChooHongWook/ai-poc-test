@@ -4,16 +4,20 @@
  */
 
 // 브라우저 환경에서 MSW 서비스 워커 시작
+// NEXT_PUBLIC_ENABLE_MSW=false로 설정하면 MSW를 비활성화하고 실제 API를 사용
 export async function initMSW(): Promise<void> {
   if (typeof window === 'undefined') {
-    // Node.js 환경 (서버사이드)에서는 MSW를 초기화하지 않음
     return
   }
 
-  // 개발 환경에서만 브라우저 워커 동적 임포트
+  // MSW 비활성화 환경변수 체크
+  if (process.env.NEXT_PUBLIC_ENABLE_MSW === 'false') {
+    console.log('[MSW] 비활성화됨 (NEXT_PUBLIC_ENABLE_MSW=false)')
+    return
+  }
+
   const { worker } = await import('./browser')
   await worker.start({
-    // 처리되지 않은 요청은 실제 네트워크로 통과
     onUnhandledRequest: 'bypass',
   })
 }
