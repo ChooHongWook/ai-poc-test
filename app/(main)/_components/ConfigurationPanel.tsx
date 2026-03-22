@@ -1,32 +1,29 @@
+'use client'
+
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { Button } from './ui/button';
-import { cn } from './ui/utils';
-import { Settings, Zap } from 'lucide-react';
-import { Separator } from './ui/separator';
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { Settings, Zap } from 'lucide-react'
+import { Separator } from '@/components/ui/separator'
 import {
   AIProviderConfigItem,
   type ModelOption,
-} from './AIProviderConfigItem';
-
-export interface AIProvider {
-  enabled: boolean;
-  apiKey: string;
-  model: string;
-}
+} from '@/app/(main)/_components/AIProviderConfigItem'
+import type { AIProvider } from '@/lib/providers/ai-config-provider'
 
 interface ConfigurationPanelProps {
-  chatgpt: AIProvider;
-  gemini: AIProvider;
-  claude: AIProvider;
-  onChatGPTChange: (provider: AIProvider) => void;
-  onGeminiChange: (provider: AIProvider) => void;
-  onClaudeChange: (provider: AIProvider) => void;
+  chatgpt: AIProvider
+  gemini: AIProvider
+  claude: AIProvider
+  onChatGPTChange: (provider: AIProvider) => void
+  onGeminiChange: (provider: AIProvider) => void
+  onClaudeChange: (provider: AIProvider) => void
 }
 
 const CHATGPT_MODELS: ModelOption[] = [
@@ -34,20 +31,20 @@ const CHATGPT_MODELS: ModelOption[] = [
   { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
   { value: 'gpt-4o', label: 'GPT-4o' },
   { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
-];
+]
 
 const GEMINI_MODELS: ModelOption[] = [
   { value: 'gemini-pro', label: 'Gemini Pro' },
   { value: 'gemini-pro-vision', label: 'Gemini Pro Vision' },
   { value: 'gemini-ultra', label: 'Gemini Ultra' },
-];
+]
 
 const CLAUDE_MODELS: ModelOption[] = [
   { value: 'claude-3-opus', label: 'Claude 3 Opus' },
   { value: 'claude-3-sonnet', label: 'Claude 3 Sonnet' },
   { value: 'claude-3-haiku', label: 'Claude 3 Haiku' },
   { value: 'claude-2', label: 'Claude 2' },
-];
+]
 
 export function ConfigurationPanel({
   chatgpt,
@@ -63,18 +60,18 @@ export function ConfigurationPanel({
       enabled: true,
       apiKey: 'sk-proj-demo-chatgpt-api-key-1234567890',
       model: 'gpt-4o',
-    });
+    })
     onGeminiChange({
       enabled: true,
       apiKey: 'AIzaSy-demo-gemini-api-key-1234567890',
       model: 'gemini-pro',
-    });
+    })
     onClaudeChange({
       enabled: true,
       apiKey: 'sk-ant-demo-claude-api-key-1234567890',
       model: 'claude-3-sonnet',
-    });
-  };
+    })
+  }
 
   return (
     <Card>
@@ -97,9 +94,7 @@ export function ConfigurationPanel({
             'bg-primary/5 border-primary/20 border',
           )}
         >
-          <div
-            className="flex items-center justify-between gap-4"
-          >
+          <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
               <p className="mb-1 text-sm font-medium">빠른 설정</p>
               <p className="text-muted-foreground text-xs">
@@ -188,5 +183,5 @@ export function ConfigurationPanel({
         />
       </CardContent>
     </Card>
-  );
+  )
 }

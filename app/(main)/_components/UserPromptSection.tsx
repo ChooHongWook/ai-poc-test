@@ -1,17 +1,19 @@
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
+'use client'
+
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { MessageCircle } from 'lucide-react';
+} from '@/components/ui/card'
+import { MessageCircle } from 'lucide-react'
 
 interface UserPromptSectionProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: string
+  onChange: (value: string) => void
 }
 
 export function UserPromptSection({ value, onChange }: UserPromptSectionProps) {
@@ -39,5 +41,5 @@ export function UserPromptSection({ value, onChange }: UserPromptSectionProps) {
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

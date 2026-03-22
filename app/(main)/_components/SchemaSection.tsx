@@ -1,30 +1,32 @@
-import { Label } from './ui/label';
-import { Textarea } from './ui/textarea';
+'use client'
+
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { Code, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from './ui/alert';
+} from '@/components/ui/card'
+import { Code, AlertCircle } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
 interface SchemaSectionProps {
-  value: string;
-  onChange: (value: string) => void;
+  value: string
+  onChange: (value: string) => void
 }
 
 export function SchemaSection({ value, onChange }: SchemaSectionProps) {
   const isValidJSON = () => {
-    if (!value.trim()) return true;
+    if (!value.trim()) return true
     try {
-      JSON.parse(value);
-      return true;
+      JSON.parse(value)
+      return true
     } catch {
-      return false;
+      return false
     }
-  };
+  }
 
   return (
     <Card>
@@ -60,5 +62,5 @@ export function SchemaSection({ value, onChange }: SchemaSectionProps) {
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

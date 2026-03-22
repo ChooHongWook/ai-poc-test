@@ -1,46 +1,48 @@
-import { useRef, useState } from 'react';
+'use client'
+
+import { useRef, useState } from 'react'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { Button } from './ui/button';
-import { cn } from './ui/utils';
-import { Upload, X, FileText, Image as ImageIcon } from 'lucide-react';
-import { Badge } from './ui/badge';
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { Upload, X, FileText, Image as ImageIcon } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 
 interface UploadedFile {
-  id: string;
-  file: File;
-  name: string;
-  size: string;
-  type: string;
+  id: string
+  file: File
+  name: string
+  size: string
+  type: string
 }
 
 interface FileUploadSectionProps {
-  files: UploadedFile[];
-  onFilesChange: (files: UploadedFile[]) => void;
+  files: UploadedFile[]
+  onFilesChange: (files: UploadedFile[]) => void
 }
 
 export function FileUploadSection({
   files,
   onFilesChange,
 }: FileUploadSectionProps) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isDragging, setIsDragging] = useState(false)
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
-  };
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+  }
 
   const handleFileSelect = (selectedFiles: FileList | null) => {
-    if (!selectedFiles) return;
+    if (!selectedFiles) return
 
     const newFiles: UploadedFile[] = Array.from(selectedFiles).map((file) => ({
       id: Date.now().toString() + Math.random().toString(),
@@ -48,47 +50,47 @@ export function FileUploadSection({
       name: file.name,
       size: formatFileSize(file.size),
       type: file.type,
-    }));
+    }))
 
-    onFilesChange([...files, ...newFiles]);
-  };
+    onFilesChange([...files, ...newFiles])
+  }
 
   const handleButtonClick = () => {
-    fileInputRef.current?.click();
-  };
+    fileInputRef.current?.click()
+  }
 
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleFileSelect(e.target.files);
+    handleFileSelect(e.target.files)
     // Reset input value to allow selecting the same file again
-    e.target.value = '';
-  };
+    e.target.value = ''
+  }
 
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
+    e.preventDefault()
+    setIsDragging(true)
+  }
 
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
+    e.preventDefault()
+    setIsDragging(false)
+  }
 
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    handleFileSelect(e.dataTransfer.files);
-  };
+    e.preventDefault()
+    setIsDragging(false)
+    handleFileSelect(e.dataTransfer.files)
+  }
 
   const removeFile = (id: string) => {
-    onFilesChange(files.filter((file) => file.id !== id));
-  };
+    onFilesChange(files.filter((file) => file.id !== id))
+  }
 
   const getFileIcon = (type: string) => {
     if (type.startsWith('image/')) {
-      return <ImageIcon className="h-4 w-4" />;
+      return <ImageIcon className="h-4 w-4" />
     }
-    return <FileText className="h-4 w-4" />;
-  };
+    return <FileText className="h-4 w-4" />
+  }
 
   return (
     <Card>
@@ -97,9 +99,7 @@ export function FileUploadSection({
           <Upload className="h-5 w-5" />
           파일 업로드
         </CardTitle>
-        <CardDescription>
-          문서 생성에 사용할 파일을 업로드하세요
-        </CardDescription>
+        <CardDescription>문서 생성에 사용할 파일을 업로드하세요</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Upload Area */}
@@ -175,8 +175,8 @@ export function FileUploadSection({
                       'opacity-0 transition-opacity group-hover:opacity-100',
                     )}
                     onClick={(e) => {
-                      e.stopPropagation();
-                      removeFile(file.id);
+                      e.stopPropagation()
+                      removeFile(file.id)
                     }}
                   >
                     <X className="h-4 w-4" />
@@ -188,5 +188,5 @@ export function FileUploadSection({
         )}
       </CardContent>
     </Card>
-  );
+  )
 }

@@ -1,33 +1,35 @@
-import { Label } from './ui/label';
-import { Input } from './ui/input';
-import { Checkbox } from './ui/checkbox';
+'use client'
+
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
-import { cn } from './ui/utils';
-import { Bot } from 'lucide-react';
+} from '@/components/ui/select'
+import { cn } from '@/lib/utils'
+import { Bot } from 'lucide-react'
 
 export interface ModelOption {
-  value: string;
-  label: string;
+  value: string
+  label: string
 }
 
 interface AIProviderConfigItemProps {
-  id: string;
-  label: string;
-  iconColor: string;
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
-  model: string;
-  onModelChange: (value: string) => void;
-  modelOptions: ModelOption[];
-  apiKey: string;
-  onApiKeyChange: (value: string) => void;
-  apiKeyPlaceholder?: string;
+  id: string
+  label: string
+  iconColor: string
+  checked: boolean
+  onCheckedChange: (checked: boolean) => void
+  model: string
+  onModelChange: (value: string) => void
+  modelOptions: ModelOption[]
+  apiKey: string
+  onApiKeyChange: (value: string) => void
+  apiKeyPlaceholder?: string
 }
 
 export function AIProviderConfigItem({
@@ -107,5 +109,5 @@ export function AIProviderConfigItem({
         </div>
       )}
     </div>
-  );
+  )
 }

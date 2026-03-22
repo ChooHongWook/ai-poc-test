@@ -1,20 +1,22 @@
-import { Label } from './ui/label';
-import { Input } from './ui/input';
+'use client'
+
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+} from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from './ui/select';
+} from '@/components/ui/select'
 import {
   Dialog,
   DialogContent,
@@ -22,47 +24,42 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog';
-import { Button } from './ui/button';
-import { cn } from './ui/utils';
-import { FileOutput, CheckCircle2, Bot, History, Eye } from 'lucide-react';
-import { Badge } from './ui/badge';
-import { CodeBlock } from './ui/code-block';
-import { EmptyState } from './ui/empty-state';
-import { AIOutputPreview } from './AIOutputPreview';
-import { useState } from 'react';
-import type { HistoryItem } from '../App';
-
-export interface AIOutput {
-  data: Record<string, string>;
-  generated: boolean;
-}
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { FileOutput, CheckCircle2, Bot, History, Eye } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { CodeBlock } from '@/components/ui/code-block'
+import { EmptyState } from '@/components/ui/empty-state'
+import { AIOutputPreview } from '@/app/(main)/_components/AIOutputPreview'
+import { useState } from 'react'
+import type { AIOutput, HistoryItem } from '@/lib/types'
 
 interface OutputDataSectionProps {
-  chatgptOutput: AIOutput;
-  geminiOutput: AIOutput;
-  claudeOutput: AIOutput;
+  chatgptOutput: AIOutput
+  geminiOutput: AIOutput
+  claudeOutput: AIOutput
   enabledProviders: {
-    chatgpt: boolean;
-    gemini: boolean;
-    claude: boolean;
-  };
-  history: HistoryItem[];
+    chatgpt: boolean
+    gemini: boolean
+    claude: boolean
+  }
+  history: HistoryItem[]
 }
 
 interface SingleOutputCardProps {
-  title: string;
-  icon: React.ReactNode;
-  output: AIOutput;
-  enabled: boolean;
-  color: string;
+  title: string
+  icon: React.ReactNode
+  output: AIOutput
+  enabled: boolean
+  color: string
 }
 
 const borderColorMap: Record<string, string> = {
   green: 'border-green-200',
   blue: 'border-blue-200',
   purple: 'border-purple-200',
-};
+}
 
 function SingleOutputCard({
   title,
@@ -72,10 +69,10 @@ function SingleOutputCard({
   color,
 }: SingleOutputCardProps) {
   const getOutputDataJSON = (data: Record<string, string>) => {
-    return JSON.stringify(data, null, 2);
-  };
+    return JSON.stringify(data, null, 2)
+  }
 
-  const outputKeys = Object.keys(output.data);
+  const outputKeys = Object.keys(output.data)
 
   if (!enabled) {
     return (
@@ -98,7 +95,7 @@ function SingleOutputCard({
           </EmptyState>
         </CardContent>
       </Card>
-    );
+    )
   }
 
   return (
@@ -171,7 +168,7 @@ function SingleOutputCard({
         </Tabs>
       </CardContent>
     </Card>
-  );
+  )
 }
 
 export function OutputDataSection({
@@ -181,10 +178,10 @@ export function OutputDataSection({
   enabledProviders,
   history,
 }: OutputDataSectionProps) {
-  const [selectedHistoryId, setSelectedHistoryId] = useState<string>('');
-  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+  const [selectedHistoryId, setSelectedHistoryId] = useState<string>('')
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false)
 
-  const selectedHistory = history.find((h) => h.id === selectedHistoryId);
+  const selectedHistory = history.find((h) => h.id === selectedHistoryId)
 
   const formatDateTime = (date: Date) => {
     return new Date(date).toLocaleString('ko-KR', {
@@ -193,8 +190,8 @@ export function OutputDataSection({
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-    });
-  };
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -209,9 +206,7 @@ export function OutputDataSection({
         </CardHeader>
         <CardContent className="space-y-4">
           {history.length === 0 ? (
-            <EmptyState
-              icon={<History className="h-10 w-10 opacity-50" />}
-            >
+            <EmptyState icon={<History className="h-10 w-10 opacity-50" />}>
               <p className="text-sm">아직 생성 기록이 없습니다</p>
             </EmptyState>
           ) : (
@@ -412,5 +407,5 @@ export function OutputDataSection({
         color="purple"
       />
     </div>
-  );
+  )
 }

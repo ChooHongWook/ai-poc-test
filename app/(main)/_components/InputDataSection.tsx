@@ -1,31 +1,33 @@
-import { useState } from 'react';
-import { Label } from './ui/label';
-import { Input } from './ui/input';
+'use client'
+
+import { useState } from 'react'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from './ui/card';
-import { Button } from './ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Plus, Trash2, Database } from 'lucide-react';
-import { CodeBlock } from './ui/code-block';
-import { EmptyState } from './ui/empty-state';
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Plus, Trash2, Database } from 'lucide-react'
+import { CodeBlock } from '@/components/ui/code-block'
+import { EmptyState } from '@/components/ui/empty-state'
 
 interface InputDataSectionProps {
-  inputFields: { id: string; label: string; value: string }[];
+  inputFields: { id: string; label: string; value: string }[]
   onInputFieldsChange: (
     fields: { id: string; label: string; value: string }[],
-  ) => void;
+  ) => void
 }
 
 export function InputDataSection({
   inputFields,
   onInputFieldsChange,
 }: InputDataSectionProps) {
-  const [newFieldLabel, setNewFieldLabel] = useState('');
+  const [newFieldLabel, setNewFieldLabel] = useState('')
 
   const addField = () => {
     if (newFieldLabel.trim()) {
@@ -33,31 +35,31 @@ export function InputDataSection({
         id: Date.now().toString(),
         label: newFieldLabel,
         value: '',
-      };
-      onInputFieldsChange([...inputFields, newField]);
-      setNewFieldLabel('');
+      }
+      onInputFieldsChange([...inputFields, newField])
+      setNewFieldLabel('')
     }
-  };
+  }
 
   const removeField = (id: string) => {
-    onInputFieldsChange(inputFields.filter((field) => field.id !== id));
-  };
+    onInputFieldsChange(inputFields.filter((field) => field.id !== id))
+  }
 
   const updateFieldValue = (id: string, value: string) => {
     onInputFieldsChange(
       inputFields.map((field) =>
         field.id === id ? { ...field, value } : field,
       ),
-    );
-  };
+    )
+  }
 
   const getInputDataJSON = () => {
-    const data: Record<string, string> = {};
+    const data: Record<string, string> = {}
     inputFields.forEach((field) => {
-      data[field.label] = field.value;
-    });
-    return JSON.stringify(data, null, 2);
-  };
+      data[field.label] = field.value
+    })
+    return JSON.stringify(data, null, 2)
+  }
 
   return (
     <Card>
@@ -91,9 +93,7 @@ export function InputDataSection({
             </div>
 
             {inputFields.length === 0 ? (
-              <EmptyState>
-                위에서 필드를 추가해주세요
-              </EmptyState>
+              <EmptyState>위에서 필드를 추가해주세요</EmptyState>
             ) : (
               <div className="space-y-3">
                 {inputFields.map((field) => (
@@ -131,5 +131,5 @@ export function InputDataSection({
         </Tabs>
       </CardContent>
     </Card>
-  );
+  )
 }

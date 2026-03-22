@@ -1,18 +1,20 @@
-import { Bot } from 'lucide-react';
-import { cn } from './ui/utils';
-import { CodeBlock } from './ui/code-block';
-import type { AIOutput } from './OutputDataSection';
+'use client'
+
+import { Bot } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { CodeBlock } from '@/components/ui/code-block'
+import type { AIOutput } from '@/lib/types'
 
 const providerColorMap: Record<string, string> = {
   green: 'text-green-600',
   blue: 'text-blue-600',
   purple: 'text-purple-600',
-};
+}
 
 interface AIOutputPreviewProps {
-  providerName: string;
-  color: string;
-  output: AIOutput;
+  providerName: string
+  color: string
+  output: AIOutput
 }
 
 export function AIOutputPreview({
@@ -30,5 +32,5 @@ export function AIOutputPreview({
         {JSON.stringify(output.data, null, 2)}
       </CodeBlock>
     </div>
-  );
+  )
 }
