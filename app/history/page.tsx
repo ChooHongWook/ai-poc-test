@@ -12,17 +12,19 @@ export default function HistoryPage() {
   if (history.length === 0) {
     return (
       <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold">생성 히스토리</h2>
         </div>
-        <p className="text-muted-foreground">아직 생성된 히스토리가 없습니다.</p>
+        <p className="text-muted-foreground">
+          아직 생성된 히스토리가 없습니다.
+        </p>
       </main>
     )
   }
 
   return (
     <main className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         <h2 className="text-2xl font-bold">생성 히스토리</h2>
         <Button variant="outline" onClick={clearHistory}>
           전체 삭제
@@ -50,7 +52,7 @@ export default function HistoryPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground line-clamp-2">
+              <p className="text-muted-foreground line-clamp-2 text-sm">
                 {item.userPrompt}
               </p>
             </CardContent>

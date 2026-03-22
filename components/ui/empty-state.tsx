@@ -1,9 +1,9 @@
-import { cn } from './utils';
+import { cn } from './utils'
 
 interface EmptyStateProps {
-  icon?: React.ReactNode;
-  children: React.ReactNode;
-  className?: string;
+  icon?: React.ReactNode
+  children: React.ReactNode
+  className?: string
 }
 
 export function EmptyState({ icon, children, className }: EmptyStateProps) {
@@ -19,10 +19,8 @@ export function EmptyState({ icon, children, className }: EmptyStateProps) {
         className,
       )}
     >
-      {icon && (
-        <div className="mx-auto mb-3 flex justify-center">{icon}</div>
-      )}
+      {icon && <div className="mx-auto mb-3 flex justify-center">{icon}</div>}
       {children}
     </div>
-  );
+  )
 }

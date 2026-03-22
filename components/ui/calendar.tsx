@@ -1,11 +1,11 @@
-'use client';
+'use client'
 
-import * as React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { DayPicker } from 'react-day-picker';
+import * as React from 'react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { DayPicker } from 'react-day-picker'
 
-import { cn } from './utils';
-import { buttonVariants } from './button';
+import { cn } from './utils'
+import { buttonVariants } from './button'
 
 function Calendar({
   className,
@@ -20,8 +20,7 @@ function Calendar({
       classNames={{
         months: 'flex flex-col sm:flex-row gap-2',
         month: 'flex flex-col gap-4',
-        month_caption:
-          'flex justify-center pt-1 relative items-center w-full',
+        month_caption: 'flex justify-center pt-1 relative items-center w-full',
         caption_label: 'text-sm font-medium',
         nav: 'flex items-center gap-1',
         button_previous: cn(
@@ -67,7 +66,7 @@ function Calendar({
       }}
       {...props}
     />
-  );
+  )
 }
 
-export { Calendar };
+export { Calendar }

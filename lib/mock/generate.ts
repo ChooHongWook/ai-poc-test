@@ -24,7 +24,15 @@ export interface GenerateResult {
 export async function generateMockOutput(
   params: GenerateParams,
 ): Promise<GenerateResult> {
-  const { chatgpt, gemini, claude, systemPrompt, userPrompt, schema, inputFields } = params
+  const {
+    chatgpt,
+    gemini,
+    claude,
+    systemPrompt,
+    userPrompt,
+    schema,
+    inputFields,
+  } = params
 
   // API 호출 시뮬레이션 (2초 지연)
   await new Promise((resolve) => setTimeout(resolve, 2000))

@@ -99,7 +99,9 @@ export function FileUploadSection({
           <Upload className="h-5 w-5" />
           파일 업로드
         </CardTitle>
-        <CardDescription>문서 생성에 사용할 파일을 업로드하세요</CardDescription>
+        <CardDescription>
+          문서 생성에 사용할 파일을 업로드하세요
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Upload Area */}

@@ -148,9 +148,7 @@ export function ConfigurationPanel({
             onGeminiChange({ ...gemini, enabled: checked })
           }
           model={gemini.model}
-          onModelChange={(value) =>
-            onGeminiChange({ ...gemini, model: value })
-          }
+          onModelChange={(value) => onGeminiChange({ ...gemini, model: value })}
           modelOptions={GEMINI_MODELS}
           apiKey={gemini.apiKey}
           onApiKeyChange={(value) =>
@@ -171,9 +169,7 @@ export function ConfigurationPanel({
             onClaudeChange({ ...claude, enabled: checked })
           }
           model={claude.model}
-          onModelChange={(value) =>
-            onClaudeChange({ ...claude, model: value })
-          }
+          onModelChange={(value) => onClaudeChange({ ...claude, model: value })}
           modelOptions={CLAUDE_MODELS}
           apiKey={claude.apiKey}
           onApiKeyChange={(value) =>

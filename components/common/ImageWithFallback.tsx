@@ -18,7 +18,10 @@ export function ImageWithFallback(
 
   return didError ? (
     <div
-      className={cn('inline-block bg-muted text-center align-middle', className)}
+      className={cn(
+        'bg-muted inline-block text-center align-middle',
+        className,
+      )}
       style={style}
     >
       <div className="flex h-full w-full items-center justify-center">

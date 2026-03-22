@@ -1,10 +1,10 @@
-import { cn } from './utils';
+import { cn } from './utils'
 
 interface CodeBlockProps {
-  children: React.ReactNode;
-  className?: string;
-  as?: 'pre' | 'div';
-  mono?: boolean;
+  children: React.ReactNode
+  className?: string
+  as?: 'pre' | 'div'
+  mono?: boolean
 }
 
 export function CodeBlock({
@@ -29,5 +29,5 @@ export function CodeBlock({
     >
       {children}
     </Component>
-  );
+  )
 }

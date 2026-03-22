@@ -44,7 +44,7 @@ export default function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-sm px-3 py-1.5 rounded-md transition-colors ${
+                  className={`rounded-md px-3 py-1.5 text-sm transition-colors ${
                     pathname === link.href
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:text-foreground hover:bg-accent'
@@ -62,8 +62,8 @@ export default function Header() {
               onClick={toggleTheme}
               aria-label="다크모드 토글"
             >
-              <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              <Sun className="h-5 w-5 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+              <Moon className="absolute h-5 w-5 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
             </Button>
           </div>
         </div>

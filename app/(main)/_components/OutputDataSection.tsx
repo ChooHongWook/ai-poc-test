@@ -367,9 +367,7 @@ export function OutputDataSection({
                                       providerName="Gemini"
                                       color="blue"
                                       output={selectedHistory.geminiOutput}
-                                      modelName={
-                                        selectedHistory.models?.gemini
-                                      }
+                                      modelName={selectedHistory.models?.gemini}
                                     />
                                   )}
 
@@ -378,9 +376,7 @@ export function OutputDataSection({
                                       providerName="Claude"
                                       color="purple"
                                       output={selectedHistory.claudeOutput}
-                                      modelName={
-                                        selectedHistory.models?.claude
-                                      }
+                                      modelName={selectedHistory.models?.claude}
                                     />
                                   )}
                                 </>
