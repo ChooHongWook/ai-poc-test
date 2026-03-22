@@ -195,259 +195,264 @@ export function OutputDataSection({
   return (
     <div className="space-y-6">
       {/* History Section */}
-      {history.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle
-              className={cn(
-                // 레이아웃
-                "flex items-center gap-2",
-              )}
-            >
-              <History className="w-5 h-5" />
-              생성 기록
-            </CardTitle>
-            <CardDescription>
-              이전 생성 결과를 확인할 수 있습니다
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="history-select">기록 선택</Label>
-              <Select
-                value={selectedHistoryId}
-                onValueChange={setSelectedHistoryId}
-              >
-                <SelectTrigger id="history-select">
-                  <SelectValue placeholder="기록을 선택하세요" />
-                </SelectTrigger>
-                <SelectContent>
-                  {history.map((item) => (
-                    <SelectItem key={item.id} value={item.id}>
-                      {formatDateTime(item.timestamp)} -{" "}
-                      {item.userPrompt.substring(0, 30)}...
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+      <Card>
+        <CardHeader>
+          <CardTitle
+            className={cn(
+              // 레이아웃
+              "flex items-center gap-2",
+            )}
+          >
+            <History className="w-5 h-5" />
+            생성 기록
+          </CardTitle>
+          <CardDescription>이전 생성 결과를 확인할 수 있습니다</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {history.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <History className="w-10 h-10 mx-auto mb-3 opacity-50" />
+              <p className="text-sm">아직 생성 기록이 없습니다</p>
             </div>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <Label htmlFor="history-select">기록 선택</Label>
+                <Select
+                  value={selectedHistoryId}
+                  onValueChange={setSelectedHistoryId}
+                >
+                  <SelectTrigger id="history-select">
+                    <SelectValue placeholder="기록을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {history.map((item) => (
+                      <SelectItem key={item.id} value={item.id}>
+                        {formatDateTime(item.timestamp)} -{" "}
+                        {item.userPrompt.substring(0, 30)}...
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-            {selectedHistory && (
-              <div
-                className={cn(
-                  // 크기/간격
-                  "p-4 rounded-lg space-y-3",
-                  // 색상/배경
-                  "bg-muted/50 border",
-                )}
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm font-medium">선택된 기록</p>
-                    <Dialog
-                      open={detailDialogOpen}
-                      onOpenChange={setDetailDialogOpen}
-                    >
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Eye className="w-4 h-4 mr-2" />
-                          상세 보기
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>생성 기록 상세 정보</DialogTitle>
-                          <DialogDescription>
-                            {formatDateTime(selectedHistory.timestamp)}
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          {/* System Prompt */}
-                          <div className="space-y-2">
-                            <Label>System Prompt</Label>
-                            <div
-                              className={cn(
-                                // 크기/간격
-                                "p-3 rounded-md max-h-32",
-                                // 색상/배경
-                                "bg-muted",
-                                // 레이아웃
-                                "overflow-auto text-sm",
-                              )}
-                            >
-                              {selectedHistory.systemPrompt || "없음"}
-                            </div>
-                          </div>
-
-                          {/* User Prompt */}
-                          <div className="space-y-2">
-                            <Label>User Prompt</Label>
-                            <div
-                              className={cn(
-                                // 크기/간격
-                                "p-3 rounded-md max-h-32",
-                                // 색상/배경
-                                "bg-muted",
-                                // 레이아웃
-                                "overflow-auto text-sm",
-                              )}
-                            >
-                              {selectedHistory.userPrompt || "없음"}
-                            </div>
-                          </div>
-
-                          {/* Schema */}
-                          {selectedHistory.schema && (
+              {selectedHistory && (
+                <div
+                  className={cn(
+                    // 크기/간격
+                    "p-4 rounded-lg space-y-3",
+                    // 색상/배경
+                    "bg-muted/50 border",
+                  )}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium">선택된 기록</p>
+                      <Dialog
+                        open={detailDialogOpen}
+                        onOpenChange={setDetailDialogOpen}
+                      >
+                        <DialogTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Eye className="w-4 h-4 mr-2" />
+                            상세 보기
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>생성 기록 상세 정보</DialogTitle>
+                            <DialogDescription>
+                              {formatDateTime(selectedHistory.timestamp)}
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            {/* System Prompt */}
                             <div className="space-y-2">
-                              <Label>AI 스키마</Label>
-                              <pre
+                              <Label>System Prompt</Label>
+                              <div
                                 className={cn(
                                   // 크기/간격
                                   "p-3 rounded-md max-h-32",
                                   // 색상/배경
                                   "bg-muted",
                                   // 레이아웃
-                                  "overflow-auto text-sm font-mono",
+                                  "overflow-auto text-sm",
                                 )}
                               >
-                                {selectedHistory.schema}
-                              </pre>
+                                {selectedHistory.systemPrompt || "없음"}
+                              </div>
                             </div>
-                          )}
 
-                          {/* Input Fields */}
-                          {selectedHistory.inputFields.length > 0 && (
+                            {/* User Prompt */}
                             <div className="space-y-2">
-                              <Label>입력 데이터</Label>
+                              <Label>User Prompt</Label>
+                              <div
+                                className={cn(
+                                  // 크기/간격
+                                  "p-3 rounded-md max-h-32",
+                                  // 색상/배경
+                                  "bg-muted",
+                                  // 레이아웃
+                                  "overflow-auto text-sm",
+                                )}
+                              >
+                                {selectedHistory.userPrompt || "없음"}
+                              </div>
+                            </div>
+
+                            {/* Schema */}
+                            {selectedHistory.schema && (
                               <div className="space-y-2">
-                                {selectedHistory.inputFields.map((field) => (
-                                  <div
-                                    key={field.id}
-                                    className={cn(
-                                      // 레이아웃
-                                      "flex items-center gap-2",
-                                      // 크기/간격
-                                      "p-2 rounded-md",
-                                      // 색상/배경
-                                      "bg-muted",
-                                    )}
-                                  >
+                                <Label>AI 스키마</Label>
+                                <pre
+                                  className={cn(
+                                    // 크기/간격
+                                    "p-3 rounded-md max-h-32",
+                                    // 색상/배경
+                                    "bg-muted",
+                                    // 레이아웃
+                                    "overflow-auto text-sm font-mono",
+                                  )}
+                                >
+                                  {selectedHistory.schema}
+                                </pre>
+                              </div>
+                            )}
+
+                            {/* Input Fields */}
+                            {selectedHistory.inputFields.length > 0 && (
+                              <div className="space-y-2">
+                                <Label>입력 데이터</Label>
+                                <div className="space-y-2">
+                                  {selectedHistory.inputFields.map((field) => (
+                                    <div
+                                      key={field.id}
+                                      className={cn(
+                                        // 레이아웃
+                                        "flex items-center gap-2",
+                                        // 크기/간격
+                                        "p-2 rounded-md",
+                                        // 색상/배경
+                                        "bg-muted",
+                                      )}
+                                    >
+                                      <span className="text-sm font-medium">
+                                        {field.label}:
+                                      </span>
+                                      <span className="text-sm">
+                                        {field.value}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* AI Outputs */}
+                            <div className="space-y-3">
+                              <Label>AI 출력 결과</Label>
+
+                              {selectedHistory.chatgptOutput && (
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <Bot className="w-4 h-4 text-green-600" />
                                     <span className="text-sm font-medium">
-                                      {field.label}:
-                                    </span>
-                                    <span className="text-sm">
-                                      {field.value}
+                                      ChatGPT
                                     </span>
                                   </div>
-                                ))}
-                              </div>
+                                  <pre
+                                    className={cn(
+                                      // 크기/간격
+                                      "p-3 rounded-md max-h-48",
+                                      // 색상/배경
+                                      "bg-muted",
+                                      // 레이아웃
+                                      "overflow-auto text-xs font-mono",
+                                    )}
+                                  >
+                                    {JSON.stringify(
+                                      selectedHistory.chatgptOutput.data,
+                                      null,
+                                      2,
+                                    )}
+                                  </pre>
+                                </div>
+                              )}
+
+                              {selectedHistory.geminiOutput && (
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <Bot className="w-4 h-4 text-blue-600" />
+                                    <span className="text-sm font-medium">
+                                      Gemini
+                                    </span>
+                                  </div>
+                                  <pre
+                                    className={cn(
+                                      // 크기/간격
+                                      "p-3 rounded-md max-h-48",
+                                      // 색상/배경
+                                      "bg-muted",
+                                      // 레이아웃
+                                      "overflow-auto text-xs font-mono",
+                                    )}
+                                  >
+                                    {JSON.stringify(
+                                      selectedHistory.geminiOutput.data,
+                                      null,
+                                      2,
+                                    )}
+                                  </pre>
+                                </div>
+                              )}
+
+                              {selectedHistory.claudeOutput && (
+                                <div className="space-y-2">
+                                  <div className="flex items-center gap-2">
+                                    <Bot className="w-4 h-4 text-purple-600" />
+                                    <span className="text-sm font-medium">
+                                      Claude
+                                    </span>
+                                  </div>
+                                  <pre
+                                    className={cn(
+                                      // 크기/간격
+                                      "p-3 rounded-md max-h-48",
+                                      // 색상/배경
+                                      "bg-muted",
+                                      // 레이아웃
+                                      "overflow-auto text-xs font-mono",
+                                    )}
+                                  >
+                                    {JSON.stringify(
+                                      selectedHistory.claudeOutput.data,
+                                      null,
+                                      2,
+                                    )}
+                                  </pre>
+                                </div>
+                              )}
                             </div>
-                          )}
-
-                          {/* AI Outputs */}
-                          <div className="space-y-3">
-                            <Label>AI 출력 결과</Label>
-
-                            {selectedHistory.chatgptOutput && (
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Bot className="w-4 h-4 text-green-600" />
-                                  <span className="text-sm font-medium">
-                                    ChatGPT
-                                  </span>
-                                </div>
-                                <pre
-                                  className={cn(
-                                    // 크기/간격
-                                    "p-3 rounded-md max-h-48",
-                                    // 색상/배경
-                                    "bg-muted",
-                                    // 레이아웃
-                                    "overflow-auto text-xs font-mono",
-                                  )}
-                                >
-                                  {JSON.stringify(
-                                    selectedHistory.chatgptOutput.data,
-                                    null,
-                                    2,
-                                  )}
-                                </pre>
-                              </div>
-                            )}
-
-                            {selectedHistory.geminiOutput && (
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Bot className="w-4 h-4 text-blue-600" />
-                                  <span className="text-sm font-medium">
-                                    Gemini
-                                  </span>
-                                </div>
-                                <pre
-                                  className={cn(
-                                    // 크기/간격
-                                    "p-3 rounded-md max-h-48",
-                                    // 색상/배경
-                                    "bg-muted",
-                                    // 레이아웃
-                                    "overflow-auto text-xs font-mono",
-                                  )}
-                                >
-                                  {JSON.stringify(
-                                    selectedHistory.geminiOutput.data,
-                                    null,
-                                    2,
-                                  )}
-                                </pre>
-                              </div>
-                            )}
-
-                            {selectedHistory.claudeOutput && (
-                              <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                  <Bot className="w-4 h-4 text-purple-600" />
-                                  <span className="text-sm font-medium">
-                                    Claude
-                                  </span>
-                                </div>
-                                <pre
-                                  className={cn(
-                                    // 크기/간격
-                                    "p-3 rounded-md max-h-48",
-                                    // 색상/배경
-                                    "bg-muted",
-                                    // 레이아웃
-                                    "overflow-auto text-xs font-mono",
-                                  )}
-                                >
-                                  {JSON.stringify(
-                                    selectedHistory.claudeOutput.data,
-                                    null,
-                                    2,
-                                  )}
-                                </pre>
-                              </div>
-                            )}
                           </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  <div className="space-y-1">
-                    <p className="text-xs text-muted-foreground">
-                      생성 시간: {formatDateTime(selectedHistory.timestamp)}
-                    </p>
-                    <p className="text-sm">
-                      User Prompt: {selectedHistory.userPrompt.substring(0, 50)}
-                      ...
-                    </p>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs text-muted-foreground">
+                        생성 시간: {formatDateTime(selectedHistory.timestamp)}
+                      </p>
+                      <p className="text-sm">
+                        User Prompt:{" "}
+                        {selectedHistory.userPrompt.substring(0, 50)}...
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
+              )}
+            </>
+          )}
+        </CardContent>
+      </Card>
 
       {/* ChatGPT Output */}
       <SingleOutputCard
