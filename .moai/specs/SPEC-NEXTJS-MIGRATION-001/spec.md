@@ -7,7 +7,8 @@
 | SPEC ID | SPEC-NEXTJS-MIGRATION-001 |
 | 제목 | Vite + React SPA를 Next.js App Router로 마이그레이션 |
 | 생성일 | 2026-03-22 |
-| 상태 | Planned |
+| 완료일 | 2026-03-22 |
+| 상태 | Completed |
 | 우선순위 | High |
 | 라이프사이클 | spec-first |
 

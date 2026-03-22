@@ -1,61 +1,76 @@
-# Technical Stack
+# 기술 스택
 
-## Runtime & Build
+## 런타임 & 빌드
 
-| Category | Technology | Version |
-|----------|-----------|---------|
-| Build Tool | Vite | 6.3.5 |
-| Language | TypeScript | 5.9.3 |
-| Runtime | React | 19.2.4 |
-| Package Manager | pnpm | - |
+| 항목 | 기술 | 버전 |
+|------|------|------|
+| 빌드 도구 | Next.js | 16.2.1 |
+| 프레임워크 | Next.js App Router | - |
+| 언어 | TypeScript | 5.9.3 |
+| 런타임 | React | 19.2.4 |
+| 패키지 매니저 | pnpm | - |
 
-## UI Framework
+## UI 프레임워크
 
-| Category | Technology | Version |
-|----------|-----------|---------|
+| 항목 | 기술 | 버전 |
+|------|------|------|
 | CSS | Tailwind CSS | 4.1.12 |
-| Component Library | shadcn/ui (Radix UI) | Latest |
-| Additional UI | MUI Material | 7.3.5 |
-| Emotion | @emotion/react + styled | 11.14.x |
-| Icons | lucide-react | 0.487.0 |
-| Toast | sonner | 2.0.3 |
-| Charts | recharts | 2.15.2 |
+| 스타일링 엔진 | @tailwindcss/postcss | 4.2.2 |
+| 컴포넌트 라이브러리 | shadcn/ui (Radix UI) | Latest |
+| 아이콘 | lucide-react | 0.487.0 |
+| 토스트 | sonner | 2.0.3 |
+| 차트 | recharts | 2.15.2 |
 
-## Libraries
+## 라이브러리
 
-| Category | Technology | Version |
-|----------|-----------|---------|
-| Routing | react-router | 7.13.0 (installed, unused) |
-| Forms | react-hook-form | 7.55.0 |
-| DnD | react-dnd | 16.0.1 |
-| Animation | motion | 12.23.24 |
-| Date | date-fns | 3.6.0 |
-| Theme | next-themes | 0.4.6 |
-| Class Merge | clsx + tailwind-merge | Latest |
+| 항목 | 기술 | 버전 |
+|------|------|------|
+| 폼 | react-hook-form | 7.55.0 |
+| 드래그앤드롭 | react-dnd | 16.0.1 |
+| 애니메이션 | motion | 12.23.24 |
+| 날짜 | date-fns | 3.6.0 |
+| 테마 | next-themes | 0.4.6 |
+| 클래스 병합 | clsx + tailwind-merge | Latest |
 | CVA | class-variance-authority | 0.7.1 |
 
-## Development Tools
+## 개발 도구
 
-| Category | Technology |
-|----------|-----------|
-| Formatting | Prettier + prettier-plugin-tailwindcss |
-| Type Checking | TypeScript strict mode |
-| Vite Plugins | @vitejs/plugin-react, @tailwindcss/vite |
+| 항목 | 기술 |
+|------|------|
+| 포매팅 | Prettier + prettier-plugin-tailwindcss |
+| 타입 체크 | TypeScript strict mode |
+| Next.js 설정 | next.config.ts |
 
-## Key Patterns
+## 주요 패턴
 
-- **State Management**: React useState (no external library)
-- **Styling**: Tailwind utility-first + CSS variables (OKLch color model)
-- **Component Architecture**: shadcn/ui pattern (copy-paste components)
-- **Dark Mode**: CSS class toggle (.dark) with CSS variables
-- **API**: Mock only (no real API integration)
-- **Routing**: None (single page)
+- **상태 관리**: React Context + localStorage (전역 상태) + useState (페이지 로컬 상태)
+- **스타일링**: Tailwind 유틸리티 우선 + CSS 변수 (OKLch 색상 모델)
+- **컴포넌트 아키텍처**: shadcn/ui 패턴 (복사-붙여넣기 컴포넌트) + Next.js App Router 컨벤션
+- **다크모드**: next-themes에서 class 속성 전략
+- **API**: Mock만 지원 (실제 API 통합은 향후 작업)
+- **라우팅**: Next.js App Router (/, /history, /settings)
+- **SSR 전략**: 대부분 클라이언트 컴포넌트 ('use client'), 레이아웃 셸용 서버 컴포넌트
 
-## Constraints & Notes
+## 변경사항 요약
 
-- React peer dependency: 19.2.4 (latest)
-- MUI and shadcn/ui coexist (potential cleanup target)
-- react-router installed but not used
-- next-themes installed (for theme management) despite no Next.js
-- No testing framework configured
-- No linting (ESLint) configured
+### 추가된 의존성
+- next: 16.2.1 (App Router 프레임워크)
+- @tailwindcss/postcss: 4.2.2 (Tailwind CSS 4 PostCSS 엔진)
+
+### 제거된 의존성
+- vite: 6.3.5 (빌드 도구)
+- @vitejs/plugin-react (Vite React 플러그인)
+- @tailwindcss/vite (Tailwind Vite 플러그인)
+- @mui/material: 7.3.5 (MUI 컴포넌트 라이브러리)
+- @mui/icons-material (MUI 아이콘)
+- @emotion/react: 11.14.x (MUI 스타일 엔진)
+- @emotion/styled (MUI 스타일 컴포넌트)
+- react-router: 7.13.0 (미사용 라이브러리)
+
+### 유지된 의존성
+- React / React DOM: 19.2.4 (여전히 필수)
+- typescript: 5.9.3
+- tailwindcss: 4.1.12
+- 모든 shadcn/ui 관련 (radix-ui/*, clsx, tailwind-merge, class-variance-authority)
+- react-hook-form, lucide-react, sonner, recharts, motion, date-fns, react-dnd
+- next-themes (Next.js 환경에서 기본 지원)
