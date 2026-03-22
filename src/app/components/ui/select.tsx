@@ -141,7 +141,7 @@ function SelectItem({
       data-slot="select-item"
       className={cn(
         // 레이아웃
-        "relative flex w-full cursor-default items-center gap-2 rounded-sm",
+        "relative flex w-full cursor-pointer items-center gap-2 rounded-sm",
         "py-1.5 pr-8 pl-2 text-sm outline-hidden select-none",
         // 상태
         "focus:bg-accent focus:text-accent-foreground",
