@@ -1,19 +1,28 @@
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { MessageSquare } from "lucide-react";
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+import { MessageSquare } from 'lucide-react';
 
 interface SystemPromptSectionProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-export function SystemPromptSection({ value, onChange }: SystemPromptSectionProps) {
+export function SystemPromptSection({
+  value,
+  onChange,
+}: SystemPromptSectionProps) {
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <MessageSquare className="w-5 h-5" />
+          <MessageSquare className="h-5 w-5" />
           System Prompt
         </CardTitle>
         <CardDescription>AI의 역할과 행동 방식을 정의하세요</CardDescription>

@@ -1,9 +1,15 @@
-import { useRef, useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { cn } from "./ui/utils";
-import { Upload, File, X, FileText, Image as ImageIcon } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { useRef, useState } from 'react';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+import { Button } from './ui/button';
+import { cn } from './ui/utils';
+import { Upload, File, X, FileText, Image as ImageIcon } from 'lucide-react';
+import { Badge } from './ui/badge';
 
 interface UploadedFile {
   id: string;
@@ -18,16 +24,19 @@ interface FileUploadSectionProps {
   onFilesChange: (files: UploadedFile[]) => void;
 }
 
-export function FileUploadSection({ files, onFilesChange }: FileUploadSectionProps) {
+export function FileUploadSection({
+  files,
+  onFilesChange,
+}: FileUploadSectionProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return "0 Bytes";
+    if (bytes === 0) return '0 Bytes';
     const k = 1024;
-    const sizes = ["Bytes", "KB", "MB", "GB"];
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
   const handleFileSelect = (selectedFiles: FileList | null) => {
@@ -51,7 +60,7 @@ export function FileUploadSection({ files, onFilesChange }: FileUploadSectionPro
   const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleFileSelect(e.target.files);
     // Reset input value to allow selecting the same file again
-    e.target.value = "";
+    e.target.value = '';
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -75,47 +84,49 @@ export function FileUploadSection({ files, onFilesChange }: FileUploadSectionPro
   };
 
   const getFileIcon = (type: string) => {
-    if (type.startsWith("image/")) {
-      return <ImageIcon className="w-4 h-4" />;
+    if (type.startsWith('image/')) {
+      return <ImageIcon className="h-4 w-4" />;
     }
-    return <FileText className="w-4 h-4" />;
+    return <FileText className="h-4 w-4" />;
   };
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Upload className="w-5 h-5" />
+          <Upload className="h-5 w-5" />
           파일 업로드
         </CardTitle>
-        <CardDescription>문서 생성에 사용할 파일을 업로드하세요</CardDescription>
+        <CardDescription>
+          문서 생성에 사용할 파일을 업로드하세요
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Upload Area */}
         <div
           className={cn(
             // 레이아웃
-            "p-8 text-center cursor-pointer",
+            'cursor-pointer p-8 text-center',
             // 크기/간격
-            "rounded-lg",
+            'rounded-lg',
             // 색상/배경
-            "border-2 border-dashed",
+            'border-2 border-dashed',
             // 인터랙션
-            "transition-colors",
+            'transition-colors',
             // 상태
-            isDragging && "border-primary bg-primary/5",
-            !isDragging && "border-muted-foreground/25 hover:border-primary/50"
+            isDragging && 'border-primary bg-primary/5',
+            !isDragging && 'border-muted-foreground/25 hover:border-primary/50',
           )}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onClick={handleButtonClick}
         >
-          <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-sm font-medium mb-1">
+          <Upload className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+          <p className="mb-1 text-sm font-medium">
             클릭하거나 파일을 드래그하여 업로드
           </p>
-          <p className="text-xs text-muted-foreground">
+          <p className="text-muted-foreground text-xs">
             PDF, DOCX, TXT, 이미지 등 모든 파일 형식 지원
           </p>
           <input
@@ -140,35 +151,35 @@ export function FileUploadSection({ files, onFilesChange }: FileUploadSectionPro
                   key={file.id}
                   className={cn(
                     // 레이아웃
-                    "flex items-center gap-3",
+                    'flex items-center gap-3',
                     // 크기/간격
-                    "p-3 rounded-lg",
+                    'rounded-lg p-3',
                     // 색상/배경
-                    "bg-muted",
+                    'bg-muted',
                     // 인터랙션
-                    "group hover:bg-muted/80 transition-colors"
+                    'group hover:bg-muted/80 transition-colors',
                   )}
                 >
                   <div className="flex-shrink-0">{getFileIcon(file.type)}</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium truncate">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">{file.size}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{file.name}</p>
+                    <p className="text-muted-foreground text-xs">{file.size}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
                     className={cn(
                       // 크기/간격
-                      "flex-shrink-0",
+                      'flex-shrink-0',
                       // 인터랙션
-                      "opacity-0 group-hover:opacity-100 transition-opacity"
+                      'opacity-0 transition-opacity group-hover:opacity-100',
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
                       removeFile(file.id);
                     }}
                   >
-                    <X className="w-4 h-4" />
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               ))}

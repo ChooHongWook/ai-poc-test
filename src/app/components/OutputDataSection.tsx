@@ -1,20 +1,20 @@
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+import { Label } from './ui/label';
+import { Input } from './ui/input';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "./ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+} from './ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
+} from './ui/select';
 import {
   Dialog,
   DialogContent,
@@ -22,13 +22,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
-import { cn } from "./ui/utils";
-import { FileOutput, CheckCircle2, Bot, History, Eye } from "lucide-react";
-import { Badge } from "./ui/badge";
-import { useState } from "react";
-import type { HistoryItem } from "../App";
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { cn } from './ui/utils';
+import { FileOutput, CheckCircle2, Bot, History, Eye } from 'lucide-react';
+import { Badge } from './ui/badge';
+import { useState } from 'react';
+import type { HistoryItem } from '../App';
 
 export interface AIOutput {
   data: Record<string, string>;
@@ -81,8 +81,8 @@ function SingleOutputCard({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            <Bot className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <div className="text-muted-foreground py-12 text-center">
+            <Bot className="mx-auto mb-3 h-12 w-12 opacity-50" />
             <p>{title}가 비활성화되어 있습니다</p>
           </div>
         </CardContent>
@@ -98,7 +98,7 @@ function SingleOutputCard({
           {title}
           {output.generated && (
             <Badge variant="default" className="ml-auto">
-              <CheckCircle2 className="w-3 h-3 mr-1" />
+              <CheckCircle2 className="mr-1 h-3 w-3" />
               생성 완료
             </Badge>
           )}
@@ -114,8 +114,8 @@ function SingleOutputCard({
 
           <TabsContent value="fields" className="space-y-4">
             {!output.generated || outputKeys.length === 0 ? (
-              <div className="text-center py-12 text-muted-foreground">
-                <FileOutput className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <div className="text-muted-foreground py-12 text-center">
+                <FileOutput className="mx-auto mb-3 h-12 w-12 opacity-50" />
                 <p>{title} 결과를 기다리는 중입니다</p>
               </div>
             ) : (
@@ -140,11 +140,11 @@ function SingleOutputCard({
               <div
                 className={cn(
                   // 크기/간격
-                  "p-4 rounded-lg py-12",
+                  'rounded-lg p-4 py-12',
                   // 색상/배경
-                  "bg-muted text-muted-foreground",
+                  'bg-muted text-muted-foreground',
                   // 레이아웃
-                  "text-center",
+                  'text-center',
                 )}
               >
                 결과가 없습니다
@@ -153,11 +153,11 @@ function SingleOutputCard({
               <pre
                 className={cn(
                   // 크기/간격
-                  "p-4 rounded-lg max-h-96",
+                  'max-h-96 rounded-lg p-4',
                   // 색상/배경
-                  "bg-muted",
+                  'bg-muted',
                   // 레이아웃
-                  "overflow-auto text-sm font-mono",
+                  'overflow-auto font-mono text-sm',
                 )}
               >
                 {getOutputDataJSON(output.data)}
@@ -177,18 +177,18 @@ export function OutputDataSection({
   enabledProviders,
   history,
 }: OutputDataSectionProps) {
-  const [selectedHistoryId, setSelectedHistoryId] = useState<string>("");
+  const [selectedHistoryId, setSelectedHistoryId] = useState<string>('');
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
 
   const selectedHistory = history.find((h) => h.id === selectedHistoryId);
 
   const formatDateTime = (date: Date) => {
-    return new Date(date).toLocaleString("ko-KR", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
+    return new Date(date).toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
@@ -200,18 +200,18 @@ export function OutputDataSection({
           <CardTitle
             className={cn(
               // 레이아웃
-              "flex items-center gap-2",
+              'flex items-center gap-2',
             )}
           >
-            <History className="w-5 h-5" />
+            <History className="h-5 w-5" />
             생성 기록
           </CardTitle>
           <CardDescription>이전 생성 결과를 확인할 수 있습니다</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           {history.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <History className="w-10 h-10 mx-auto mb-3 opacity-50" />
+            <div className="text-muted-foreground py-8 text-center">
+              <History className="mx-auto mb-3 h-10 w-10 opacity-50" />
               <p className="text-sm">아직 생성 기록이 없습니다</p>
             </div>
           ) : (
@@ -228,7 +228,7 @@ export function OutputDataSection({
                   <SelectContent>
                     {history.map((item) => (
                       <SelectItem key={item.id} value={item.id}>
-                        {formatDateTime(item.timestamp)} -{" "}
+                        {formatDateTime(item.timestamp)} -{' '}
                         {item.userPrompt.substring(0, 30)}...
                       </SelectItem>
                     ))}
@@ -240,9 +240,9 @@ export function OutputDataSection({
                 <div
                   className={cn(
                     // 크기/간격
-                    "p-4 rounded-lg space-y-3",
+                    'space-y-3 rounded-lg p-4',
                     // 색상/배경
-                    "bg-muted/50 border",
+                    'bg-muted/50 border',
                   )}
                 >
                   <div className="space-y-2">
@@ -254,11 +254,11 @@ export function OutputDataSection({
                       >
                         <DialogTrigger asChild>
                           <Button variant="outline" size="sm">
-                            <Eye className="w-4 h-4 mr-2" />
+                            <Eye className="mr-2 h-4 w-4" />
                             상세 보기
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                        <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
                           <DialogHeader>
                             <DialogTitle>생성 기록 상세 정보</DialogTitle>
                             <DialogDescription>
@@ -272,14 +272,14 @@ export function OutputDataSection({
                               <div
                                 className={cn(
                                   // 크기/간격
-                                  "p-3 rounded-md max-h-32",
+                                  'max-h-32 rounded-md p-3',
                                   // 색상/배경
-                                  "bg-muted",
+                                  'bg-muted',
                                   // 레이아웃
-                                  "overflow-auto text-sm",
+                                  'overflow-auto text-sm',
                                 )}
                               >
-                                {selectedHistory.systemPrompt || "없음"}
+                                {selectedHistory.systemPrompt || '없음'}
                               </div>
                             </div>
 
@@ -289,14 +289,14 @@ export function OutputDataSection({
                               <div
                                 className={cn(
                                   // 크기/간격
-                                  "p-3 rounded-md max-h-32",
+                                  'max-h-32 rounded-md p-3',
                                   // 색상/배경
-                                  "bg-muted",
+                                  'bg-muted',
                                   // 레이아웃
-                                  "overflow-auto text-sm",
+                                  'overflow-auto text-sm',
                                 )}
                               >
-                                {selectedHistory.userPrompt || "없음"}
+                                {selectedHistory.userPrompt || '없음'}
                               </div>
                             </div>
 
@@ -307,11 +307,11 @@ export function OutputDataSection({
                                 <pre
                                   className={cn(
                                     // 크기/간격
-                                    "p-3 rounded-md max-h-32",
+                                    'max-h-32 rounded-md p-3',
                                     // 색상/배경
-                                    "bg-muted",
+                                    'bg-muted',
                                     // 레이아웃
-                                    "overflow-auto text-sm font-mono",
+                                    'overflow-auto font-mono text-sm',
                                   )}
                                 >
                                   {selectedHistory.schema}
@@ -329,11 +329,11 @@ export function OutputDataSection({
                                       key={field.id}
                                       className={cn(
                                         // 레이아웃
-                                        "flex items-center gap-2",
+                                        'flex items-center gap-2',
                                         // 크기/간격
-                                        "p-2 rounded-md",
+                                        'rounded-md p-2',
                                         // 색상/배경
-                                        "bg-muted",
+                                        'bg-muted',
                                       )}
                                     >
                                       <span className="text-sm font-medium">
@@ -355,7 +355,7 @@ export function OutputDataSection({
                               {selectedHistory.chatgptOutput && (
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2">
-                                    <Bot className="w-4 h-4 text-green-600" />
+                                    <Bot className="h-4 w-4 text-green-600" />
                                     <span className="text-sm font-medium">
                                       ChatGPT
                                     </span>
@@ -363,11 +363,11 @@ export function OutputDataSection({
                                   <pre
                                     className={cn(
                                       // 크기/간격
-                                      "p-3 rounded-md max-h-48",
+                                      'max-h-48 rounded-md p-3',
                                       // 색상/배경
-                                      "bg-muted",
+                                      'bg-muted',
                                       // 레이아웃
-                                      "overflow-auto text-xs font-mono",
+                                      'overflow-auto font-mono text-xs',
                                     )}
                                   >
                                     {JSON.stringify(
@@ -382,7 +382,7 @@ export function OutputDataSection({
                               {selectedHistory.geminiOutput && (
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2">
-                                    <Bot className="w-4 h-4 text-blue-600" />
+                                    <Bot className="h-4 w-4 text-blue-600" />
                                     <span className="text-sm font-medium">
                                       Gemini
                                     </span>
@@ -390,11 +390,11 @@ export function OutputDataSection({
                                   <pre
                                     className={cn(
                                       // 크기/간격
-                                      "p-3 rounded-md max-h-48",
+                                      'max-h-48 rounded-md p-3',
                                       // 색상/배경
-                                      "bg-muted",
+                                      'bg-muted',
                                       // 레이아웃
-                                      "overflow-auto text-xs font-mono",
+                                      'overflow-auto font-mono text-xs',
                                     )}
                                   >
                                     {JSON.stringify(
@@ -409,7 +409,7 @@ export function OutputDataSection({
                               {selectedHistory.claudeOutput && (
                                 <div className="space-y-2">
                                   <div className="flex items-center gap-2">
-                                    <Bot className="w-4 h-4 text-purple-600" />
+                                    <Bot className="h-4 w-4 text-purple-600" />
                                     <span className="text-sm font-medium">
                                       Claude
                                     </span>
@@ -417,11 +417,11 @@ export function OutputDataSection({
                                   <pre
                                     className={cn(
                                       // 크기/간격
-                                      "p-3 rounded-md max-h-48",
+                                      'max-h-48 rounded-md p-3',
                                       // 색상/배경
-                                      "bg-muted",
+                                      'bg-muted',
                                       // 레이아웃
-                                      "overflow-auto text-xs font-mono",
+                                      'overflow-auto font-mono text-xs',
                                     )}
                                   >
                                     {JSON.stringify(
@@ -438,11 +438,11 @@ export function OutputDataSection({
                       </Dialog>
                     </div>
                     <div className="space-y-1">
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-muted-foreground text-xs">
                         생성 시간: {formatDateTime(selectedHistory.timestamp)}
                       </p>
                       <p className="text-sm">
-                        User Prompt:{" "}
+                        User Prompt:{' '}
                         {selectedHistory.userPrompt.substring(0, 50)}...
                       </p>
                     </div>
@@ -457,7 +457,7 @@ export function OutputDataSection({
       {/* ChatGPT Output */}
       <SingleOutputCard
         title="ChatGPT"
-        icon={<Bot className="w-5 h-5 text-green-600" />}
+        icon={<Bot className="h-5 w-5 text-green-600" />}
         output={chatgptOutput}
         enabled={enabledProviders.chatgpt}
         color="green"
@@ -466,7 +466,7 @@ export function OutputDataSection({
       {/* Gemini Output */}
       <SingleOutputCard
         title="Gemini"
-        icon={<Bot className="w-5 h-5 text-blue-600" />}
+        icon={<Bot className="h-5 w-5 text-blue-600" />}
         output={geminiOutput}
         enabled={enabledProviders.gemini}
         color="blue"
@@ -475,7 +475,7 @@ export function OutputDataSection({
       {/* Claude Output */}
       <SingleOutputCard
         title="Claude"
-        icon={<Bot className="w-5 h-5 text-purple-600" />}
+        icon={<Bot className="h-5 w-5 text-purple-600" />}
         output={claudeOutput}
         enabled={enabledProviders.claude}
         color="purple"

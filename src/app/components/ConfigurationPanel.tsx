@@ -1,12 +1,24 @@
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Checkbox } from "./ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Button } from "./ui/button";
-import { cn } from "./ui/utils";
-import { Settings, Bot, Zap } from "lucide-react";
-import { Separator } from "./ui/separator";
+import { Label } from './ui/label';
+import { Input } from './ui/input';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+import { Checkbox } from './ui/checkbox';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
+import { Button } from './ui/button';
+import { cn } from './ui/utils';
+import { Settings, Bot, Zap } from 'lucide-react';
+import { Separator } from './ui/separator';
 
 export interface AIProvider {
   enabled: boolean;
@@ -35,18 +47,18 @@ export function ConfigurationPanel({
     // 기본값 API Key 적용
     onChatGPTChange({
       enabled: true,
-      apiKey: "sk-proj-demo-chatgpt-api-key-1234567890",
-      model: "gpt-4o",
+      apiKey: 'sk-proj-demo-chatgpt-api-key-1234567890',
+      model: 'gpt-4o',
     });
     onGeminiChange({
       enabled: true,
-      apiKey: "AIzaSy-demo-gemini-api-key-1234567890",
-      model: "gemini-pro",
+      apiKey: 'AIzaSy-demo-gemini-api-key-1234567890',
+      model: 'gemini-pro',
     });
     onClaudeChange({
       enabled: true,
-      apiKey: "sk-ant-demo-claude-api-key-1234567890",
-      model: "claude-3-sonnet",
+      apiKey: 'sk-ant-demo-claude-api-key-1234567890',
+      model: 'claude-3-sonnet',
     });
   };
 
@@ -54,33 +66,37 @@ export function ConfigurationPanel({
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Settings className="w-5 h-5" />
+          <Settings className="h-5 w-5" />
           AI 제공자 설정
         </CardTitle>
-        <CardDescription>사용할 AI 제공자를 선택하고 설정하세요 (복수 선택 가능)</CardDescription>
+        <CardDescription>
+          사용할 AI 제공자를 선택하고 설정하세요 (복수 선택 가능)
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Quick Setup Button */}
-        <div className={cn(
-          // 크기/간격
-          "p-4 rounded-lg",
-          // 색상/배경
-          "bg-primary/5 border border-primary/20"
-        )}>
+        <div
+          className={cn(
+            // 크기/간격
+            'rounded-lg p-4',
+            // 색상/배경
+            'bg-primary/5 border-primary/20 border',
+          )}
+        >
           <div className="flex items-center justify-between gap-4">
             <div className="flex-1">
-              <p className="text-sm font-medium mb-1">빠른 설정</p>
-              <p className="text-xs text-muted-foreground">
+              <p className="mb-1 text-sm font-medium">빠른 설정</p>
+              <p className="text-muted-foreground text-xs">
                 테스트용 기본 API Key를 모든 제공자에 적용합니다
               </p>
             </div>
-            <Button 
+            <Button
               onClick={handleApplyDefaultKeys}
               variant="default"
               size="sm"
               className="flex-shrink-0"
             >
-              <Zap className="w-4 h-4 mr-2" />
+              <Zap className="mr-2 h-4 w-4" />
               기본값 적용
             </Button>
           </div>
@@ -99,20 +115,25 @@ export function ConfigurationPanel({
               }
             />
             <div className="flex items-center gap-2">
-              <Bot className="w-5 h-5 text-green-600" />
-              <Label htmlFor="chatgpt-enabled" className="text-base font-semibold cursor-pointer">
+              <Bot className="h-5 w-5 text-green-600" />
+              <Label
+                htmlFor="chatgpt-enabled"
+                className="cursor-pointer text-base font-semibold"
+              >
                 ChatGPT (OpenAI)
               </Label>
             </div>
           </div>
 
           {chatgpt.enabled && (
-            <div className="ml-8 space-y-3 p-4 border rounded-lg bg-muted/30">
+            <div className="bg-muted/30 ml-8 space-y-3 rounded-lg border p-4">
               <div className="space-y-2">
                 <Label htmlFor="chatgpt-model">모델 선택</Label>
                 <Select
                   value={chatgpt.model}
-                  onValueChange={(value) => onChatGPTChange({ ...chatgpt, model: value })}
+                  onValueChange={(value) =>
+                    onChatGPTChange({ ...chatgpt, model: value })
+                  }
                 >
                   <SelectTrigger id="chatgpt-model">
                     <SelectValue placeholder="모델을 선택하세요" />
@@ -133,7 +154,9 @@ export function ConfigurationPanel({
                   type="password"
                   placeholder="sk-..."
                   value={chatgpt.apiKey}
-                  onChange={(e) => onChatGPTChange({ ...chatgpt, apiKey: e.target.value })}
+                  onChange={(e) =>
+                    onChatGPTChange({ ...chatgpt, apiKey: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -153,27 +176,34 @@ export function ConfigurationPanel({
               }
             />
             <div className="flex items-center gap-2">
-              <Bot className="w-5 h-5 text-blue-600" />
-              <Label htmlFor="gemini-enabled" className="text-base font-semibold cursor-pointer">
+              <Bot className="h-5 w-5 text-blue-600" />
+              <Label
+                htmlFor="gemini-enabled"
+                className="cursor-pointer text-base font-semibold"
+              >
                 Gemini (Google)
               </Label>
             </div>
           </div>
 
           {gemini.enabled && (
-            <div className="ml-8 space-y-3 p-4 border rounded-lg bg-muted/30">
+            <div className="bg-muted/30 ml-8 space-y-3 rounded-lg border p-4">
               <div className="space-y-2">
                 <Label htmlFor="gemini-model">모델 선택</Label>
                 <Select
                   value={gemini.model}
-                  onValueChange={(value) => onGeminiChange({ ...gemini, model: value })}
+                  onValueChange={(value) =>
+                    onGeminiChange({ ...gemini, model: value })
+                  }
                 >
                   <SelectTrigger id="gemini-model">
                     <SelectValue placeholder="모델을 선택하세요" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="gemini-pro">Gemini Pro</SelectItem>
-                    <SelectItem value="gemini-pro-vision">Gemini Pro Vision</SelectItem>
+                    <SelectItem value="gemini-pro-vision">
+                      Gemini Pro Vision
+                    </SelectItem>
                     <SelectItem value="gemini-ultra">Gemini Ultra</SelectItem>
                   </SelectContent>
                 </Select>
@@ -186,7 +216,9 @@ export function ConfigurationPanel({
                   type="password"
                   placeholder="AI..."
                   value={gemini.apiKey}
-                  onChange={(e) => onGeminiChange({ ...gemini, apiKey: e.target.value })}
+                  onChange={(e) =>
+                    onGeminiChange({ ...gemini, apiKey: e.target.value })
+                  }
                 />
               </div>
             </div>
@@ -206,28 +238,37 @@ export function ConfigurationPanel({
               }
             />
             <div className="flex items-center gap-2">
-              <Bot className="w-5 h-5 text-purple-600" />
-              <Label htmlFor="claude-enabled" className="text-base font-semibold cursor-pointer">
+              <Bot className="h-5 w-5 text-purple-600" />
+              <Label
+                htmlFor="claude-enabled"
+                className="cursor-pointer text-base font-semibold"
+              >
                 Claude (Anthropic)
               </Label>
             </div>
           </div>
 
           {claude.enabled && (
-            <div className="ml-8 space-y-3 p-4 border rounded-lg bg-muted/30">
+            <div className="bg-muted/30 ml-8 space-y-3 rounded-lg border p-4">
               <div className="space-y-2">
                 <Label htmlFor="claude-model">모델 선택</Label>
                 <Select
                   value={claude.model}
-                  onValueChange={(value) => onClaudeChange({ ...claude, model: value })}
+                  onValueChange={(value) =>
+                    onClaudeChange({ ...claude, model: value })
+                  }
                 >
                   <SelectTrigger id="claude-model">
                     <SelectValue placeholder="모델을 선택하세요" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="claude-3-opus">Claude 3 Opus</SelectItem>
-                    <SelectItem value="claude-3-sonnet">Claude 3 Sonnet</SelectItem>
-                    <SelectItem value="claude-3-haiku">Claude 3 Haiku</SelectItem>
+                    <SelectItem value="claude-3-sonnet">
+                      Claude 3 Sonnet
+                    </SelectItem>
+                    <SelectItem value="claude-3-haiku">
+                      Claude 3 Haiku
+                    </SelectItem>
                     <SelectItem value="claude-2">Claude 2</SelectItem>
                   </SelectContent>
                 </Select>
@@ -240,7 +281,9 @@ export function ConfigurationPanel({
                   type="password"
                   placeholder="sk-ant-..."
                   value={claude.apiKey}
-                  onChange={(e) => onClaudeChange({ ...claude, apiKey: e.target.value })}
+                  onChange={(e) =>
+                    onClaudeChange({ ...claude, apiKey: e.target.value })
+                  }
                 />
               </div>
             </div>

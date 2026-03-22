@@ -1,15 +1,18 @@
-import { useState } from "react";
-import { OutputDataSection, AIOutput } from "./components/OutputDataSection";
-import { FileUploadSection } from "./components/FileUploadSection";
-import { ConfigurationPanel, AIProvider } from "./components/ConfigurationPanel";
-import { SystemPromptSection } from "./components/SystemPromptSection";
-import { UserPromptSection } from "./components/UserPromptSection";
-import { SchemaSection } from "./components/SchemaSection";
-import { InputDataSection } from "./components/InputDataSection";
-import { Button } from "./components/ui/button";
-import { Sparkles, Loader2, Moon, Sun } from "lucide-react";
-import { toast } from "sonner";
-import { Toaster } from "./components/ui/sonner";
+import { useState } from 'react';
+import { OutputDataSection, AIOutput } from './components/OutputDataSection';
+import { FileUploadSection } from './components/FileUploadSection';
+import {
+  ConfigurationPanel,
+  AIProvider,
+} from './components/ConfigurationPanel';
+import { SystemPromptSection } from './components/SystemPromptSection';
+import { UserPromptSection } from './components/UserPromptSection';
+import { SchemaSection } from './components/SchemaSection';
+import { InputDataSection } from './components/InputDataSection';
+import { Button } from './components/ui/button';
+import { Sparkles, Loader2, Moon, Sun } from 'lucide-react';
+import { toast } from 'sonner';
+import { Toaster } from './components/ui/sonner';
 
 export interface HistoryItem {
   id: string;
@@ -30,24 +33,24 @@ export default function App() {
   // AI Provider state
   const [chatgpt, setChatGPT] = useState<AIProvider>({
     enabled: false,
-    apiKey: "",
-    model: "",
+    apiKey: '',
+    model: '',
   });
   const [gemini, setGemini] = useState<AIProvider>({
     enabled: false,
-    apiKey: "",
-    model: "",
+    apiKey: '',
+    model: '',
   });
   const [claude, setClaude] = useState<AIProvider>({
     enabled: false,
-    apiKey: "",
-    model: "",
+    apiKey: '',
+    model: '',
   });
 
   // Configuration state
-  const [systemPrompt, setSystemPrompt] = useState("");
-  const [userPrompt, setUserPrompt] = useState("");
-  const [schema, setSchema] = useState("");
+  const [systemPrompt, setSystemPrompt] = useState('');
+  const [userPrompt, setUserPrompt] = useState('');
+  const [schema, setSchema] = useState('');
 
   // Input data state
   const [inputFields, setInputFields] = useState<
@@ -79,21 +82,21 @@ export default function App() {
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark");
+    document.documentElement.classList.toggle('dark');
   };
 
   const handleGenerate = async () => {
     // Validation
     if (!chatgpt.enabled && !gemini.enabled && !claude.enabled) {
-      toast.error("AI 모델을 선택해주세요");
+      toast.error('AI 모델을 선택해주세요');
       return;
     }
     if (!chatgpt.apiKey && !gemini.apiKey && !claude.apiKey) {
-      toast.error("API Key를 입력해주세요");
+      toast.error('API Key를 입력해주세요');
       return;
     }
     if (!systemPrompt || !userPrompt) {
-      toast.error("System Prompt와 User Prompt를 입력해주세요");
+      toast.error('System Prompt와 User Prompt를 입력해주세요');
       return;
     }
 
@@ -119,11 +122,12 @@ export default function App() {
       // Generate different outputs for each AI provider
       if (chatgpt.enabled) {
         const chatgptData: Record<string, string> = {
-          "문서 제목": "ChatGPT 생성 문서",
-          "작성일": new Date().toLocaleDateString("ko-KR"),
-          "요약": "ChatGPT를 활용하여 생성한 전문적인 문서입니다.",
-          "주요 내용": "사용자 프롬프트를 기반으로 구조화된 내용을 작성했습니다.",
-          "결론": "ChatGPT 모델을 통한 문서 생성이 완료되었습니다.",
+          '문서 제목': 'ChatGPT 생성 문서',
+          작성일: new Date().toLocaleDateString('ko-KR'),
+          요약: 'ChatGPT를 활용하여 생성한 전문적인 문서입니다.',
+          '주요 내용':
+            '사용자 프롬프트를 기반으로 구조화된 내용을 작성했습니다.',
+          결론: 'ChatGPT 모델을 통한 문서 생성이 완료되었습니다.',
           ...baseData,
         };
         newChatGPTOutput = { data: chatgptData, generated: true };
@@ -132,11 +136,11 @@ export default function App() {
 
       if (gemini.enabled) {
         const geminiData: Record<string, string> = {
-          "문서 제목": "Gemini 생성 문서",
-          "작성일": new Date().toLocaleDateString("ko-KR"),
-          "요약": "Google Gemini로 작성한 혁신적인 문서입니다.",
-          "주요 내용": "멀티모달 능력을 활용한 풍부한 컨텐츠를 제공합니다.",
-          "결론": "Gemini 모델의 강력한 성능이 입증되었습니다.",
+          '문서 제목': 'Gemini 생성 문서',
+          작성일: new Date().toLocaleDateString('ko-KR'),
+          요약: 'Google Gemini로 작성한 혁신적인 문서입니다.',
+          '주요 내용': '멀티모달 능력을 활용한 풍부한 컨텐츠를 제공합니다.',
+          결론: 'Gemini 모델의 강력한 성능이 입증되었습니다.',
           ...baseData,
         };
         newGeminiOutput = { data: geminiData, generated: true };
@@ -145,11 +149,12 @@ export default function App() {
 
       if (claude.enabled) {
         const claudeData: Record<string, string> = {
-          "문서 제목": "Claude 생성 문서",
-          "작성일": new Date().toLocaleDateString("ko-KR"),
-          "요약": "Anthropic Claude가 작성한 상세하고 정확한 문서입니다.",
-          "주요 내용": "윤리적이고 안전한 AI 원칙에 따라 신중하게 작성되었습니다.",
-          "결론": "Claude 모델의 신뢰성과 품질이 돋보입니다.",
+          '문서 제목': 'Claude 생성 문서',
+          작성일: new Date().toLocaleDateString('ko-KR'),
+          요약: 'Anthropic Claude가 작성한 상세하고 정확한 문서입니다.',
+          '주요 내용':
+            '윤리적이고 안전한 AI 원칙에 따라 신중하게 작성되었습니다.',
+          결론: 'Claude 모델의 신뢰성과 품질이 돋보입니다.',
           ...baseData,
         };
         newClaudeOutput = { data: claudeData, generated: true };
@@ -170,9 +175,9 @@ export default function App() {
       };
       setHistory([newHistoryItem, ...history]);
 
-      toast.success("문서가 성공적으로 생성되었습니다!");
+      toast.success('문서가 성공적으로 생성되었습니다!');
     } catch (error) {
-      toast.error("문서 생성 중 오류가 발생했습니다");
+      toast.error('문서 생성 중 오류가 발생했습니다');
       console.error(error);
     } finally {
       setIsGenerating(false);
@@ -180,23 +185,23 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Toaster />
-      
+
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Sparkles className="w-8 h-8 text-primary" />
+              <Sparkles className="text-primary h-8 w-8" />
               <div>
                 <h1 className="text-2xl font-bold">AI 문서 생성 POC</h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   AI 기반 자동 문서 생성 시스템 개념 검증
                 </p>
               </div>
             </div>
-            
+
             {/* Dark Mode Toggle */}
             <Button
               variant="outline"
@@ -216,7 +221,7 @@ export default function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           {/* Left Column - Configuration */}
           <div className="space-y-6">
             <ConfigurationPanel
@@ -233,15 +238,9 @@ export default function App() {
               onChange={setSystemPrompt}
             />
 
-            <UserPromptSection
-              value={userPrompt}
-              onChange={setUserPrompt}
-            />
+            <UserPromptSection value={userPrompt} onChange={setUserPrompt} />
 
-            <SchemaSection
-              value={schema}
-              onChange={setSchema}
-            />
+            <SchemaSection value={schema} onChange={setSchema} />
 
             <InputDataSection
               inputFields={inputFields}
@@ -262,12 +261,12 @@ export default function App() {
             >
               {isGenerating ? (
                 <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                   문서 생성 중...
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5 mr-2" />
+                  <Sparkles className="mr-2 h-5 w-5" />
                   문서 생성하기
                 </>
               )}
@@ -292,9 +291,9 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t mt-12">
+      <footer className="mt-12 border-t">
         <div className="container mx-auto px-4 py-6">
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-center text-sm">
             © 2026 AI 문서 생성 POC | Proof of Concept Application
           </p>
         </div>
