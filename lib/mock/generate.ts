@@ -91,6 +91,11 @@ export async function generateMockOutput(
     chatgptOutput,
     geminiOutput,
     claudeOutput,
+    models: {
+      ...(chatgpt.enabled && chatgpt.model ? { chatgpt: chatgpt.model } : {}),
+      ...(gemini.enabled && gemini.model ? { gemini: gemini.model } : {}),
+      ...(claude.enabled && claude.model ? { claude: claude.model } : {}),
+    },
   }
 
   return { chatgptOutput, geminiOutput, claudeOutput, historyItem }

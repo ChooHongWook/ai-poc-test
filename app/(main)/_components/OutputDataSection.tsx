@@ -340,6 +340,7 @@ export function OutputDataSection({
                                   providerName="ChatGPT"
                                   color="green"
                                   output={selectedHistory.chatgptOutput}
+                                  modelName={selectedHistory.models?.chatgpt}
                                 />
                               )}
 
@@ -348,6 +349,7 @@ export function OutputDataSection({
                                   providerName="Gemini"
                                   color="blue"
                                   output={selectedHistory.geminiOutput}
+                                  modelName={selectedHistory.models?.gemini}
                                 />
                               )}
 
@@ -356,6 +358,7 @@ export function OutputDataSection({
                                   providerName="Claude"
                                   color="purple"
                                   output={selectedHistory.claudeOutput}
+                                  modelName={selectedHistory.models?.claude}
                                 />
                               )}
                             </div>

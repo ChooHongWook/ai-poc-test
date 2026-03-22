@@ -15,4 +15,9 @@ export interface HistoryItem {
   chatgptOutput?: AIOutput
   geminiOutput?: AIOutput
   claudeOutput?: AIOutput
+  models?: {
+    chatgpt?: string
+    gemini?: string
+    claude?: string
+  }
 }
