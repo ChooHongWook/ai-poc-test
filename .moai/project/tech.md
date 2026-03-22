@@ -35,11 +35,15 @@
 
 ## 개발 도구
 
-| 항목 | 기술 |
-|------|------|
-| 포매팅 | Prettier + prettier-plugin-tailwindcss |
-| 타입 체크 | TypeScript strict mode |
-| Next.js 설정 | next.config.ts |
+| 항목 | 기술 | 버전 |
+|------|------|------|
+| 포매팅 | Prettier + prettier-plugin-tailwindcss | - |
+| 타입 체크 | TypeScript strict mode | - |
+| 테스트 프레임워크 | Vitest | ^4.1.0 |
+| 테스트 환경 | jsdom | ^26.1.0 |
+| 테스트 React | @vitejs/plugin-react | ^4.5.2 |
+| API Mocking | MSW (Mock Service Worker) | ^2.8.4 |
+| Next.js 설정 | next.config.ts | - |
 
 ## 주요 패턴
 
@@ -47,9 +51,10 @@
 - **스타일링**: Tailwind 유틸리티 우선 + CSS 변수 (OKLch 색상 모델)
 - **컴포넌트 아키텍처**: shadcn/ui 패턴 (복사-붙여넣기 컴포넌트) + Next.js App Router 컨벤션
 - **다크모드**: next-themes에서 class 속성 전략
-- **API**: Mock만 지원 (실제 API 통합은 향후 작업)
+- **API**: MSW 기반 fetch API 아키텍처 (개발: MSW 인터셉트, 프로덕션: Route Handler 폴백, 실제 AI API 연동은 향후 작업)
 - **라우팅**: Next.js App Router (/, /history, /settings)
 - **SSR 전략**: 대부분 클라이언트 컴포넌트 ('use client'), 레이아웃 셸용 서버 컴포넌트
+- **테스트**: Vitest + MSW node server
 
 ## 변경사항 요약
 

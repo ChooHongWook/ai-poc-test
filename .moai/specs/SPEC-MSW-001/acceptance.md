@@ -158,14 +158,14 @@ Scenario: 테스트 환경에서 MSW node server로 API를 Mock한다
 
 ## 5. Definition of Done
 
-- [ ] MSW v2가 devDependencies로 설치됨
-- [ ] `public/mockServiceWorker.js` 생성됨
-- [ ] `lib/mock/handlers.ts` - POST /api/generate handler 구현됨
-- [ ] `lib/mock/browser.ts` - browser worker 설정됨
-- [ ] `lib/mock/node.ts` - node server 설정됨
-- [ ] `lib/api/generate.ts` - fetch 기반 API 클라이언트 구현됨
-- [ ] `app/page.tsx` - fetch 기반 호출로 교체됨
-- [ ] MSW Provider가 개발 환경에서 자동 초기화됨
-- [ ] Production 빌드 성공 (MSW 코드 미포함)
-- [ ] 기존 생성/히스토리 기능 정상 동작 확인
-- [ ] TypeScript 컴파일 오류 0건
+- [x] MSW v2가 devDependencies로 설치됨
+- [x] `public/mockServiceWorker.js` 생성됨
+- [x] `lib/mock/handlers.ts` - POST /api/generate handler 구현됨
+- [x] `lib/mock/browser.ts` - browser worker 설정됨
+- [x] `lib/mock/node.ts` - node server 설정됨
+- [x] `lib/api/generate.ts` - fetch 기반 API 클라이언트 구현됨
+- [x] `app/page.tsx` - fetch 기반 호출로 교체됨
+- [x] MSW Provider가 개발 환경에서 자동 초기화됨
+- [x] Production 빌드 성공 (MSW 코드 미포함)
+- [x] 기존 생성/히스토리 기능 정상 동작 확인
+- [x] TypeScript 컴파일 오류 0건

@@ -1,9 +1,10 @@
 ---
 id: SPEC-MSW-001
 version: "1.0.0"
-status: planned
+status: completed
 created: 2026-03-22
 updated: 2026-03-22
+completed: 2026-03-22
 author: hw
 priority: high
 issue_number: 0
@@ -191,3 +192,44 @@ interface GenerateResponse {
 | REQ-S-002 | Production 빌드 | 번들 분석 |
 | REQ-N-001 | next.config.ts | 번들 사이즈 확인 |
 | REQ-O-001 | `app/api/generate/route.ts` | Route Handler 동작 |
+
+---
+
+## 6. Implementation Notes (구현 노트)
+
+### 완료된 작업
+
+#### 신규 생성 파일 (11개)
+- `vitest.config.ts` - Vitest 테스트 인프라 설정
+- `lib/mock/handlers.ts` - MSW v2 핸들러 (POST /api/generate)
+- `lib/mock/browser.ts` - 브라우저 setupWorker 설정
+- `lib/mock/node.ts` - 테스트 setupServer 설정
+- `lib/mock/index.ts` - MSW 초기화 엔트리 포인트
+- `lib/api/generate.ts` - fetch 기반 API 클라이언트 (generateOutput 함수)
+- `lib/mock/__tests__/handlers.test.ts` - 핸들러 테스트 (3개 테스트)
+- `lib/api/__tests__/generate.test.ts` - API 클라이언트 테스트 (3개 테스트)
+- `components/providers/MSWProvider.tsx` - MSW 초기화 Provider
+- `app/api/generate/route.ts` - Next.js Route Handler (프로덕션 폴백)
+- `public/mockServiceWorker.js` - MSW 서비스 워커
+
+#### 수정된 파일 (3개)
+- `app/page.tsx` - generateMockOutput → generateOutput (fetch 기반)
+- `app/layout.tsx` - MSWProvider 추가
+- `package.json` - msw, vitest, jsdom, @vitejs/plugin-react 의존성 추가
+
+### 아키텍처 변경
+```
+변경 전: page.tsx → generateMockOutput() 직접 호출
+변경 후: page.tsx → fetch('/api/generate') → MSW 인터셉트 (개발) / Route Handler (프로덕션)
+```
+
+### 테스트 결과
+- 핸들러 테스트: 3개 테스트 통과
+- API 클라이언트 테스트: 3개 테스트 통과
+- 모든 TypeScript 타입 오류 0건
+- ESLint 오류 0건
+
+### 배포 준비
+- Production 빌드에서 MSW 코드 자동 제외
+- Route Handler가 실제 API 통합을 위한 폴백 제공
+- 향후 실제 AI API 연동 시 라우트 핸들러만 수정하면 됨
