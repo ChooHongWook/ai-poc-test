@@ -1,15 +1,21 @@
+---
+id: SPEC-MSW-001
+version: "1.0.0"
+status: planned
+created: 2026-03-22
+updated: 2026-03-22
+author: hw
+priority: high
+issue_number: 0
+---
+
 # SPEC-MSW-001: 인라인 Mock 데이터를 MSW(Mock Service Worker)로 마이그레이션
 
-## 메타데이터
+## HISTORY
 
-| 항목 | 값 |
-|------|------|
-| SPEC ID | SPEC-MSW-001 |
-| 제목 | Inline Mock to MSW Migration |
-| 생성일 | 2026-03-22 |
-| 상태 | Planned |
-| 우선순위 | High |
-| 라이프사이클 | spec-anchored |
+| 날짜 | 버전 | 변경 내용 |
+|------|------|----------|
+| 2026-03-22 | 1.0.0 | 초기 SPEC 생성 |
 
 ---
 
