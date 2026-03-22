@@ -1,9 +1,15 @@
-"use client";
+'use client';
 
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { MessageCircle } from "lucide-react";
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+import { MessageCircle } from 'lucide-react';
 
 interface UserPromptSectionProps {
   value: string;
@@ -15,10 +21,12 @@ export function UserPromptSection({ value, onChange }: UserPromptSectionProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <MessageCircle className="w-5 h-5" />
+          <MessageCircle className="h-5 w-5" />
           User Prompt
         </CardTitle>
-        <CardDescription>생성하고자 하는 문서의 구체적인 요구사항을 입력하세요</CardDescription>
+        <CardDescription>
+          생성하고자 하는 문서의 구체적인 요구사항을 입력하세요
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">

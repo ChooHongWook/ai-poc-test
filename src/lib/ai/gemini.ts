@@ -1,8 +1,12 @@
 // Google Gemini 프로바이더 클라이언트 구현
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import type { Part, TextPart, InlineDataPart } from "@google/generative-ai";
-import type { AIProviderClient, ProviderRequest, ProviderResponse } from "@/lib/ai/types";
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import type { Part, TextPart, InlineDataPart } from '@google/generative-ai';
+import type {
+  AIProviderClient,
+  ProviderRequest,
+  ProviderResponse,
+} from '@/lib/ai/types';
 
 // @MX:NOTE: Gemini 프로바이더 - @google/generative-ai SDK를 사용하여 content 생성 API를 호출
 // 시스템 인스트럭션, JSON 응답 모드, 인라인 이미지 첨부 파일을 지원함
@@ -12,7 +16,7 @@ import type { AIProviderClient, ProviderRequest, ProviderResponse } from "@/lib/
  * @google/generative-ai 패키지의 generateContent API를 사용하여 텍스트/JSON을 생성
  */
 export class GeminiProvider implements AIProviderClient {
-  readonly name = "gemini" as const;
+  readonly name = 'gemini' as const;
 
   /**
    * Google Gemini API를 호출하여 텍스트 또는 JSON 응답을 생성
@@ -30,17 +34,15 @@ export class GeminiProvider implements AIProviderClient {
     // 생성 설정: JSON 스키마가 있으면 JSON 응답 모드 활성화
     const generationConfig: Record<string, unknown> = {};
     if (request.schema) {
-      generationConfig["responseMimeType"] = "application/json";
-      generationConfig["responseSchema"] = request.schema;
+      generationConfig['responseMimeType'] = 'application/json';
+      generationConfig['responseSchema'] = request.schema;
     }
 
     // 모델 초기화 (시스템 인스트럭션 + 생성 설정 포함)
     const model = genAI.getGenerativeModel({
       model: request.model,
       systemInstruction: request.systemPrompt,
-      ...(Object.keys(generationConfig).length > 0
-        ? { generationConfig }
-        : {}),
+      ...(Object.keys(generationConfig).length > 0 ? { generationConfig } : {}),
     });
 
     // 사용자 콘텐츠 파트 배열 구성 (텍스트 + 인라인 이미지)
@@ -53,7 +55,7 @@ export class GeminiProvider implements AIProviderClient {
     if (request.inputFields && request.inputFields.length > 0) {
       const fieldsText = request.inputFields
         .map((f) => `${f.label}: ${f.value}`)
-        .join("\n");
+        .join('\n');
       textContent += `\n\n입력 데이터:\n${fieldsText}`;
     }
 
@@ -68,7 +70,7 @@ export class GeminiProvider implements AIProviderClient {
     // 이미지 파일이 있으면 inlineData 파트로 추가
     if (request.files && request.files.length > 0) {
       for (const file of request.files) {
-        if (file.mimeType.startsWith("image/")) {
+        if (file.mimeType.startsWith('image/')) {
           // Gemini는 inlineData 방식으로 이미지를 처리
           const inlineDataPart: InlineDataPart = {
             inlineData: {
@@ -85,7 +87,7 @@ export class GeminiProvider implements AIProviderClient {
     const result = await model.generateContent({
       contents: [
         {
-          role: "user",
+          role: 'user',
           parts,
         },
       ],

@@ -1,19 +1,19 @@
 // 파일 처리 유틸리티 - 업로드된 파일을 AI 프로바이더용으로 변환
 
-import type { ProcessedFile } from "@/lib/ai/types";
+import type { ProcessedFile } from '@/lib/ai/types';
 
 // 지원 파일 타입 정의
 const SUPPORTED_MIME_TYPES = {
-  images: ["image/jpeg", "image/png", "image/webp", "image/gif"],
-  documents: ["application/pdf"],
-  text: ["text/plain", "text/csv", "text/markdown", "application/json"],
+  images: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
+  documents: ['application/pdf'],
+  text: ['text/plain', 'text/csv', 'text/markdown', 'application/json'],
 } as const;
 
 // 파일 크기 제한 (바이트)
 const FILE_SIZE_LIMITS = {
-  image: 20 * 1024 * 1024,    // 20MB
+  image: 20 * 1024 * 1024, // 20MB
   document: 50 * 1024 * 1024, // 50MB
-  text: 5 * 1024 * 1024,      // 5MB
+  text: 5 * 1024 * 1024, // 5MB
 } as const;
 
 // 최대 파일 개수 제한
@@ -38,7 +38,9 @@ export function getFileSizeLimit(mimeType: string): number {
   if ((SUPPORTED_MIME_TYPES.images as readonly string[]).includes(mimeType)) {
     return FILE_SIZE_LIMITS.image;
   }
-  if ((SUPPORTED_MIME_TYPES.documents as readonly string[]).includes(mimeType)) {
+  if (
+    (SUPPORTED_MIME_TYPES.documents as readonly string[]).includes(mimeType)
+  ) {
     return FILE_SIZE_LIMITS.document;
   }
   // 텍스트 파일 및 기타
@@ -61,7 +63,7 @@ export function validateFile(file: File): FileValidationResult {
   if (!isSupportedFileType(file.type)) {
     return {
       valid: false,
-      error: `지원하지 않는 파일 형식입니다: ${file.type || "알 수 없음"}. 이미지(JPEG, PNG, WebP, GIF), PDF, 텍스트(TXT, CSV, MD, JSON) 파일만 지원합니다.`,
+      error: `지원하지 않는 파일 형식입니다: ${file.type || '알 수 없음'}. 이미지(JPEG, PNG, WebP, GIF), PDF, 텍스트(TXT, CSV, MD, JSON) 파일만 지원합니다.`,
     };
   }
 
@@ -69,7 +71,7 @@ export function validateFile(file: File): FileValidationResult {
   const sizeLimit = getFileSizeLimit(file.type);
   if (file.size > sizeLimit) {
     const limitMB = Math.round(sizeLimit / 1024 / 1024);
-    const fileMB = Math.round(file.size / 1024 / 1024 * 100) / 100;
+    const fileMB = Math.round((file.size / 1024 / 1024) * 100) / 100;
     return {
       valid: false,
       error: `파일 크기가 초과되었습니다: ${fileMB}MB (최대 ${limitMB}MB). 파일: ${file.name}`,
@@ -82,7 +84,10 @@ export function validateFile(file: File): FileValidationResult {
 /**
  * 파일 개수 제한 검사
  */
-export function validateFileCount(currentCount: number, additionalCount: number): FileValidationResult {
+export function validateFileCount(
+  currentCount: number,
+  additionalCount: number,
+): FileValidationResult {
   if (currentCount + additionalCount > MAX_FILE_COUNT) {
     return {
       valid: false,
@@ -100,14 +105,14 @@ function readFileAsBase64(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result;
-      if (typeof result !== "string") {
-        reject(new Error("FileReader 결과가 문자열이 아닙니다"));
+      if (typeof result !== 'string') {
+        reject(new Error('FileReader 결과가 문자열이 아닙니다'));
         return;
       }
       // data:mimetype;base64,{data} 형식에서 base64 부분만 추출
-      const base64 = result.split(",")[1];
+      const base64 = result.split(',')[1];
       if (!base64) {
-        reject(new Error("base64 데이터를 추출할 수 없습니다"));
+        reject(new Error('base64 데이터를 추출할 수 없습니다'));
         return;
       }
       resolve(base64);
@@ -125,13 +130,14 @@ function readFileAsText(file: File): Promise<string> {
     const reader = new FileReader();
     reader.onload = (event) => {
       const result = event.target?.result;
-      if (typeof result !== "string") {
-        reject(new Error("텍스트 읽기 결과가 문자열이 아닙니다"));
+      if (typeof result !== 'string') {
+        reject(new Error('텍스트 읽기 결과가 문자열이 아닙니다'));
         return;
       }
       resolve(result);
     };
-    reader.onerror = () => reject(new Error(`텍스트 파일 읽기 실패: ${file.name}`));
+    reader.onerror = () =>
+      reject(new Error(`텍스트 파일 읽기 실패: ${file.name}`));
     reader.readAsText(file);
   });
 }
@@ -167,7 +173,7 @@ export async function processFile(file: File): Promise<ProcessedFile> {
 
   return {
     name: file.name,
-    mimeType: file.type || "application/octet-stream",
+    mimeType: file.type || 'application/octet-stream',
     base64Data,
     textContent,
   };

@@ -1,6 +1,6 @@
 // 프롬프트 빌더 - 사용자 요청에서 최종 사용자 프롬프트 텍스트를 구성
 
-import type { InputField } from "@/lib/types";
+import type { InputField } from '@/lib/types';
 
 // @MX:NOTE: buildPrompt는 userPrompt, inputFields, schema를 조합하여 최종 사용자 프롬프트를 생성
 // 각 프로바이더 클라이언트는 내부적으로도 이 조합을 수행하지만,
@@ -17,7 +17,7 @@ import type { InputField } from "@/lib/types";
 export function buildPrompt(
   userPrompt: string,
   inputFields?: InputField[],
-  schema?: object
+  schema?: object,
 ): string {
   let prompt = userPrompt;
 
@@ -25,7 +25,7 @@ export function buildPrompt(
   if (inputFields && inputFields.length > 0) {
     const fieldsText = inputFields
       .map((f) => `${f.label}: ${f.value}`)
-      .join("\n");
+      .join('\n');
     prompt += `\n\n입력 데이터:\n${fieldsText}`;
   }
 

@@ -1,11 +1,17 @@
-"use client";
+'use client';
 
-import { Label } from "./ui/label";
-import { Textarea } from "./ui/textarea";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Code, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "./ui/alert";
-import { cn } from "./ui/utils";
+import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+import { Code, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from './ui/alert';
+import { cn } from './ui/utils';
 
 interface SchemaSectionProps {
   value: string;
@@ -27,10 +33,12 @@ export function SchemaSection({ value, onChange }: SchemaSectionProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Code className="w-5 h-5" />
+          <Code className="h-5 w-5" />
           AI 스키마
         </CardTitle>
-        <CardDescription>출력 데이터의 구조를 JSON 스키마로 정의하세요</CardDescription>
+        <CardDescription>
+          출력 데이터의 구조를 JSON 스키마로 정의하세요
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="space-y-2">
@@ -43,7 +51,7 @@ export function SchemaSection({ value, onChange }: SchemaSectionProps) {
             rows={8}
             className={cn(
               // 타이포그래피
-              "font-mono text-sm",
+              'font-mono text-sm',
             )}
           />
         </div>

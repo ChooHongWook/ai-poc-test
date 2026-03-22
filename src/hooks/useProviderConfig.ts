@@ -1,8 +1,8 @@
-"use client";
+'use client';
 // AI 프로바이더 설정 관리 훅 - enabled/model은 localStorage에 저장, API Key는 메모리만
-import { useState, useCallback } from "react";
-import { useLocalStorage } from "./useLocalStorage";
-import { STORAGE_KEYS } from "@/lib/storage-keys";
+import { useState, useCallback } from 'react';
+import { useLocalStorage } from './useLocalStorage';
+import { STORAGE_KEYS } from '@/lib/storage-keys';
 
 export interface AIProvider {
   enabled: boolean;
@@ -17,23 +17,26 @@ interface ProviderPersistedConfig {
 
 export function useProviderConfig() {
   // enabled, model은 localStorage에 영속화
-  const [chatgptConfig, setChatGPTConfig] = useLocalStorage<ProviderPersistedConfig>(
-    STORAGE_KEYS.PROVIDER_CHATGPT,
-    { enabled: false, model: "" }
-  );
-  const [geminiConfig, setGeminiConfig] = useLocalStorage<ProviderPersistedConfig>(
-    STORAGE_KEYS.PROVIDER_GEMINI,
-    { enabled: false, model: "" }
-  );
-  const [claudeConfig, setClaudeConfig] = useLocalStorage<ProviderPersistedConfig>(
-    STORAGE_KEYS.PROVIDER_CLAUDE,
-    { enabled: false, model: "" }
-  );
+  const [chatgptConfig, setChatGPTConfig] =
+    useLocalStorage<ProviderPersistedConfig>(STORAGE_KEYS.PROVIDER_CHATGPT, {
+      enabled: false,
+      model: '',
+    });
+  const [geminiConfig, setGeminiConfig] =
+    useLocalStorage<ProviderPersistedConfig>(STORAGE_KEYS.PROVIDER_GEMINI, {
+      enabled: false,
+      model: '',
+    });
+  const [claudeConfig, setClaudeConfig] =
+    useLocalStorage<ProviderPersistedConfig>(STORAGE_KEYS.PROVIDER_CLAUDE, {
+      enabled: false,
+      model: '',
+    });
 
   // API Key는 메모리에만 유지 (보안)
-  const [chatgptKey, setChatGPTKey] = useState("");
-  const [geminiKey, setGeminiKey] = useState("");
-  const [claudeKey, setClaudeKey] = useState("");
+  const [chatgptKey, setChatGPTKey] = useState('');
+  const [geminiKey, setGeminiKey] = useState('');
+  const [claudeKey, setClaudeKey] = useState('');
 
   // 통합 getter - AIProvider 인터페이스로 반환
   const chatgpt: AIProvider = { ...chatgptConfig, apiKey: chatgptKey };
@@ -46,7 +49,7 @@ export function useProviderConfig() {
       setChatGPTConfig({ enabled: value.enabled, model: value.model });
       setChatGPTKey(value.apiKey);
     },
-    [setChatGPTConfig]
+    [setChatGPTConfig],
   );
 
   const setGemini = useCallback(
@@ -54,7 +57,7 @@ export function useProviderConfig() {
       setGeminiConfig({ enabled: value.enabled, model: value.model });
       setGeminiKey(value.apiKey);
     },
-    [setGeminiConfig]
+    [setGeminiConfig],
   );
 
   const setClaude = useCallback(
@@ -62,7 +65,7 @@ export function useProviderConfig() {
       setClaudeConfig({ enabled: value.enabled, model: value.model });
       setClaudeKey(value.apiKey);
     },
-    [setClaudeConfig]
+    [setClaudeConfig],
   );
 
   return { chatgpt, gemini, claude, setChatGPT, setGemini, setClaude };

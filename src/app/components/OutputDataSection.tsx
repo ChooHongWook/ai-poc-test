@@ -1,21 +1,42 @@
-"use client";
+'use client';
 
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { FileOutput, CheckCircle2, Bot, Copy, Download, FileJson, FileSpreadsheet, FileText } from "lucide-react";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { cn } from "./ui/utils";
+import { Label } from './ui/label';
+import { Input } from './ui/input';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import {
+  FileOutput,
+  CheckCircle2,
+  Bot,
+  Copy,
+  Download,
+  FileJson,
+  FileSpreadsheet,
+  FileText,
+} from 'lucide-react';
+import { Badge } from './ui/badge';
+import { Button } from './ui/button';
+import { cn } from './ui/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { toast } from "sonner";
-import { copyToClipboard, downloadJSON, downloadCSV, downloadMarkdown, type ExportData } from "@/lib/export-utils";
+} from './ui/dropdown-menu';
+import { toast } from 'sonner';
+import {
+  copyToClipboard,
+  downloadJSON,
+  downloadCSV,
+  downloadMarkdown,
+  type ExportData,
+} from '@/lib/export-utils';
 
 export interface AIOutput {
   data: Record<string, string>;
@@ -37,9 +58,9 @@ interface OutputDataSectionProps {
 
 // 색상별 border 클래스 맵 (Tailwind 정적 분석을 위해 하드코딩)
 const colorBorderMap: Record<string, string> = {
-  green: "border-green-200",
-  blue: "border-blue-200",
-  purple: "border-purple-200",
+  green: 'border-green-200',
+  blue: 'border-blue-200',
+  purple: 'border-purple-200',
 };
 
 interface SingleOutputCardProps {
@@ -50,7 +71,13 @@ interface SingleOutputCardProps {
   color: string;
 }
 
-function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputCardProps) {
+function SingleOutputCard({
+  title,
+  icon,
+  output,
+  enabled,
+  color,
+}: SingleOutputCardProps) {
   const getOutputDataJSON = (data: Record<string, string>) => {
     return JSON.stringify(data, null, 2);
   };
@@ -63,7 +90,7 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
     if (success) {
       toast.success(`${title} 결과가 클립보드에 복사되었습니다`);
     } else {
-      toast.error("클립보드 복사에 실패했습니다");
+      toast.error('클립보드 복사에 실패했습니다');
     }
   };
 
@@ -74,17 +101,21 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
           <CardTitle className="flex items-center gap-2">
             {icon}
             {title}
-            <Badge variant="secondary" className="ml-auto">비활성화</Badge>
+            <Badge variant="secondary" className="ml-auto">
+              비활성화
+            </Badge>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className={cn(
-            // 레이아웃 / 간격
-            "text-center py-12",
-            // 색상
-            "text-muted-foreground",
-          )}>
-            <Bot className="w-12 h-12 mx-auto mb-3 opacity-50" />
+          <div
+            className={cn(
+              // 레이아웃 / 간격
+              'py-12 text-center',
+              // 색상
+              'text-muted-foreground',
+            )}
+          >
+            <Bot className="mx-auto mb-3 h-12 w-12 opacity-50" />
             <p>{title}가 비활성화되어 있습니다</p>
           </div>
         </CardContent>
@@ -100,7 +131,7 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
           {title}
           {output.generated && (
             <Badge variant="default" className="ml-auto">
-              <CheckCircle2 className="w-3 h-3 mr-1" />
+              <CheckCircle2 className="mr-1 h-3 w-3" />
               생성 완료
             </Badge>
           )}
@@ -111,14 +142,14 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
               size="sm"
               className={cn(
                 // 크기
-                "h-7 px-2",
+                'h-7 px-2',
                 // 간격
-                "ml-1",
+                'ml-1',
               )}
               onClick={handleCopySingle}
               title={`${title} 결과 복사`}
             >
-              <Copy className="w-3.5 h-3.5 mr-1" />
+              <Copy className="mr-1 h-3.5 w-3.5" />
               복사
             </Button>
           )}
@@ -134,13 +165,15 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
 
           <TabsContent value="fields" className="space-y-4">
             {!output.generated || outputKeys.length === 0 ? (
-              <div className={cn(
-                // 레이아웃 / 간격
-                "text-center py-12",
-                // 색상
-                "text-muted-foreground",
-              )}>
-                <FileOutput className="w-12 h-12 mx-auto mb-3 opacity-50" />
+              <div
+                className={cn(
+                  // 레이아웃 / 간격
+                  'py-12 text-center',
+                  // 색상
+                  'text-muted-foreground',
+                )}
+              >
+                <FileOutput className="mx-auto mb-3 h-12 w-12 opacity-50" />
                 <p>{title} 결과를 기다리는 중입니다</p>
               </div>
             ) : (
@@ -162,25 +195,29 @@ function SingleOutputCard({ title, icon, output, enabled, color }: SingleOutputC
 
           <TabsContent value="json">
             {!output.generated || outputKeys.length === 0 ? (
-              <div className={cn(
-                // 색상 / 배경
-                "bg-muted rounded-lg",
-                // 레이아웃 / 간격
-                "p-4 text-center py-12",
-                // 색상
-                "text-muted-foreground",
-              )}>
+              <div
+                className={cn(
+                  // 색상 / 배경
+                  'bg-muted rounded-lg',
+                  // 레이아웃 / 간격
+                  'p-4 py-12 text-center',
+                  // 색상
+                  'text-muted-foreground',
+                )}
+              >
                 결과가 없습니다
               </div>
             ) : (
-              <pre className={cn(
-                // 색상 / 배경
-                "bg-muted rounded-lg",
-                // 레이아웃 / 크기
-                "p-4 overflow-auto max-h-96",
-                // 타이포그래피
-                "text-sm font-mono",
-              )}>
+              <pre
+                className={cn(
+                  // 색상 / 배경
+                  'bg-muted rounded-lg',
+                  // 레이아웃 / 크기
+                  'max-h-96 overflow-auto p-4',
+                  // 타이포그래피
+                  'font-mono text-sm',
+                )}
+              >
                 {getOutputDataJSON(output.data)}
               </pre>
             )}
@@ -201,9 +238,15 @@ export function OutputDataSection({
 }: OutputDataSectionProps) {
   // 하나라도 생성된 결과가 있는지 확인
   const hasAnyOutput =
-    (enabledProviders.chatgpt && chatgptOutput.generated && Object.keys(chatgptOutput.data).length > 0) ||
-    (enabledProviders.gemini && geminiOutput.generated && Object.keys(geminiOutput.data).length > 0) ||
-    (enabledProviders.claude && claudeOutput.generated && Object.keys(claudeOutput.data).length > 0);
+    (enabledProviders.chatgpt &&
+      chatgptOutput.generated &&
+      Object.keys(chatgptOutput.data).length > 0) ||
+    (enabledProviders.gemini &&
+      geminiOutput.generated &&
+      Object.keys(geminiOutput.data).length > 0) ||
+    (enabledProviders.claude &&
+      claudeOutput.generated &&
+      Object.keys(claudeOutput.data).length > 0);
 
   // ExportData 빌드 헬퍼
   const buildExportData = (): ExportData => {
@@ -215,13 +258,25 @@ export function OutputDataSection({
       },
     };
 
-    if (enabledProviders.chatgpt && chatgptOutput.generated && Object.keys(chatgptOutput.data).length > 0) {
+    if (
+      enabledProviders.chatgpt &&
+      chatgptOutput.generated &&
+      Object.keys(chatgptOutput.data).length > 0
+    ) {
       exportData.chatgpt = chatgptOutput.data;
     }
-    if (enabledProviders.gemini && geminiOutput.generated && Object.keys(geminiOutput.data).length > 0) {
+    if (
+      enabledProviders.gemini &&
+      geminiOutput.generated &&
+      Object.keys(geminiOutput.data).length > 0
+    ) {
       exportData.gemini = geminiOutput.data;
     }
-    if (enabledProviders.claude && claudeOutput.generated && Object.keys(claudeOutput.data).length > 0) {
+    if (
+      enabledProviders.claude &&
+      claudeOutput.generated &&
+      Object.keys(claudeOutput.data).length > 0
+    ) {
       exportData.claude = claudeOutput.data;
     }
 
@@ -233,28 +288,28 @@ export function OutputDataSection({
     const exportData = buildExportData();
     const success = await copyToClipboard(exportData);
     if (success) {
-      toast.success("전체 결과가 클립보드에 복사되었습니다");
+      toast.success('전체 결과가 클립보드에 복사되었습니다');
     } else {
-      toast.error("클립보드 복사에 실패했습니다");
+      toast.error('클립보드 복사에 실패했습니다');
     }
   };
 
   // JSON 다운로드
   const handleDownloadJSON = () => {
     downloadJSON(buildExportData());
-    toast.success("JSON 파일이 다운로드되었습니다");
+    toast.success('JSON 파일이 다운로드되었습니다');
   };
 
   // CSV 다운로드
   const handleDownloadCSV = () => {
     downloadCSV(buildExportData());
-    toast.success("CSV 파일이 다운로드되었습니다");
+    toast.success('CSV 파일이 다운로드되었습니다');
   };
 
   // 마크다운 다운로드
   const handleDownloadMarkdown = () => {
     downloadMarkdown(buildExportData());
-    toast.success("마크다운 파일이 다운로드되었습니다");
+    toast.success('마크다운 파일이 다운로드되었습니다');
   };
 
   return (
@@ -267,27 +322,27 @@ export function OutputDataSection({
           onClick={handleCopyAll}
           disabled={!hasAnyOutput}
         >
-          <Copy className="w-4 h-4 mr-1" />
+          <Copy className="mr-1 h-4 w-4" />
           전체 JSON 복사
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" disabled={!hasAnyOutput}>
-              <Download className="w-4 h-4 mr-1" />
+              <Download className="mr-1 h-4 w-4" />
               다운로드
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={handleDownloadJSON}>
-              <FileJson className="w-4 h-4 mr-2" />
+              <FileJson className="mr-2 h-4 w-4" />
               JSON
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleDownloadCSV}>
-              <FileSpreadsheet className="w-4 h-4 mr-2" />
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
               CSV
             </DropdownMenuItem>
             <DropdownMenuItem onClick={handleDownloadMarkdown}>
-              <FileText className="w-4 h-4 mr-2" />
+              <FileText className="mr-2 h-4 w-4" />
               마크다운
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -297,7 +352,7 @@ export function OutputDataSection({
       {/* ChatGPT Output */}
       <SingleOutputCard
         title="ChatGPT"
-        icon={<Bot className="w-5 h-5 text-green-600" />}
+        icon={<Bot className="h-5 w-5 text-green-600" />}
         output={chatgptOutput}
         enabled={enabledProviders.chatgpt}
         color="green"
@@ -306,7 +361,7 @@ export function OutputDataSection({
       {/* Gemini Output */}
       <SingleOutputCard
         title="Gemini"
-        icon={<Bot className="w-5 h-5 text-blue-600" />}
+        icon={<Bot className="h-5 w-5 text-blue-600" />}
         output={geminiOutput}
         enabled={enabledProviders.gemini}
         color="blue"
@@ -315,7 +370,7 @@ export function OutputDataSection({
       {/* Claude Output */}
       <SingleOutputCard
         title="Claude"
-        icon={<Bot className="w-5 h-5 text-purple-600" />}
+        icon={<Bot className="h-5 w-5 text-purple-600" />}
         output={claudeOutput}
         enabled={enabledProviders.claude}
         color="purple"

@@ -1,31 +1,42 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { Button } from "./ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Plus, Trash2, Database } from "lucide-react";
-import { cn } from "./ui/utils";
+import { useState } from 'react';
+import { Label } from './ui/label';
+import { Input } from './ui/input';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from './ui/card';
+import { Button } from './ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Plus, Trash2, Database } from 'lucide-react';
+import { cn } from './ui/utils';
 
 interface InputDataSectionProps {
   inputFields: { id: string; label: string; value: string }[];
-  onInputFieldsChange: (fields: { id: string; label: string; value: string }[]) => void;
+  onInputFieldsChange: (
+    fields: { id: string; label: string; value: string }[],
+  ) => void;
 }
 
-export function InputDataSection({ inputFields, onInputFieldsChange }: InputDataSectionProps) {
-  const [newFieldLabel, setNewFieldLabel] = useState("");
+export function InputDataSection({
+  inputFields,
+  onInputFieldsChange,
+}: InputDataSectionProps) {
+  const [newFieldLabel, setNewFieldLabel] = useState('');
 
   const addField = () => {
     if (newFieldLabel.trim()) {
       const newField = {
         id: Date.now().toString(),
         label: newFieldLabel,
-        value: "",
+        value: '',
       };
       onInputFieldsChange([...inputFields, newField]);
-      setNewFieldLabel("");
+      setNewFieldLabel('');
     }
   };
 
@@ -35,7 +46,9 @@ export function InputDataSection({ inputFields, onInputFieldsChange }: InputData
 
   const updateFieldValue = (id: string, value: string) => {
     onInputFieldsChange(
-      inputFields.map((field) => (field.id === id ? { ...field, value } : field))
+      inputFields.map((field) =>
+        field.id === id ? { ...field, value } : field,
+      ),
     );
   };
 
@@ -51,10 +64,12 @@ export function InputDataSection({ inputFields, onInputFieldsChange }: InputData
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Database className="w-5 h-5" />
+          <Database className="h-5 w-5" />
           입력 데이터
         </CardTitle>
-        <CardDescription>문서 생성에 필요한 추가 데이터를 입력하세요</CardDescription>
+        <CardDescription>
+          문서 생성에 필요한 추가 데이터를 입력하세요
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="fields" className="w-full">
@@ -69,32 +84,36 @@ export function InputDataSection({ inputFields, onInputFieldsChange }: InputData
                 placeholder="새 필드 이름 (예: 고객명, 날짜)"
                 value={newFieldLabel}
                 onChange={(e) => setNewFieldLabel(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && addField()}
+                onKeyDown={(e) => e.key === 'Enter' && addField()}
               />
               <Button onClick={addField} size="icon">
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
               </Button>
             </div>
 
             {inputFields.length === 0 ? (
-              <div className={cn(
-                // 레이아웃 / 간격
-                "text-center py-8",
-                // 색상
-                "text-muted-foreground",
-              )}>
+              <div
+                className={cn(
+                  // 레이아웃 / 간격
+                  'py-8 text-center',
+                  // 색상
+                  'text-muted-foreground',
+                )}
+              >
                 위에서 필드를 추가해주세요
               </div>
             ) : (
               <div className="space-y-3">
                 {inputFields.map((field) => (
-                  <div key={field.id} className="flex gap-2 items-start">
+                  <div key={field.id} className="flex items-start gap-2">
                     <div className="flex-1 space-y-2">
                       <Label htmlFor={`input-${field.id}`}>{field.label}</Label>
                       <Input
                         id={`input-${field.id}`}
                         value={field.value}
-                        onChange={(e) => updateFieldValue(field.id, e.target.value)}
+                        onChange={(e) =>
+                          updateFieldValue(field.id, e.target.value)
+                        }
                         placeholder={`${field.label} 값을 입력하세요`}
                       />
                     </div>
@@ -104,7 +123,7 @@ export function InputDataSection({ inputFields, onInputFieldsChange }: InputData
                       onClick={() => removeField(field.id)}
                       className="mt-8"
                     >
-                      <Trash2 className="w-4 h-4 text-destructive" />
+                      <Trash2 className="text-destructive h-4 w-4" />
                     </Button>
                   </div>
                 ))}
@@ -113,14 +132,16 @@ export function InputDataSection({ inputFields, onInputFieldsChange }: InputData
           </TabsContent>
 
           <TabsContent value="json">
-            <pre className={cn(
-              // 색상 / 배경
-              "bg-muted rounded-lg",
-              // 레이아웃 / 크기
-              "p-4 overflow-auto max-h-96",
-              // 타이포그래피
-              "text-sm font-mono",
-            )}>
+            <pre
+              className={cn(
+                // 색상 / 배경
+                'bg-muted rounded-lg',
+                // 레이아웃 / 크기
+                'max-h-96 overflow-auto p-4',
+                // 타이포그래피
+                'font-mono text-sm',
+              )}
+            >
               {getInputDataJSON()}
             </pre>
           </TabsContent>

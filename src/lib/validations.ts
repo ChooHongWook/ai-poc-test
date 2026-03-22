@@ -1,8 +1,8 @@
 // Zod 유효성 검사 스키마 정의
-import { z } from "zod";
+import { z } from 'zod';
 
 // 프로바이더 이름 스키마
-const providerNameSchema = z.enum(["chatgpt", "gemini", "claude"]);
+const providerNameSchema = z.enum(['chatgpt', 'gemini', 'claude']);
 
 // 입력 필드 스키마
 const inputFieldSchema = z.object({
@@ -33,7 +33,7 @@ export const generateRequestConfigSchema = z
       .optional()
       .refine(
         (val) => {
-          if (val === undefined || val === "") return true;
+          if (val === undefined || val === '') return true;
           try {
             JSON.parse(val);
             return true;
@@ -41,7 +41,7 @@ export const generateRequestConfigSchema = z
             return false;
           }
         },
-        { message: "유효한 JSON 형식이어야 합니다" }
+        { message: '유효한 JSON 형식이어야 합니다' },
       ),
     // 입력 필드: 선택적 배열
     inputFields: z.array(inputFieldSchema).optional(),
@@ -52,13 +52,14 @@ export const generateRequestConfigSchema = z
     (data) => {
       // 최소 하나의 프로바이더가 활성화되고 API 키가 있어야 함
       return Object.values(data.providers).some(
-        (p) => p.enabled && p.apiKey.trim().length > 0
+        (p) => p.enabled && p.apiKey.trim().length > 0,
       );
     },
     {
-      message: "최소 하나의 프로바이더가 활성화되고 유효한 API 키를 가져야 합니다",
-      path: ["providers"],
-    }
+      message:
+        '최소 하나의 프로바이더가 활성화되고 유효한 API 키를 가져야 합니다',
+      path: ['providers'],
+    },
   );
 
 // 스키마 유효성 검사 엔드포인트 입력 스키마
@@ -66,7 +67,7 @@ export const validateSchemaRequestSchema = z.object({
   // 검사할 JSON 스키마 문자열
   schema: z
     .string()
-    .min(1, "스키마가 비어 있습니다")
+    .min(1, '스키마가 비어 있습니다')
     .refine(
       (val) => {
         try {
@@ -76,11 +77,17 @@ export const validateSchemaRequestSchema = z.object({
           return false;
         }
       },
-      { message: "유효한 JSON 형식이어야 합니다" }
+      { message: '유효한 JSON 형식이어야 합니다' },
     ),
 });
 
 // Zod 스키마에서 파생된 TypeScript 타입들
-export type GenerateRequestConfigInput = z.input<typeof generateRequestConfigSchema>;
-export type GenerateRequestConfigOutput = z.output<typeof generateRequestConfigSchema>;
-export type ValidateSchemaRequestInput = z.input<typeof validateSchemaRequestSchema>;
+export type GenerateRequestConfigInput = z.input<
+  typeof generateRequestConfigSchema
+>;
+export type GenerateRequestConfigOutput = z.output<
+  typeof generateRequestConfigSchema
+>;
+export type ValidateSchemaRequestInput = z.input<
+  typeof validateSchemaRequestSchema
+>;

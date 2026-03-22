@@ -1,7 +1,7 @@
 // AI 프로바이더 관련 타입 정의
 
 // 지원하는 AI 프로바이더 이름 타입
-export type ProviderName = "chatgpt" | "gemini" | "claude";
+export type ProviderName = 'chatgpt' | 'gemini' | 'claude';
 
 // 사용자 입력 필드 타입
 export interface InputField {
@@ -75,12 +75,12 @@ export interface APIErrorResponse {
 
 // 에러 코드 유니온 타입
 export type ErrorCode =
-  | "VALIDATION_ERROR"
-  | "MISSING_API_KEY"
-  | "INVALID_SCHEMA"
-  | "PROVIDER_ERROR"
-  | "RATE_LIMIT_EXCEEDED"
-  | "TIMEOUT"
-  | "FILE_TOO_LARGE"
-  | "UNSUPPORTED_FILE_TYPE"
-  | "INTERNAL_ERROR";
+  | 'VALIDATION_ERROR'
+  | 'MISSING_API_KEY'
+  | 'INVALID_SCHEMA'
+  | 'PROVIDER_ERROR'
+  | 'RATE_LIMIT_EXCEEDED'
+  | 'TIMEOUT'
+  | 'FILE_TOO_LARGE'
+  | 'UNSUPPORTED_FILE_TYPE'
+  | 'INTERNAL_ERROR';

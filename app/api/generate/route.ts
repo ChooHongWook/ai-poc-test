@@ -1,17 +1,17 @@
 // AI 생성 API 라우트 핸들러 (메인 엔드포인트)
 
-import { NextRequest, NextResponse } from "next/server";
-import { generateRequestConfigSchema } from "@/lib/validations";
-import { createErrorResponse, mapProviderError } from "@/lib/errors";
-import { createProvider } from "@/lib/ai/provider-factory";
-import type { ProviderRequest, ProcessedFile } from "@/lib/ai/types";
+import { NextRequest, NextResponse } from 'next/server';
+import { generateRequestConfigSchema } from '@/lib/validations';
+import { createErrorResponse, mapProviderError } from '@/lib/errors';
+import { createProvider } from '@/lib/ai/provider-factory';
+import type { ProviderRequest, ProcessedFile } from '@/lib/ai/types';
 import type {
   GenerateRequestConfig,
   GenerateResponse,
   ProviderName,
   ProviderResult,
   ProviderError,
-} from "@/lib/types";
+} from '@/lib/types';
 
 // @MX:ANCHOR: AI 생성 엔드포인트 - 다수의 프로바이더를 병렬로 호출하는 핵심 API
 // @MX:REASON: 프론트엔드와 계약이 맺어진 공개 API 경계로, 변경 시 프론트엔드 연동에 영향을 미침
@@ -28,11 +28,11 @@ async function convertToProcessedFile(file: File): Promise<ProcessedFile> {
   const uint8Array = new Uint8Array(arrayBuffer);
 
   // Node.js 환경에서 base64 변환
-  const base64Data = Buffer.from(uint8Array).toString("base64");
+  const base64Data = Buffer.from(uint8Array).toString('base64');
 
   return {
     name: file.name,
-    mimeType: file.type || "application/octet-stream",
+    mimeType: file.type || 'application/octet-stream',
     base64Data,
   };
 }
@@ -61,19 +61,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch {
     return NextResponse.json(
       createErrorResponse(
-        "VALIDATION_ERROR",
-        "multipart/form-data 파싱에 실패했습니다"
+        'VALIDATION_ERROR',
+        'multipart/form-data 파싱에 실패했습니다',
       ),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   // config 필드 추출 (JSON 문자열)
-  const configRaw = formData.get("config");
-  if (typeof configRaw !== "string" || configRaw.trim().length === 0) {
+  const configRaw = formData.get('config');
+  if (typeof configRaw !== 'string' || configRaw.trim().length === 0) {
     return NextResponse.json(
-      createErrorResponse("VALIDATION_ERROR", "config 필드가 누락되었습니다"),
-      { status: 400 }
+      createErrorResponse('VALIDATION_ERROR', 'config 필드가 누락되었습니다'),
+      { status: 400 },
     );
   }
 
@@ -84,10 +84,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch {
     return NextResponse.json(
       createErrorResponse(
-        "VALIDATION_ERROR",
-        "config 필드가 올바른 JSON 형식이 아닙니다"
+        'VALIDATION_ERROR',
+        'config 필드가 올바른 JSON 형식이 아닙니다',
       ),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -96,25 +96,25 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!configValidation.success) {
     return NextResponse.json(
       createErrorResponse(
-        "VALIDATION_ERROR",
-        "config 유효성 검사 실패",
-        configValidation.error.flatten()
+        'VALIDATION_ERROR',
+        'config 유효성 검사 실패',
+        configValidation.error.flatten(),
       ),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   const config: GenerateRequestConfig = configValidation.data;
 
   // 첨부 파일을 ProcessedFile 형식으로 변환
-  const rawFiles = formData.getAll("files").filter(
-    (item): item is File => item instanceof File
-  );
+  const rawFiles = formData
+    .getAll('files')
+    .filter((item): item is File => item instanceof File);
 
   let processedFiles: ProcessedFile[] = [];
   if (rawFiles.length > 0) {
     processedFiles = await Promise.all(
-      rawFiles.map((file) => convertToProcessedFile(file))
+      rawFiles.map((file) => convertToProcessedFile(file)),
     );
   }
 
@@ -126,13 +126,13 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     ][]
   ).filter(
     ([, providerConfig]) =>
-      providerConfig.enabled && providerConfig.apiKey.trim().length > 0
+      providerConfig.enabled && providerConfig.apiKey.trim().length > 0,
   );
 
   if (enabledProviders.length === 0) {
     return NextResponse.json(
-      createErrorResponse("VALIDATION_ERROR", "활성화된 프로바이더가 없습니다"),
-      { status: 400 }
+      createErrorResponse('VALIDATION_ERROR', '활성화된 프로바이더가 없습니다'),
+      { status: 400 },
     );
   }
 
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       };
 
       return provider.generate(providerRequest);
-    })
+    }),
   );
 
   // 결과 및 오류 집계
@@ -186,7 +186,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   settledResults.forEach((settled, index) => {
     const [providerName] = enabledProviders[index];
 
-    if (settled.status === "fulfilled") {
+    if (settled.status === 'fulfilled') {
       results[providerName] = settled.value;
       successCount++;
     } else {

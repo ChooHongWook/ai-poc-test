@@ -1,32 +1,39 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useTheme } from "next-themes";
-import { ConfigurationPanel } from "./components/ConfigurationPanel";
-import { SystemPromptSection } from "./components/SystemPromptSection";
-import { UserPromptSection } from "./components/UserPromptSection";
-import { SchemaSection } from "./components/SchemaSection";
-import { InputDataSection } from "./components/InputDataSection";
-import { OutputDataSection, AIOutput } from "./components/OutputDataSection";
-import { FileUploadSection } from "./components/FileUploadSection";
-import { Button } from "./components/ui/button";
-import { Sparkles, Loader2, X, Sun, Moon } from "lucide-react";
-import { toast } from "sonner";
-import { Toaster } from "./components/ui/sonner";
-import type { GenerateRequestConfig, GenerateResponse } from "@/lib/types";
-import { useProviderConfig } from "@/hooks/useProviderConfig";
-import { usePromptConfig } from "@/hooks/usePromptConfig";
-import { useStreamGenerate } from "@/hooks/useStreamGenerate";
-import { cn } from "./components/ui/utils";
+import { useState } from 'react';
+import { useTheme } from 'next-themes';
+import { ConfigurationPanel } from './components/ConfigurationPanel';
+import { SystemPromptSection } from './components/SystemPromptSection';
+import { UserPromptSection } from './components/UserPromptSection';
+import { SchemaSection } from './components/SchemaSection';
+import { InputDataSection } from './components/InputDataSection';
+import { OutputDataSection, AIOutput } from './components/OutputDataSection';
+import { FileUploadSection } from './components/FileUploadSection';
+import { Button } from './components/ui/button';
+import { Sparkles, Loader2, X, Sun, Moon } from 'lucide-react';
+import { toast } from 'sonner';
+import { Toaster } from './components/ui/sonner';
+import type { GenerateRequestConfig, GenerateResponse } from '@/lib/types';
+import { useProviderConfig } from '@/hooks/useProviderConfig';
+import { usePromptConfig } from '@/hooks/usePromptConfig';
+import { useStreamGenerate } from '@/hooks/useStreamGenerate';
+import { cn } from './components/ui/utils';
 
 export default function App() {
   // AI 프로바이더 상태 - localStorage에 enabled/model 영속화 (API Key는 메모리만)
   const { theme, setTheme } = useTheme();
-  const { chatgpt, gemini, claude, setChatGPT, setGemini, setClaude } = useProviderConfig();
+  const { chatgpt, gemini, claude, setChatGPT, setGemini, setClaude } =
+    useProviderConfig();
 
   // 프롬프트 설정 상태 - localStorage에 자동 저장
-  const { systemPrompt, userPrompt, schema, setSystemPrompt, setUserPrompt, setSchema } =
-    usePromptConfig();
+  const {
+    systemPrompt,
+    userPrompt,
+    schema,
+    setSystemPrompt,
+    setUserPrompt,
+    setSchema,
+  } = usePromptConfig();
 
   // 입력 필드 상태
   const [inputFields, setInputFields] = useState<
@@ -82,24 +89,26 @@ export default function App() {
    */
   const buildConfig = (): GenerateRequestConfig | null => {
     if (!chatgpt.enabled && !gemini.enabled && !claude.enabled) {
-      toast.error("AI 모델을 선택해주세요");
+      toast.error('AI 모델을 선택해주세요');
       return null;
     }
 
     const enabledProviders = [
-      { name: "ChatGPT", config: chatgpt },
-      { name: "Gemini", config: gemini },
-      { name: "Claude", config: claude },
+      { name: 'ChatGPT', config: chatgpt },
+      { name: 'Gemini', config: gemini },
+      { name: 'Claude', config: claude },
     ].filter((p) => p.config.enabled);
 
     const missingKeys = enabledProviders.filter((p) => !p.config.apiKey.trim());
     if (missingKeys.length > 0) {
-      toast.error(`${missingKeys.map((p) => p.name).join(", ")}의 API Key를 입력해주세요`);
+      toast.error(
+        `${missingKeys.map((p) => p.name).join(', ')}의 API Key를 입력해주세요`,
+      );
       return null;
     }
 
     if (!systemPrompt.trim() || !userPrompt.trim()) {
-      toast.error("System Prompt와 User Prompt를 입력해주세요");
+      toast.error('System Prompt와 User Prompt를 입력해주세요');
       return null;
     }
 
@@ -109,9 +118,21 @@ export default function App() {
       schema: schema || undefined,
       inputFields: inputFields.length > 0 ? inputFields : undefined,
       providers: {
-        chatgpt: { enabled: chatgpt.enabled, apiKey: chatgpt.apiKey, model: chatgpt.model },
-        gemini: { enabled: gemini.enabled, apiKey: gemini.apiKey, model: gemini.model },
-        claude: { enabled: claude.enabled, apiKey: claude.apiKey, model: claude.model },
+        chatgpt: {
+          enabled: chatgpt.enabled,
+          apiKey: chatgpt.apiKey,
+          model: chatgpt.model,
+        },
+        gemini: {
+          enabled: gemini.enabled,
+          apiKey: gemini.apiKey,
+          model: gemini.model,
+        },
+        claude: {
+          enabled: claude.enabled,
+          apiKey: claude.apiKey,
+          model: claude.model,
+        },
       },
     };
   };
@@ -129,10 +150,10 @@ export default function App() {
       await startStreaming(config, files);
       // 스트리밍 완료 - 성공/오류 알림은 상태 업데이트 이후 effect에서 처리하거나
       // 여기서는 단순히 완료 메시지만 표시 (실제 결과는 outputs 상태에 반영됨)
-      toast.success("스트리밍이 완료되었습니다!");
+      toast.success('스트리밍이 완료되었습니다!');
     } catch {
       // 스트리밍 실패 시 폴백으로 동기 방식 시도
-      toast.error("스트리밍 실패 - 동기 모드로 재시도합니다");
+      toast.error('스트리밍 실패 - 동기 모드로 재시도합니다');
       await handleGenerateSync();
     }
   };
@@ -146,11 +167,11 @@ export default function App() {
 
     try {
       const formData = new FormData();
-      formData.append("config", JSON.stringify(config));
-      uploadedFiles.forEach(({ file }) => formData.append("files", file));
+      formData.append('config', JSON.stringify(config));
+      uploadedFiles.forEach(({ file }) => formData.append('files', file));
 
-      const response = await fetch("/api/generate", {
-        method: "POST",
+      const response = await fetch('/api/generate', {
+        method: 'POST',
         body: formData,
       });
 
@@ -166,10 +187,10 @@ export default function App() {
       }
 
       if (data.success) {
-        toast.success("문서가 성공적으로 생성되었습니다! (폴백 모드)");
+        toast.success('문서가 성공적으로 생성되었습니다! (폴백 모드)');
       }
     } catch (error) {
-      toast.error("문서 생성 중 오류가 발생했습니다. 네트워크를 확인해주세요.");
+      toast.error('문서 생성 중 오류가 발생했습니다. 네트워크를 확인해주세요.');
       console.error(error);
     }
   };
@@ -178,18 +199,18 @@ export default function App() {
   const handleGenerate = handleGenerateStream;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background min-h-screen">
       <Toaster />
 
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="bg-card border-b">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Sparkles className="w-8 h-8 text-primary" />
+              <Sparkles className="text-primary h-8 w-8" />
               <div>
                 <h1 className="text-2xl font-bold">AI 문서 생성 POC</h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   AI 기반 자동 문서 생성 시스템 개념 검증
                 </p>
               </div>
@@ -197,21 +218,25 @@ export default function App() {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
               aria-label="다크모드 전환"
             >
-              <Sun className={cn(
-                // 크기
-                "h-5 w-5",
-                // 인터랙션 / 상태
-                "rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0",
-              )} />
-              <Moon className={cn(
-                // 위치 / 크기
-                "absolute h-5 w-5",
-                // 인터랙션 / 상태
-                "rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100",
-              )} />
+              <Sun
+                className={cn(
+                  // 크기
+                  'h-5 w-5',
+                  // 인터랙션 / 상태
+                  'scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90',
+                )}
+              />
+              <Moon
+                className={cn(
+                  // 위치 / 크기
+                  'absolute h-5 w-5',
+                  // 인터랙션 / 상태
+                  'scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0',
+                )}
+              />
             </Button>
           </div>
         </div>
@@ -219,12 +244,14 @@ export default function App() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className={cn(
-          // 레이아웃 / 반응형
-          "grid grid-cols-1 lg:grid-cols-2",
-          // 간격
-          "gap-6",
-        )}>
+        <div
+          className={cn(
+            // 레이아웃 / 반응형
+            'grid grid-cols-1 lg:grid-cols-2',
+            // 간격
+            'gap-6',
+          )}
+        >
           {/* Left Column - Configuration */}
           <div className="space-y-6">
             <ConfigurationPanel
@@ -241,15 +268,9 @@ export default function App() {
               onChange={setSystemPrompt}
             />
 
-            <UserPromptSection
-              value={userPrompt}
-              onChange={setUserPrompt}
-            />
+            <UserPromptSection value={userPrompt} onChange={setUserPrompt} />
 
-            <SchemaSection
-              value={schema}
-              onChange={setSchema}
-            />
+            <SchemaSection value={schema} onChange={setSchema} />
 
             <InputDataSection
               inputFields={inputFields}
@@ -271,12 +292,12 @@ export default function App() {
               >
                 {isGenerating ? (
                   <>
-                    <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
                     스트리밍 중...
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5 mr-2" />
+                    <Sparkles className="mr-2 h-5 w-5" />
                     문서 생성하기
                   </>
                 )}
@@ -291,7 +312,7 @@ export default function App() {
                   className="shrink-0"
                   title="스트리밍 취소"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="h-5 w-5" />
                 </Button>
               )}
             </div>
@@ -314,14 +335,16 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t mt-12">
+      <footer className="mt-12 border-t">
         <div className="container mx-auto px-4 py-6">
-          <p className={cn(
-            // 레이아웃
-            "text-center",
-            // 색상 / 타이포그래피
-            "text-sm text-muted-foreground",
-          )}>
+          <p
+            className={cn(
+              // 레이아웃
+              'text-center',
+              // 색상 / 타이포그래피
+              'text-muted-foreground text-sm',
+            )}
+          >
             © 2026 AI 문서 생성 POC | Proof of Concept Application
           </p>
         </div>

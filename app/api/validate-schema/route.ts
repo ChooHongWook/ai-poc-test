@@ -1,8 +1,8 @@
 // JSON 스키마 유효성 검사 API 라우트 핸들러
 
-import { NextRequest, NextResponse } from "next/server";
-import { validateSchemaRequestSchema } from "@/lib/validations";
-import { createErrorResponse } from "@/lib/errors";
+import { NextRequest, NextResponse } from 'next/server';
+import { validateSchemaRequestSchema } from '@/lib/validations';
+import { createErrorResponse } from '@/lib/errors';
 
 /**
  * POST /api/validate-schema
@@ -19,8 +19,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch {
     // JSON 파싱 실패 시 400 에러 반환
     return NextResponse.json(
-      createErrorResponse("VALIDATION_ERROR", "요청 바디가 올바른 JSON 형식이 아닙니다"),
-      { status: 400 }
+      createErrorResponse(
+        'VALIDATION_ERROR',
+        '요청 바디가 올바른 JSON 형식이 아닙니다',
+      ),
+      { status: 400 },
     );
   }
 
@@ -30,11 +33,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Zod 유효성 검사 실패 시 400 에러 반환
     return NextResponse.json(
       createErrorResponse(
-        "VALIDATION_ERROR",
-        "입력 유효성 검사 실패",
-        validationResult.error.flatten()
+        'VALIDATION_ERROR',
+        '입력 유효성 검사 실패',
+        validationResult.error.flatten(),
       ),
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -48,7 +51,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   } catch (error) {
     // JSON 파싱 실패 시 오류 메시지와 함께 응답 (HTTP 200, valid: false)
     const message =
-      error instanceof Error ? error.message : "JSON 파싱에 실패했습니다";
+      error instanceof Error ? error.message : 'JSON 파싱에 실패했습니다';
     return NextResponse.json({ valid: false, error: message }, { status: 200 });
   }
 }

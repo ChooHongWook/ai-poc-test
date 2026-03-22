@@ -1,6 +1,6 @@
 // AI 프로바이더 클라이언트 인터페이스 정의
 
-import type { ProviderName, TokenUsage } from "@/lib/types";
+import type { ProviderName, TokenUsage } from '@/lib/types';
 
 // 프로바이더 요청 인터페이스
 export interface ProviderRequest {
