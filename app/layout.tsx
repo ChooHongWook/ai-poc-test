@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { ThemeProvider } from 'next-themes'
 import { AIConfigProvider } from '@/lib/providers/ai-config-provider'
 import { HistoryProvider } from '@/lib/providers/history-provider'
+import { MSWProvider } from '@/components/providers/MSWProvider'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import './globals.css'
@@ -20,15 +21,17 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <AIConfigProvider>
-            <HistoryProvider>
-              <div className="bg-background min-h-screen">
-                <Header />
-                {children}
-                <Footer />
-              </div>
-            </HistoryProvider>
-          </AIConfigProvider>
+          <MSWProvider>
+            <AIConfigProvider>
+              <HistoryProvider>
+                <div className="bg-background min-h-screen">
+                  <Header />
+                  {children}
+                  <Footer />
+                </div>
+              </HistoryProvider>
+            </AIConfigProvider>
+          </MSWProvider>
         </ThemeProvider>
       </body>
     </html>

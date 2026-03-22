@@ -14,7 +14,7 @@ import { Sparkles, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAIConfig } from '@/lib/providers/ai-config-provider'
 import { useHistory } from '@/lib/providers/history-provider'
-import { generateMockOutput } from '@/lib/mock/generate'
+import { generateOutput } from '@/lib/api/generate'
 import type { AIOutput } from '@/lib/types'
 
 export default function HomePage() {
@@ -73,7 +73,7 @@ export default function HomePage() {
     setIsGenerating(true)
 
     try {
-      const result = await generateMockOutput({
+      const result = await generateOutput({
         chatgpt,
         gemini,
         claude,
