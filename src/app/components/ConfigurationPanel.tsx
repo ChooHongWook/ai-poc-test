@@ -1,5 +1,3 @@
-import { Label } from './ui/label';
-import { Input } from './ui/input';
 import {
   Card,
   CardContent,
@@ -7,18 +5,14 @@ import {
   CardHeader,
   CardTitle,
 } from './ui/card';
-import { Checkbox } from './ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from './ui/select';
 import { Button } from './ui/button';
 import { cn } from './ui/utils';
-import { Settings, Bot, Zap } from 'lucide-react';
+import { Settings, Zap } from 'lucide-react';
 import { Separator } from './ui/separator';
+import {
+  AIProviderConfigItem,
+  type ModelOption,
+} from './AIProviderConfigItem';
 
 export interface AIProvider {
   enabled: boolean;
@@ -34,6 +28,26 @@ interface ConfigurationPanelProps {
   onGeminiChange: (provider: AIProvider) => void;
   onClaudeChange: (provider: AIProvider) => void;
 }
+
+const CHATGPT_MODELS: ModelOption[] = [
+  { value: 'gpt-4', label: 'GPT-4' },
+  { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
+  { value: 'gpt-4o', label: 'GPT-4o' },
+  { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
+];
+
+const GEMINI_MODELS: ModelOption[] = [
+  { value: 'gemini-pro', label: 'Gemini Pro' },
+  { value: 'gemini-pro-vision', label: 'Gemini Pro Vision' },
+  { value: 'gemini-ultra', label: 'Gemini Ultra' },
+];
+
+const CLAUDE_MODELS: ModelOption[] = [
+  { value: 'claude-3-opus', label: 'Claude 3 Opus' },
+  { value: 'claude-3-sonnet', label: 'Claude 3 Sonnet' },
+  { value: 'claude-3-haiku', label: 'Claude 3 Haiku' },
+  { value: 'claude-2', label: 'Claude 2' },
+];
 
 export function ConfigurationPanel({
   chatgpt,
@@ -83,7 +97,9 @@ export function ConfigurationPanel({
             'bg-primary/5 border-primary/20 border',
           )}
         >
-          <div className="flex items-center justify-between gap-4">
+          <div
+            className="flex items-center justify-between gap-4"
+          >
             <div className="flex-1">
               <p className="mb-1 text-sm font-medium">빠른 설정</p>
               <p className="text-muted-foreground text-xs">
@@ -105,190 +121,71 @@ export function ConfigurationPanel({
         <Separator />
 
         {/* ChatGPT Section */}
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              id="chatgpt-enabled"
-              checked={chatgpt.enabled}
-              onCheckedChange={(checked) =>
-                onChatGPTChange({ ...chatgpt, enabled: checked as boolean })
-              }
-            />
-            <div className="flex items-center gap-2">
-              <Bot className="h-5 w-5 text-green-600" />
-              <Label
-                htmlFor="chatgpt-enabled"
-                className="cursor-pointer text-base font-semibold"
-              >
-                ChatGPT (OpenAI)
-              </Label>
-            </div>
-          </div>
-
-          {chatgpt.enabled && (
-            <div className="bg-muted/30 ml-8 space-y-3 rounded-lg border p-4">
-              <div className="space-y-2">
-                <Label htmlFor="chatgpt-model">모델 선택</Label>
-                <Select
-                  value={chatgpt.model}
-                  onValueChange={(value) =>
-                    onChatGPTChange({ ...chatgpt, model: value })
-                  }
-                >
-                  <SelectTrigger id="chatgpt-model">
-                    <SelectValue placeholder="모델을 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gpt-4">GPT-4</SelectItem>
-                    <SelectItem value="gpt-4-turbo">GPT-4 Turbo</SelectItem>
-                    <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-                    <SelectItem value="gpt-3.5-turbo">GPT-3.5 Turbo</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="chatgpt-key">API Key</Label>
-                <Input
-                  id="chatgpt-key"
-                  type="password"
-                  placeholder="sk-..."
-                  value={chatgpt.apiKey}
-                  onChange={(e) =>
-                    onChatGPTChange({ ...chatgpt, apiKey: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        <AIProviderConfigItem
+          id="chatgpt"
+          label="ChatGPT (OpenAI)"
+          iconColor="text-green-600"
+          checked={chatgpt.enabled}
+          onCheckedChange={(checked) =>
+            onChatGPTChange({ ...chatgpt, enabled: checked })
+          }
+          model={chatgpt.model}
+          onModelChange={(value) =>
+            onChatGPTChange({ ...chatgpt, model: value })
+          }
+          modelOptions={CHATGPT_MODELS}
+          apiKey={chatgpt.apiKey}
+          onApiKeyChange={(value) =>
+            onChatGPTChange({ ...chatgpt, apiKey: value })
+          }
+          apiKeyPlaceholder="sk-..."
+        />
 
         <Separator />
 
         {/* Gemini Section */}
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              id="gemini-enabled"
-              checked={gemini.enabled}
-              onCheckedChange={(checked) =>
-                onGeminiChange({ ...gemini, enabled: checked as boolean })
-              }
-            />
-            <div className="flex items-center gap-2">
-              <Bot className="h-5 w-5 text-blue-600" />
-              <Label
-                htmlFor="gemini-enabled"
-                className="cursor-pointer text-base font-semibold"
-              >
-                Gemini (Google)
-              </Label>
-            </div>
-          </div>
-
-          {gemini.enabled && (
-            <div className="bg-muted/30 ml-8 space-y-3 rounded-lg border p-4">
-              <div className="space-y-2">
-                <Label htmlFor="gemini-model">모델 선택</Label>
-                <Select
-                  value={gemini.model}
-                  onValueChange={(value) =>
-                    onGeminiChange({ ...gemini, model: value })
-                  }
-                >
-                  <SelectTrigger id="gemini-model">
-                    <SelectValue placeholder="모델을 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="gemini-pro">Gemini Pro</SelectItem>
-                    <SelectItem value="gemini-pro-vision">
-                      Gemini Pro Vision
-                    </SelectItem>
-                    <SelectItem value="gemini-ultra">Gemini Ultra</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="gemini-key">API Key</Label>
-                <Input
-                  id="gemini-key"
-                  type="password"
-                  placeholder="AI..."
-                  value={gemini.apiKey}
-                  onChange={(e) =>
-                    onGeminiChange({ ...gemini, apiKey: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        <AIProviderConfigItem
+          id="gemini"
+          label="Gemini (Google)"
+          iconColor="text-blue-600"
+          checked={gemini.enabled}
+          onCheckedChange={(checked) =>
+            onGeminiChange({ ...gemini, enabled: checked })
+          }
+          model={gemini.model}
+          onModelChange={(value) =>
+            onGeminiChange({ ...gemini, model: value })
+          }
+          modelOptions={GEMINI_MODELS}
+          apiKey={gemini.apiKey}
+          onApiKeyChange={(value) =>
+            onGeminiChange({ ...gemini, apiKey: value })
+          }
+          apiKeyPlaceholder="AI..."
+        />
 
         <Separator />
 
         {/* Claude Section */}
-        <div className="space-y-4">
-          <div className="flex items-center space-x-3">
-            <Checkbox
-              id="claude-enabled"
-              checked={claude.enabled}
-              onCheckedChange={(checked) =>
-                onClaudeChange({ ...claude, enabled: checked as boolean })
-              }
-            />
-            <div className="flex items-center gap-2">
-              <Bot className="h-5 w-5 text-purple-600" />
-              <Label
-                htmlFor="claude-enabled"
-                className="cursor-pointer text-base font-semibold"
-              >
-                Claude (Anthropic)
-              </Label>
-            </div>
-          </div>
-
-          {claude.enabled && (
-            <div className="bg-muted/30 ml-8 space-y-3 rounded-lg border p-4">
-              <div className="space-y-2">
-                <Label htmlFor="claude-model">모델 선택</Label>
-                <Select
-                  value={claude.model}
-                  onValueChange={(value) =>
-                    onClaudeChange({ ...claude, model: value })
-                  }
-                >
-                  <SelectTrigger id="claude-model">
-                    <SelectValue placeholder="모델을 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="claude-3-opus">Claude 3 Opus</SelectItem>
-                    <SelectItem value="claude-3-sonnet">
-                      Claude 3 Sonnet
-                    </SelectItem>
-                    <SelectItem value="claude-3-haiku">
-                      Claude 3 Haiku
-                    </SelectItem>
-                    <SelectItem value="claude-2">Claude 2</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="claude-key">API Key</Label>
-                <Input
-                  id="claude-key"
-                  type="password"
-                  placeholder="sk-ant-..."
-                  value={claude.apiKey}
-                  onChange={(e) =>
-                    onClaudeChange({ ...claude, apiKey: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-          )}
-        </div>
+        <AIProviderConfigItem
+          id="claude"
+          label="Claude (Anthropic)"
+          iconColor="text-purple-600"
+          checked={claude.enabled}
+          onCheckedChange={(checked) =>
+            onClaudeChange({ ...claude, enabled: checked })
+          }
+          model={claude.model}
+          onModelChange={(value) =>
+            onClaudeChange({ ...claude, model: value })
+          }
+          modelOptions={CLAUDE_MODELS}
+          apiKey={claude.apiKey}
+          onApiKeyChange={(value) =>
+            onClaudeChange({ ...claude, apiKey: value })
+          }
+          apiKeyPlaceholder="sk-ant-..."
+        />
       </CardContent>
     </Card>
   );

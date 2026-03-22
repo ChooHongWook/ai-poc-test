@@ -11,6 +11,8 @@ import {
 import { Button } from './ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Plus, Trash2, Database } from 'lucide-react';
+import { CodeBlock } from './ui/code-block';
+import { EmptyState } from './ui/empty-state';
 
 interface InputDataSectionProps {
   inputFields: { id: string; label: string; value: string }[];
@@ -89,9 +91,9 @@ export function InputDataSection({
             </div>
 
             {inputFields.length === 0 ? (
-              <div className="text-muted-foreground py-8 text-center">
+              <EmptyState>
                 위에서 필드를 추가해주세요
-              </div>
+              </EmptyState>
             ) : (
               <div className="space-y-3">
                 {inputFields.map((field) => (
@@ -122,9 +124,9 @@ export function InputDataSection({
           </TabsContent>
 
           <TabsContent value="json">
-            <pre className="bg-muted max-h-96 overflow-auto rounded-lg p-4 font-mono text-sm">
+            <CodeBlock className="max-h-96 rounded-lg p-4">
               {getInputDataJSON()}
-            </pre>
+            </CodeBlock>
           </TabsContent>
         </Tabs>
       </CardContent>

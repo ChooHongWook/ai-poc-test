@@ -27,6 +27,9 @@ import { Button } from './ui/button';
 import { cn } from './ui/utils';
 import { FileOutput, CheckCircle2, Bot, History, Eye } from 'lucide-react';
 import { Badge } from './ui/badge';
+import { CodeBlock } from './ui/code-block';
+import { EmptyState } from './ui/empty-state';
+import { AIOutputPreview } from './AIOutputPreview';
 import { useState } from 'react';
 import type { HistoryItem } from '../App';
 
@@ -55,6 +58,12 @@ interface SingleOutputCardProps {
   color: string;
 }
 
+const borderColorMap: Record<string, string> = {
+  green: 'border-green-200',
+  blue: 'border-blue-200',
+  purple: 'border-purple-200',
+};
+
 function SingleOutputCard({
   title,
   icon,
@@ -81,17 +90,19 @@ function SingleOutputCard({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="text-muted-foreground py-12 text-center">
-            <Bot className="mx-auto mb-3 h-12 w-12 opacity-50" />
+          <EmptyState
+            icon={<Bot className="h-12 w-12 opacity-50" />}
+            className="py-12"
+          >
             <p>{title}가 비활성화되어 있습니다</p>
-          </div>
+          </EmptyState>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className={`border-${color}-200`}>
+    <Card className={borderColorMap[color]}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {icon}
@@ -114,10 +125,12 @@ function SingleOutputCard({
 
           <TabsContent value="fields" className="space-y-4">
             {!output.generated || outputKeys.length === 0 ? (
-              <div className="text-muted-foreground py-12 text-center">
-                <FileOutput className="mx-auto mb-3 h-12 w-12 opacity-50" />
+              <EmptyState
+                icon={<FileOutput className="h-12 w-12 opacity-50" />}
+                className="py-12"
+              >
                 <p>{title} 결과를 기다리는 중입니다</p>
-              </div>
+              </EmptyState>
             ) : (
               <div className="space-y-3">
                 {outputKeys.map((key) => (
@@ -150,18 +163,9 @@ function SingleOutputCard({
                 결과가 없습니다
               </div>
             ) : (
-              <pre
-                className={cn(
-                  // 크기/간격
-                  'max-h-96 rounded-lg p-4',
-                  // 색상/배경
-                  'bg-muted',
-                  // 레이아웃
-                  'overflow-auto font-mono text-sm',
-                )}
-              >
+              <CodeBlock className="max-h-96 rounded-lg p-4">
                 {getOutputDataJSON(output.data)}
-              </pre>
+              </CodeBlock>
             )}
           </TabsContent>
         </Tabs>
@@ -197,12 +201,7 @@ export function OutputDataSection({
       {/* History Section */}
       <Card>
         <CardHeader>
-          <CardTitle
-            className={cn(
-              // 레이아웃
-              'flex items-center gap-2',
-            )}
-          >
+          <CardTitle className="flex items-center gap-2">
             <History className="h-5 w-5" />
             생성 기록
           </CardTitle>
@@ -210,10 +209,11 @@ export function OutputDataSection({
         </CardHeader>
         <CardContent className="space-y-4">
           {history.length === 0 ? (
-            <div className="text-muted-foreground py-8 text-center">
-              <History className="mx-auto mb-3 h-10 w-10 opacity-50" />
+            <EmptyState
+              icon={<History className="h-10 w-10 opacity-50" />}
+            >
               <p className="text-sm">아직 생성 기록이 없습니다</p>
-            </div>
+            </EmptyState>
           ) : (
             <>
               <div className="space-y-2">
@@ -258,7 +258,14 @@ export function OutputDataSection({
                             상세 보기
                           </Button>
                         </DialogTrigger>
-                        <DialogContent className="max-h-[80vh] max-w-2xl overflow-y-auto">
+                        <DialogContent
+                          className={cn(
+                            // 크기/간격
+                            'max-h-[80vh] max-w-2xl',
+                            // 레이아웃
+                            'overflow-y-auto',
+                          )}
+                        >
                           <DialogHeader>
                             <DialogTitle>생성 기록 상세 정보</DialogTitle>
                             <DialogDescription>
@@ -269,53 +276,34 @@ export function OutputDataSection({
                             {/* System Prompt */}
                             <div className="space-y-2">
                               <Label>System Prompt</Label>
-                              <div
-                                className={cn(
-                                  // 크기/간격
-                                  'max-h-32 rounded-md p-3',
-                                  // 색상/배경
-                                  'bg-muted',
-                                  // 레이아웃
-                                  'overflow-auto text-sm',
-                                )}
+                              <CodeBlock
+                                as="div"
+                                mono={false}
+                                className="max-h-32"
                               >
                                 {selectedHistory.systemPrompt || '없음'}
-                              </div>
+                              </CodeBlock>
                             </div>
 
                             {/* User Prompt */}
                             <div className="space-y-2">
                               <Label>User Prompt</Label>
-                              <div
-                                className={cn(
-                                  // 크기/간격
-                                  'max-h-32 rounded-md p-3',
-                                  // 색상/배경
-                                  'bg-muted',
-                                  // 레이아웃
-                                  'overflow-auto text-sm',
-                                )}
+                              <CodeBlock
+                                as="div"
+                                mono={false}
+                                className="max-h-32"
                               >
                                 {selectedHistory.userPrompt || '없음'}
-                              </div>
+                              </CodeBlock>
                             </div>
 
                             {/* Schema */}
                             {selectedHistory.schema && (
                               <div className="space-y-2">
                                 <Label>AI 스키마</Label>
-                                <pre
-                                  className={cn(
-                                    // 크기/간격
-                                    'max-h-32 rounded-md p-3',
-                                    // 색상/배경
-                                    'bg-muted',
-                                    // 레이아웃
-                                    'overflow-auto font-mono text-sm',
-                                  )}
-                                >
+                                <CodeBlock className="max-h-32">
                                   {selectedHistory.schema}
-                                </pre>
+                                </CodeBlock>
                               </div>
                             )}
 
@@ -353,84 +341,27 @@ export function OutputDataSection({
                               <Label>AI 출력 결과</Label>
 
                               {selectedHistory.chatgptOutput && (
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2">
-                                    <Bot className="h-4 w-4 text-green-600" />
-                                    <span className="text-sm font-medium">
-                                      ChatGPT
-                                    </span>
-                                  </div>
-                                  <pre
-                                    className={cn(
-                                      // 크기/간격
-                                      'max-h-48 rounded-md p-3',
-                                      // 색상/배경
-                                      'bg-muted',
-                                      // 레이아웃
-                                      'overflow-auto font-mono text-xs',
-                                    )}
-                                  >
-                                    {JSON.stringify(
-                                      selectedHistory.chatgptOutput.data,
-                                      null,
-                                      2,
-                                    )}
-                                  </pre>
-                                </div>
+                                <AIOutputPreview
+                                  providerName="ChatGPT"
+                                  color="green"
+                                  output={selectedHistory.chatgptOutput}
+                                />
                               )}
 
                               {selectedHistory.geminiOutput && (
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2">
-                                    <Bot className="h-4 w-4 text-blue-600" />
-                                    <span className="text-sm font-medium">
-                                      Gemini
-                                    </span>
-                                  </div>
-                                  <pre
-                                    className={cn(
-                                      // 크기/간격
-                                      'max-h-48 rounded-md p-3',
-                                      // 색상/배경
-                                      'bg-muted',
-                                      // 레이아웃
-                                      'overflow-auto font-mono text-xs',
-                                    )}
-                                  >
-                                    {JSON.stringify(
-                                      selectedHistory.geminiOutput.data,
-                                      null,
-                                      2,
-                                    )}
-                                  </pre>
-                                </div>
+                                <AIOutputPreview
+                                  providerName="Gemini"
+                                  color="blue"
+                                  output={selectedHistory.geminiOutput}
+                                />
                               )}
 
                               {selectedHistory.claudeOutput && (
-                                <div className="space-y-2">
-                                  <div className="flex items-center gap-2">
-                                    <Bot className="h-4 w-4 text-purple-600" />
-                                    <span className="text-sm font-medium">
-                                      Claude
-                                    </span>
-                                  </div>
-                                  <pre
-                                    className={cn(
-                                      // 크기/간격
-                                      'max-h-48 rounded-md p-3',
-                                      // 색상/배경
-                                      'bg-muted',
-                                      // 레이아웃
-                                      'overflow-auto font-mono text-xs',
-                                    )}
-                                  >
-                                    {JSON.stringify(
-                                      selectedHistory.claudeOutput.data,
-                                      null,
-                                      2,
-                                    )}
-                                  </pre>
-                                </div>
+                                <AIOutputPreview
+                                  providerName="Claude"
+                                  color="purple"
+                                  output={selectedHistory.claudeOutput}
+                                />
                               )}
                             </div>
                           </div>

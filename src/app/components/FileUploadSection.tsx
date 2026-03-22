@@ -8,7 +8,7 @@ import {
 } from './ui/card';
 import { Button } from './ui/button';
 import { cn } from './ui/utils';
-import { Upload, File, X, FileText, Image as ImageIcon } from 'lucide-react';
+import { Upload, X, FileText, Image as ImageIcon } from 'lucide-react';
 import { Badge } from './ui/badge';
 
 interface UploadedFile {
