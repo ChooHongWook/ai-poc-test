@@ -12,11 +12,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { Bot } from 'lucide-react'
-
-export interface ModelOption {
-  value: string
-  label: string
-}
+import type { ModelOption } from '@/lib/constants/ai-models'
 
 interface AIProviderConfigItemProps {
   id: string

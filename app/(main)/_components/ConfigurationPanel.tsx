@@ -14,9 +14,16 @@ import { useState } from 'react'
 import { Separator } from '@/components/ui/separator'
 import {
   AIProviderConfigItem,
-  type ModelOption,
 } from '@/app/(main)/_components/AIProviderConfigItem'
 import type { AIProvider } from '@/lib/providers/ai-config-provider'
+import {
+  OPENAI_MODEL_OPTIONS,
+  OPENAI_DEFAULT_MODEL,
+  GEMINI_MODEL_OPTIONS,
+  GEMINI_DEFAULT_MODEL,
+  CLAUDE_MODEL_OPTIONS,
+  CLAUDE_DEFAULT_MODEL,
+} from '@/lib/constants/ai-models'
 
 interface ConfigurationPanelProps {
   chatgpt: AIProvider
@@ -27,25 +34,9 @@ interface ConfigurationPanelProps {
   onClaudeChange: (provider: AIProvider) => void
 }
 
-const CHATGPT_MODELS: ModelOption[] = [
-  { value: 'gpt-4', label: 'GPT-4' },
-  { value: 'gpt-4-turbo', label: 'GPT-4 Turbo' },
-  { value: 'gpt-4o', label: 'GPT-4o' },
-  { value: 'gpt-3.5-turbo', label: 'GPT-3.5 Turbo' },
-]
-
-const GEMINI_MODELS: ModelOption[] = [
-  { value: 'gemini-pro', label: 'Gemini Pro' },
-  { value: 'gemini-pro-vision', label: 'Gemini Pro Vision' },
-  { value: 'gemini-ultra', label: 'Gemini Ultra' },
-]
-
-const CLAUDE_MODELS: ModelOption[] = [
-  { value: 'claude-3-opus', label: 'Claude 3 Opus' },
-  { value: 'claude-3-sonnet', label: 'Claude 3 Sonnet' },
-  { value: 'claude-3-haiku', label: 'Claude 3 Haiku' },
-  { value: 'claude-2', label: 'Claude 2' },
-]
+const CHATGPT_MODELS = OPENAI_MODEL_OPTIONS
+const GEMINI_MODELS = GEMINI_MODEL_OPTIONS
+const CLAUDE_MODELS = CLAUDE_MODEL_OPTIONS
 
 export function ConfigurationPanel({
   chatgpt,
@@ -64,13 +55,13 @@ export function ConfigurationPanel({
       const keys = await res.json()
 
       if (keys.openai) {
-        onChatGPTChange({ enabled: true, apiKey: keys.openai, model: 'gpt-4o' })
+        onChatGPTChange({ enabled: true, apiKey: keys.openai, model: OPENAI_DEFAULT_MODEL })
       }
       if (keys.gemini) {
-        onGeminiChange({ enabled: true, apiKey: keys.gemini, model: 'gemini-pro' })
+        onGeminiChange({ enabled: true, apiKey: keys.gemini, model: GEMINI_DEFAULT_MODEL })
       }
       if (keys.claude) {
-        onClaudeChange({ enabled: true, apiKey: keys.claude, model: 'claude-3-sonnet' })
+        onClaudeChange({ enabled: true, apiKey: keys.claude, model: CLAUDE_DEFAULT_MODEL })
       }
     } catch {
       // API 호출 실패 시 무시
