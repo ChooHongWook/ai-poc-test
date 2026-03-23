@@ -3,6 +3,7 @@
 // @MX:REASON: API 라우트 핸들러에서 직접 호출하는 서비스 레이어 진입점
 
 import type { Document } from '@langchain/core/documents'
+import { HumanMessage, SystemMessage } from '@langchain/core/messages'
 import type {
   AnalysisRequest,
   AnalysisResponse,
@@ -40,15 +41,20 @@ function combineDocuments(documents: Document[]): {
 async function analyzeWithProvider(
   provider: ProviderConfig,
   documentText: string,
-  _systemPrompt: string,
-  _userPrompt: string,
+  systemPrompt: string,
+  userPrompt: string,
   schema?: AnalysisRequest['schema'],
 ): Promise<ProviderResult> {
+  const messages = [
+    new SystemMessage(systemPrompt),
+    new HumanMessage(`${userPrompt}\n\n${documentText}`),
+  ]
+
   try {
     if (schema) {
-      // Zod 스키마 제공 시 구조화 출력 사용 - 모델에 직접 invoke
+      // Zod 스키마 제공 시 구조화 출력 사용
       const structuredModel = provider.model.withStructuredOutput(schema)
-      const result = await structuredModel.invoke(documentText)
+      const result = await structuredModel.invoke(messages)
 
       return {
         provider: provider.name,
@@ -56,8 +62,8 @@ async function analyzeWithProvider(
         structuredOutput: result as Record<string, unknown>,
       }
     } else {
-      // 일반 텍스트 출력 - 모델 직접 invoke
-      const rawResult = await provider.model.invoke(documentText)
+      // 일반 텍스트 출력
+      const rawResult = await provider.model.invoke(messages)
 
       // 응답에서 텍스트 추출 (AIMessage 또는 string 형태)
       const content =
@@ -95,7 +101,7 @@ export async function analyzeDocuments(
     documents,
     providers,
     systemPrompt = '당신은 문서 분석 전문가입니다. 주어진 문서를 분석하여 핵심 내용을 추출하세요.',
-    userPrompt = '다음 문서를 분석해주세요:\n\n{document}',
+    userPrompt = '다음 문서를 분석해주세요.',
     schema,
   } = request
 
