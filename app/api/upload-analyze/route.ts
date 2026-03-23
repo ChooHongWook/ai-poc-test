@@ -7,7 +7,7 @@ import { loadDocument } from '@/lib/langchain/document-loader'
 import { createProviders } from '@/lib/langchain/ai-provider-factory'
 import { analyzeDocuments } from '@/lib/langchain/analysis-chain'
 import { UnsupportedFileTypeError } from '@/lib/langchain/types'
-import type { AIOutput, HistoryItem } from '@/lib/types'
+import type { AIOutput, HistoryItem, UploadAnalyzeConfig } from '@/lib/types'
 
 // 파일 크기 제한: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -40,14 +40,7 @@ export async function POST(request: Request) {
   const configRaw = formData.get('config')
   const config = JSON.parse(
     typeof configRaw === 'string' ? configRaw : '{}',
-  ) as {
-    chatgpt: { enabled: boolean; apiKey: string; model: string }
-    gemini: { enabled: boolean; apiKey: string; model: string }
-    claude: { enabled: boolean; apiKey: string; model: string }
-    systemPrompt: string
-    userPrompt: string
-    schema: string
-  }
+  ) as UploadAnalyzeConfig
 
   // 파일 유효성 검사
   for (const file of files) {
@@ -65,8 +58,9 @@ export async function POST(request: Request) {
     }
   }
 
-  // AI 제공자 생성 (환경변수 기반)
-  const providers = createProviders()
+  // AI 제공자 생성
+  const { chatgpt, gemini, claude } = config
+  const providers = createProviders({ chatgpt, gemini, claude })
   if (providers.length === 0) {
     return NextResponse.json(
       { error: '활성화된 AI 제공자가 없습니다. API 키를 설정하세요.' },

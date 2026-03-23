@@ -46,9 +46,7 @@ export async function analyzeUpload(params: {
     const errorData = (await response.json().catch(() => ({}))) as {
       error?: string
     }
-    throw new Error(
-      errorData.error ?? `API error: ${response.status}`,
-    )
+    throw new Error(errorData.error ?? `API error: ${response.status}`)
   }
 
   return response.json() as Promise<UploadAnalyzeResult>
