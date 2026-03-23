@@ -3,7 +3,12 @@
 // @MX:REASON: API 라우트 핸들러에서 직접 호출하는 서비스 레이어 진입점
 
 import type { Document } from '@langchain/core/documents'
-import type { AnalysisRequest, AnalysisResponse, ProviderConfig, ProviderResult } from './types'
+import type {
+  AnalysisRequest,
+  AnalysisResponse,
+  ProviderConfig,
+  ProviderResult,
+} from './types'
 
 // 토큰 절단 임계값 (약 12,000자 = 약 4,000 토큰)
 const MAX_CONTENT_LENGTH = 12_000
@@ -12,7 +17,10 @@ const MAX_CONTENT_LENGTH = 12_000
  * Document 배열을 하나의 텍스트로 합치고 필요시 절단
  * 절단 여부를 함께 반환
  */
-function combineDocuments(documents: Document[]): { text: string; truncated: boolean } {
+function combineDocuments(documents: Document[]): {
+  text: string
+  truncated: boolean
+} {
   const fullText = documents.map((doc) => doc.pageContent).join('\n\n')
 
   if (fullText.length > MAX_CONTENT_LENGTH) {
@@ -55,7 +63,9 @@ async function analyzeWithProvider(
       const content =
         typeof rawResult === 'string'
           ? rawResult
-          : typeof rawResult === 'object' && rawResult !== null && 'content' in rawResult
+          : typeof rawResult === 'object' &&
+              rawResult !== null &&
+              'content' in rawResult
             ? String((rawResult as { content: unknown }).content)
             : String(rawResult)
 
@@ -78,7 +88,9 @@ async function analyzeWithProvider(
  * 복수의 AI 제공자로 문서를 동시에 분석
  * Promise.allSettled를 사용하여 부분 실패를 허용
  */
-export async function analyzeDocuments(request: AnalysisRequest): Promise<AnalysisResponse> {
+export async function analyzeDocuments(
+  request: AnalysisRequest,
+): Promise<AnalysisResponse> {
   const {
     documents,
     providers,
@@ -98,7 +110,13 @@ export async function analyzeDocuments(request: AnalysisRequest): Promise<Analys
   // 모든 제공자에 대해 동시 분석 실행
   const settledResults = await Promise.allSettled(
     providers.map((provider) =>
-      analyzeWithProvider(provider, documentText, systemPrompt, userPrompt, schema),
+      analyzeWithProvider(
+        provider,
+        documentText,
+        systemPrompt,
+        userPrompt,
+        schema,
+      ),
     ),
   )
 
@@ -110,7 +128,10 @@ export async function analyzeDocuments(request: AnalysisRequest): Promise<Analys
       return {
         provider: providers[index]!.name,
         success: false,
-        error: settled.reason instanceof Error ? settled.reason.message : String(settled.reason),
+        error:
+          settled.reason instanceof Error
+            ? settled.reason.message
+            : String(settled.reason),
       }
     }
   })
