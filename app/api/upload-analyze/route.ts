@@ -38,7 +38,9 @@ export async function POST(request: Request) {
 
   // 설정 파싱
   const configRaw = formData.get('config')
-  const config = JSON.parse(typeof configRaw === 'string' ? configRaw : '{}') as {
+  const config = JSON.parse(
+    typeof configRaw === 'string' ? configRaw : '{}',
+  ) as {
     chatgpt: { enabled: boolean; apiKey: string; model: string }
     gemini: { enabled: boolean; apiKey: string; model: string }
     claude: { enabled: boolean; apiKey: string; model: string }
@@ -106,15 +108,14 @@ export async function POST(request: Request) {
 
       if (result.success) {
         // 구조화 출력 또는 텍스트를 Record<string, string>으로 변환
-        const data: Record<string, string> =
-          result.structuredOutput
-            ? Object.fromEntries(
-                Object.entries(result.structuredOutput).map(([k, v]) => [
-                  k,
-                  String(v),
-                ]),
-              )
-            : { 분석결과: result.content ?? '' }
+        const data: Record<string, string> = result.structuredOutput
+          ? Object.fromEntries(
+              Object.entries(result.structuredOutput).map(([k, v]) => [
+                k,
+                String(v),
+              ]),
+            )
+          : { 분석결과: result.content ?? '' }
 
         outputs[key] = { data, generated: true }
       } else {
@@ -131,7 +132,9 @@ export async function POST(request: Request) {
       id: Date.now().toString(),
       timestamp: new Date(),
       systemPrompt: config.systemPrompt,
-      userPrompt: config.userPrompt || `[파일 분석] ${files.map((f) => f.name).join(', ')}`,
+      userPrompt:
+        config.userPrompt ||
+        `[파일 분석] ${files.map((f) => f.name).join(', ')}`,
       schema: config.schema,
       inputFields: files.map((file, i) => ({
         id: `file-${i}`,
