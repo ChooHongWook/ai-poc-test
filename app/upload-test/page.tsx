@@ -103,9 +103,7 @@ function AnalysisResultCard({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground text-sm">
-            분석을 실행해주세요
-          </p>
+          <p className="text-muted-foreground text-sm">분석을 실행해주세요</p>
         </CardContent>
       </Card>
     )
@@ -299,9 +297,7 @@ export default function UploadTestPage() {
                     <Upload className="h-5 w-5" />
                     업로드 상태
                   </CardTitle>
-                  <CardDescription>
-                    업로드된 파일 상세 정보
-                  </CardDescription>
+                  <CardDescription>업로드된 파일 상세 정보</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">

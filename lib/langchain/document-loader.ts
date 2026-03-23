@@ -12,7 +12,9 @@ import { UnsupportedFileTypeError } from './types'
  * 파일 입력을 LangChain Document 배열로 변환
  * Buffer를 Blob으로 변환 후 적절한 로더 사용
  */
-export async function loadDocument(input: FileAnalysisInput): Promise<Document[]> {
+export async function loadDocument(
+  input: FileAnalysisInput,
+): Promise<Document[]> {
   const { buffer, mimeType, fileName } = input
 
   // 빈 파일 검증

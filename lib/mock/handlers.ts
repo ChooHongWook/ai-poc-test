@@ -32,18 +32,28 @@ export const handlers = [
       formData = new FormData()
     }
 
-    const files = formData.getAll('files').filter((v): v is File => v instanceof File)
+    const files = formData
+      .getAll('files')
+      .filter((v): v is File => v instanceof File)
     const configRaw = formData.get('config')
 
     // configRaw가 string 타입인지 명시적으로 확인 후 파싱
     // File 객체나 null이 들어오는 경우를 방어
-    let config: Omit<UploadAnalyzeParams, 'fileNames' | 'fileSizes' | 'fileTypes'>
+    let config: Omit<
+      UploadAnalyzeParams,
+      'fileNames' | 'fileSizes' | 'fileTypes'
+    >
     try {
       config = JSON.parse(
-        typeof configRaw === 'string' && configRaw.startsWith('{') ? configRaw : '{}',
+        typeof configRaw === 'string' && configRaw.startsWith('{')
+          ? configRaw
+          : '{}',
       ) as Omit<UploadAnalyzeParams, 'fileNames' | 'fileSizes' | 'fileTypes'>
     } catch {
-      config = {} as Omit<UploadAnalyzeParams, 'fileNames' | 'fileSizes' | 'fileTypes'>
+      config = {} as Omit<
+        UploadAnalyzeParams,
+        'fileNames' | 'fileSizes' | 'fileTypes'
+      >
     }
 
     // File 객체에서 메타데이터 추출하여 기존 mock 함수에 전달

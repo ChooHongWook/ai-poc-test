@@ -12,9 +12,7 @@ import { cn } from '@/lib/utils'
 import { Settings, Zap, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { Separator } from '@/components/ui/separator'
-import {
-  AIProviderConfigItem,
-} from '@/app/(main)/_components/AIProviderConfigItem'
+import { AIProviderConfigItem } from '@/app/(main)/_components/AIProviderConfigItem'
 import type { AIProvider } from '@/lib/providers/ai-config-provider'
 import {
   OPENAI_MODEL_OPTIONS,
@@ -55,13 +53,25 @@ export function ConfigurationPanel({
       const keys = await res.json()
 
       if (keys.openai) {
-        onChatGPTChange({ enabled: true, apiKey: keys.openai, model: OPENAI_DEFAULT_MODEL })
+        onChatGPTChange({
+          enabled: true,
+          apiKey: keys.openai,
+          model: OPENAI_DEFAULT_MODEL,
+        })
       }
       if (keys.gemini) {
-        onGeminiChange({ enabled: true, apiKey: keys.gemini, model: GEMINI_DEFAULT_MODEL })
+        onGeminiChange({
+          enabled: true,
+          apiKey: keys.gemini,
+          model: GEMINI_DEFAULT_MODEL,
+        })
       }
       if (keys.claude) {
-        onClaudeChange({ enabled: true, apiKey: keys.claude, model: CLAUDE_DEFAULT_MODEL })
+        onClaudeChange({
+          enabled: true,
+          apiKey: keys.claude,
+          model: CLAUDE_DEFAULT_MODEL,
+        })
       }
     } catch {
       // API 호출 실패 시 무시

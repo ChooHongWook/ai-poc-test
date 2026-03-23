@@ -13,7 +13,9 @@ const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? ''
 
 // @MX:ANCHOR: app/page.tsx에서 호출되는 핵심 API 함수
 // @MX:REASON: MSW 인터셉터와 실제 Route Handler 모두를 통해 처리되는 단일 진입점
-export async function generateOutput(params: GenerateParams): Promise<GenerateResult> {
+export async function generateOutput(
+  params: GenerateParams,
+): Promise<GenerateResult> {
   const response = await fetch(`${BASE_URL}/api/generate`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

@@ -44,7 +44,10 @@ export const GEMINI_MODEL_OPTIONS: ModelOption[] = [
   { value: GEMINI_MODELS.GEMINI_2_5_PRO, label: 'Gemini 2.5 Pro' },
   { value: GEMINI_MODELS.GEMINI_2_5_FLASH, label: 'Gemini 2.5 Flash' },
   { value: GEMINI_MODELS.GEMINI_2_0_FLASH, label: 'Gemini 2.0 Flash' },
-  { value: GEMINI_MODELS.GEMINI_2_0_FLASH_LITE, label: 'Gemini 2.0 Flash Lite' },
+  {
+    value: GEMINI_MODELS.GEMINI_2_0_FLASH_LITE,
+    label: 'Gemini 2.0 Flash Lite',
+  },
 ]
 
 // ─── Anthropic Claude ────────────────────────────────────

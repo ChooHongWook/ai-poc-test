@@ -7,7 +7,11 @@ import { ChatGoogleGenerativeAI } from '@langchain/google-genai'
 import { ChatAnthropic } from '@langchain/anthropic'
 import type { ProviderConfig } from './types'
 import type { AiProviderConfigs } from '@/lib/types'
-import { OPENAI_DEFAULT_MODEL, GEMINI_DEFAULT_MODEL, CLAUDE_DEFAULT_MODEL } from '@/lib/constants/ai-models'
+import {
+  OPENAI_DEFAULT_MODEL,
+  GEMINI_DEFAULT_MODEL,
+  CLAUDE_DEFAULT_MODEL,
+} from '@/lib/constants/ai-models'
 
 /**
  * config에서 전달된 AI 설정을 기반으로 사용 가능한 AI 제공자 목록 반환
