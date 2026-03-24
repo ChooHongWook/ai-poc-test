@@ -3,7 +3,8 @@
 // @MX:REASON: API 라우트 핸들러에서 직접 호출하는 서비스 레이어 진입점
 
 import type { Document } from '@langchain/core/documents'
-import { HumanMessage, SystemMessage } from '@langchain/core/messages'
+import { StringOutputParser } from '@langchain/core/output_parsers'
+import { ChatPromptTemplate } from '@langchain/core/prompts'
 import type {
   AnalysisRequest,
   AnalysisResponse,
@@ -15,46 +16,71 @@ import type {
 const MAX_CONTENT_LENGTH = 12_000
 
 /**
- * Document 배열을 하나의 텍스트로 합치고 필요시 절단
- * 절단 여부를 함께 반환
+ * Document 배열의 pageContent를 절단 처리
+ * 총 길이가 임계값을 초과하면 절단 후 새 Document 배열 반환
  */
-function combineDocuments(documents: Document[]): {
-  text: string
+function truncateDocuments(documents: Document[]): {
+  documents: Document[]
   truncated: boolean
 } {
-  const fullText = documents.map((doc) => doc.pageContent).join('\n\n')
+  let totalLength = 0
+  const truncated: Document[] = []
 
-  if (fullText.length > MAX_CONTENT_LENGTH) {
-    return {
-      text: fullText.slice(0, MAX_CONTENT_LENGTH),
-      truncated: true,
+  for (const doc of documents) {
+    const remaining = MAX_CONTENT_LENGTH - totalLength
+    if (remaining <= 0) break
+
+    if (doc.pageContent.length <= remaining) {
+      truncated.push(doc)
+      totalLength += doc.pageContent.length
+    } else {
+      truncated.push({
+        ...doc,
+        pageContent: doc.pageContent.slice(0, remaining),
+      })
+      return { documents: truncated, truncated: true }
     }
   }
 
-  return { text: fullText, truncated: false }
+  return {
+    documents: truncated,
+    truncated: totalLength > MAX_CONTENT_LENGTH,
+  }
+}
+
+/**
+ * Document 배열을 하나의 텍스트로 결합
+ */
+function formatDocuments(documents: Document[]): string {
+  return documents.map((doc) => doc.pageContent).join('\n\n')
 }
 
 /**
  * 단일 AI 제공자로 문서 분석 수행
- * schema가 있으면 구조화 출력, 없으면 텍스트 출력
+ * LCEL pipe 체인으로 prompt → model → parser 구성
  */
 async function analyzeWithProvider(
   provider: ProviderConfig,
-  documentText: string,
+  documents: Document[],
   systemPrompt: string,
   userPrompt: string,
   schema?: AnalysisRequest['schema'],
 ): Promise<ProviderResult> {
-  const messages = [
-    new SystemMessage(systemPrompt),
-    new HumanMessage(`${userPrompt}\n\n${documentText}`),
-  ]
+  const context = formatDocuments(documents)
+  const prompt = ChatPromptTemplate.fromMessages([
+    ['system', `{systemPrompt}\n\n{context}`],
+    ['human', '{input}'],
+  ])
 
   try {
     if (schema) {
-      // Zod 스키마 제공 시 구조화 출력 사용
-      const structuredModel = provider.model.withStructuredOutput(schema)
-      const result = await structuredModel.invoke(messages)
+      // 구조화 출력: prompt → structuredModel (function calling)
+      const chain = prompt.pipe(provider.model.withStructuredOutput(schema))
+      const result = await chain.invoke({
+        systemPrompt,
+        input: userPrompt,
+        context,
+      })
 
       return {
         provider: provider.name,
@@ -62,23 +88,18 @@ async function analyzeWithProvider(
         structuredOutput: result as Record<string, unknown>,
       }
     } else {
-      // 일반 텍스트 출력
-      const rawResult = await provider.model.invoke(messages)
-
-      // 응답에서 텍스트 추출 (AIMessage 또는 string 형태)
-      const content =
-        typeof rawResult === 'string'
-          ? rawResult
-          : typeof rawResult === 'object' &&
-              rawResult !== null &&
-              'content' in rawResult
-            ? String((rawResult as { content: unknown }).content)
-            : String(rawResult)
+      // 일반 텍스트 출력: prompt → model → StringOutputParser
+      const chain = prompt.pipe(provider.model).pipe(new StringOutputParser())
+      const result = await chain.invoke({
+        systemPrompt,
+        input: userPrompt,
+        context,
+      })
 
       return {
         provider: provider.name,
         success: true,
-        content,
+        content: result,
       }
     }
   } catch (error) {
@@ -110,15 +131,15 @@ export async function analyzeDocuments(
     return { results: [] }
   }
 
-  // 문서 텍스트 합치기 및 절단 처리
-  const { text: documentText, truncated } = combineDocuments(documents)
+  // 문서 절단 처리
+  const { documents: truncatedDocs, truncated } = truncateDocuments(documents)
 
   // 모든 제공자에 대해 동시 분석 실행
   const settledResults = await Promise.allSettled(
     providers.map((provider) =>
       analyzeWithProvider(
         provider,
-        documentText,
+        truncatedDocs,
         systemPrompt,
         userPrompt,
         schema,
