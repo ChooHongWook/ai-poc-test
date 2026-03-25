@@ -69,18 +69,16 @@ async function analyzeWithProvider(
   const context = formatDocuments(documents)
   const prompt = ChatPromptTemplate.fromMessages([
     ['system', `{systemPrompt}\n\n{context}`],
-    ['human', '{input}'],
+    ['human', '{userPrompt}'],
   ])
+
+  const invokeArgs = { systemPrompt, userPrompt, context }
 
   try {
     if (schema) {
       // 구조화 출력: prompt → structuredModel (function calling)
       const chain = prompt.pipe(provider.model.withStructuredOutput(schema))
-      const result = await chain.invoke({
-        systemPrompt,
-        input: userPrompt,
-        context,
-      })
+      const result = await chain.invoke(invokeArgs)
 
       return {
         provider: provider.name,
@@ -90,11 +88,7 @@ async function analyzeWithProvider(
     } else {
       // 일반 텍스트 출력: prompt → model → StringOutputParser
       const chain = prompt.pipe(provider.model).pipe(new StringOutputParser())
-      const result = await chain.invoke({
-        systemPrompt,
-        input: userPrompt,
-        context,
-      })
+      const result = await chain.invoke(invokeArgs)
 
       return {
         provider: provider.name,
