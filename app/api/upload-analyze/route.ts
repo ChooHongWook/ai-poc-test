@@ -5,6 +5,8 @@
 import { NextResponse } from 'next/server'
 import { loadDocument } from '@/lib/langchain/document-loader'
 import { analyzeDocuments } from '@/lib/langchain/analysis-chain'
+import { createProviders } from '@/lib/langchain/ai-provider-factory'
+import { jsonSchemaToZod } from '@/lib/langchain/schema-converter'
 import { UnsupportedFileTypeError } from '@/lib/langchain/types'
 import { getHistoryItem, getOutputs } from './_utils'
 import { validateUploadRequest } from './_validate'
@@ -13,7 +15,11 @@ export async function POST(request: Request) {
   const validation = await validateUploadRequest(request)
   if (!validation.success) return validation.response
 
-  const { files, config, providers, schema } = validation.data
+  const { files, config } = validation.data
+  const { chatgpt, gemini, claude } = config
+
+  const providers = createProviders({ chatgpt, gemini, claude })
+  const schema = config.schema ? jsonSchemaToZod(config.schema) : undefined
 
   try {
     // 모든 파일을 Document[]로 변환

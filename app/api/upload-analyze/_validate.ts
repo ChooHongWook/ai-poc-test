@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createProviders } from '@/lib/langchain/ai-provider-factory'
-import type { ProviderConfig } from '@/lib/langchain/types'
 import type { UploadAnalyzeConfig } from '@/lib/types'
-import { jsonSchemaToZod } from '@/lib/langchain/schema-converter'
-import type { ZodTypeAny } from 'zod'
 
 // 파일 크기 제한: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -11,8 +7,6 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024
 interface ValidatedRequest {
   files: File[]
   config: UploadAnalyzeConfig
-  providers: ProviderConfig[]
-  schema?: ZodTypeAny
 }
 
 type ValidationResult =
@@ -49,9 +43,6 @@ export async function validateUploadRequest(
     typeof configRaw === 'string' ? configRaw : '{}',
   ) as UploadAnalyzeConfig
 
-  // JSON Schema 문자열 → Zod 스키마 변환
-  const schema = config.schema ? jsonSchemaToZod(config.schema) : undefined
-
   // 파일 유효성 검사
   for (const file of files) {
     if (file.size === 0) {
@@ -74,10 +65,13 @@ export async function validateUploadRequest(
     }
   }
 
-  // AI 제공자 생성 및 검사
+  // AI 제공자 설정 유효성 검사 (인스턴스 생성은 호출부에서 수행)
   const { chatgpt, gemini, claude } = config
-  const providers = createProviders({ chatgpt, gemini, claude })
-  if (providers.length === 0) {
+  const hasProvider =
+    (chatgpt?.enabled && chatgpt?.apiKey) ||
+    (gemini?.enabled && gemini?.apiKey) ||
+    (claude?.enabled && claude?.apiKey)
+  if (!hasProvider) {
     return {
       success: false,
       response: NextResponse.json(
@@ -87,5 +81,5 @@ export async function validateUploadRequest(
     }
   }
 
-  return { success: true, data: { files, config, providers, schema } }
+  return { success: true, data: { files, config } }
 }
