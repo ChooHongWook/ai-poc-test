@@ -12,6 +12,13 @@ const PROVIDER_KEY_MAP: Record<string, keyof OutputMap> = {
   ChatAnthropic: 'claudeOutput',
 }
 
+/** 객체의 모든 value를 문자열로 변환한다. */
+function getStringifyValues(
+  obj: Record<string, unknown>,
+): Record<string, string> {
+  return Object.fromEntries(Object.entries(obj).map(([k, v]) => [k, String(v)]))
+}
+
 /**
  * ProviderResult 배열을 AIOutput 형태의 OutputMap으로 변환한다.
  */
@@ -25,12 +32,7 @@ export function getOutputs(results: ProviderResult[]): OutputMap {
     if (result.success) {
       // 구조화 출력 또는 텍스트를 Record<string, string>으로 변환
       const data: Record<string, string> = result.structuredOutput
-        ? Object.fromEntries(
-            Object.entries(result.structuredOutput).map(([k, v]) => [
-              k,
-              String(v),
-            ]),
-          )
+        ? getStringifyValues(result.structuredOutput)
         : { 분석결과: result.content ?? '' }
 
       outputs[key] = { data, generated: true }
@@ -59,9 +61,8 @@ export function getHistoryItem(
     timestamp: new Date(),
     systemPrompt: config.systemPrompt,
     userPrompt:
-      config.userPrompt ||
-      `[파일 분석] ${files.map((f) => f.name).join(', ')}`,
-    schema: config.schema,
+      config.userPrompt || `[파일 분석] ${files.map((f) => f.name).join(', ')}`,
+    schema: config.schema || '',
     inputFields: files.map((file, i) => ({
       id: `file-${i}`,
       label: file.name,
