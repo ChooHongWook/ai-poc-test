@@ -13,7 +13,7 @@ export async function POST(request: Request) {
   const validation = await validateUploadRequest(request)
   if (!validation.success) return validation.response
 
-  const { files, config, providers } = validation.data
+  const { files, config, providers, schema } = validation.data
 
   try {
     // 모든 파일을 Document[]로 변환
@@ -36,6 +36,7 @@ export async function POST(request: Request) {
       providers,
       systemPrompt: config.systemPrompt || undefined,
       userPrompt: config.userPrompt || undefined,
+      schema,
     })
 
     // ProviderResult를 AIOutput 형태로 변환
@@ -49,7 +50,6 @@ export async function POST(request: Request) {
       geminiOutput: outputs.geminiOutput,
       claudeOutput: outputs.claudeOutput,
       historyItem,
-      ...(analysisResponse.truncated ? { truncated: true } : {}),
     })
   } catch (error) {
     if (error instanceof UnsupportedFileTypeError) {

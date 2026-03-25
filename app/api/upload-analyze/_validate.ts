@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createProviders } from '@/lib/langchain/ai-provider-factory'
 import type { ProviderConfig } from '@/lib/langchain/types'
 import type { UploadAnalyzeConfig } from '@/lib/types'
+import { jsonSchemaToZod } from '@/lib/langchain/schema-converter'
+import type { ZodTypeAny } from 'zod'
 
 // 파일 크기 제한: 10MB
 const MAX_FILE_SIZE = 10 * 1024 * 1024
@@ -10,6 +12,7 @@ interface ValidatedRequest {
   files: File[]
   config: UploadAnalyzeConfig
   providers: ProviderConfig[]
+  schema?: ZodTypeAny
 }
 
 type ValidationResult =
@@ -46,6 +49,9 @@ export async function validateUploadRequest(
     typeof configRaw === 'string' ? configRaw : '{}',
   ) as UploadAnalyzeConfig
 
+  // JSON Schema 문자열 → Zod 스키마 변환
+  const schema = config.schema ? jsonSchemaToZod(config.schema) : undefined
+
   // 파일 유효성 검사
   for (const file of files) {
     if (file.size === 0) {
@@ -81,5 +87,5 @@ export async function validateUploadRequest(
     }
   }
 
-  return { success: true, data: { files, config, providers } }
+  return { success: true, data: { files, config, providers, schema } }
 }

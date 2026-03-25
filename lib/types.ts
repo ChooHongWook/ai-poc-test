@@ -39,5 +39,5 @@ export interface AiProviderConfigs {
 export interface UploadAnalyzeConfig extends AiProviderConfigs {
   systemPrompt: string
   userPrompt: string
-  schema: string
+  schema?: string
 }
