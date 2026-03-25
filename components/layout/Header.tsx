@@ -21,8 +21,8 @@ const navLinks = [
 
 // 파일 분석 서브 메뉴
 const fileAnalysisLinks = [
-  { href: '/upload-test', label: '저용량 파일 분석' },
-  { href: '/upload-test-large', label: '대용량 파일 분석' },
+  { href: '/upload-test', label: '기본 파일 분석' },
+  { href: '/upload-test-large/files-api', label: '대용량 - Files API' },
 ]
 
 export default function Header() {
@@ -35,15 +35,16 @@ export default function Header() {
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
 
-  // 파일 분석 페이지 활성 여부
+  // 파일 분석 페이지 활성 여부 (하위 경로 포함)
   const isFileAnalysisActive = fileAnalysisLinks.some(
-    (link) => pathname === link.href,
+    (link) => pathname === link.href || pathname.startsWith(link.href + '/'),
   )
 
   // 현재 선택된 파일 분석 메뉴 라벨
   const currentFileAnalysisLabel =
-    fileAnalysisLinks.find((link) => pathname === link.href)?.label ??
-    '파일 분석 테스트'
+    fileAnalysisLinks.find(
+      (link) => pathname === link.href || pathname.startsWith(link.href + '/'),
+    )?.label ?? '파일 분석 테스트'
 
   return (
     <header className="bg-card border-b">
@@ -95,7 +96,10 @@ export default function Header() {
                       key={link.href}
                       onClick={() => router.push(link.href)}
                       className={
-                        pathname === link.href ? 'bg-accent font-medium' : ''
+                        pathname === link.href ||
+                        pathname.startsWith(link.href + '/')
+                          ? 'bg-accent font-medium'
+                          : ''
                       }
                     >
                       {link.label}
