@@ -1,8 +1,50 @@
 import type { AIOutput, HistoryItem, UploadAnalyzeConfig } from '@/lib/types'
+import type { ProviderResult } from '@/lib/langchain/types'
 
-type OutputMap = Partial<
+export type OutputMap = Partial<
   Record<'chatgptOutput' | 'geminiOutput' | 'claudeOutput', AIOutput>
 >
+
+// ProviderResult.provider 이름과 OutputMap 키 매핑
+const PROVIDER_KEY_MAP: Record<string, keyof OutputMap> = {
+  ChatOpenAI: 'chatgptOutput',
+  ChatGoogleGenerativeAI: 'geminiOutput',
+  ChatAnthropic: 'claudeOutput',
+}
+
+/**
+ * ProviderResult 배열을 AIOutput 형태의 OutputMap으로 변환한다.
+ */
+export function getOutputs(results: ProviderResult[]): OutputMap {
+  const outputs: OutputMap = {}
+
+  for (const result of results) {
+    const key = PROVIDER_KEY_MAP[result.provider]
+    if (!key) continue
+
+    if (result.success) {
+      // 구조화 출력 또는 텍스트를 Record<string, string>으로 변환
+      const data: Record<string, string> = result.structuredOutput
+        ? Object.fromEntries(
+            Object.entries(result.structuredOutput).map(([k, v]) => [
+              k,
+              String(v),
+            ]),
+          )
+        : { 분석결과: result.content ?? '' }
+
+      outputs[key] = { data, generated: true }
+    } else {
+      // 실패 시 에러 메시지를 데이터로 포함
+      outputs[key] = {
+        data: { 오류: result.error ?? '분석 중 오류가 발생했습니다' },
+        generated: true,
+      }
+    }
+  }
+
+  return outputs
+}
 
 /**
  * 분석 결과와 요청 정보를 기반으로 HistoryItem을 생성한다.

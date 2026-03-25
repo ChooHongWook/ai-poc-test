@@ -6,19 +6,8 @@ import { NextResponse } from 'next/server'
 import { loadDocument } from '@/lib/langchain/document-loader'
 import { analyzeDocuments } from '@/lib/langchain/analysis-chain'
 import { UnsupportedFileTypeError } from '@/lib/langchain/types'
-import type { AIOutput } from '@/lib/types'
-import { getHistoryItem } from './_utils'
+import { getHistoryItem, getOutputs } from './_utils'
 import { validateUploadRequest } from './_validate'
-
-// ProviderResult.provider 이름과 UploadAnalyzeResult 키 매핑
-const PROVIDER_KEY_MAP: Record<
-  string,
-  'chatgptOutput' | 'geminiOutput' | 'claudeOutput'
-> = {
-  ChatOpenAI: 'chatgptOutput',
-  ChatGoogleGenerativeAI: 'geminiOutput',
-  ChatAnthropic: 'claudeOutput',
-}
 
 export async function POST(request: Request) {
   const validation = await validateUploadRequest(request)
@@ -50,34 +39,7 @@ export async function POST(request: Request) {
     })
 
     // ProviderResult를 AIOutput 형태로 변환
-    const outputs: Partial<
-      Record<'chatgptOutput' | 'geminiOutput' | 'claudeOutput', AIOutput>
-    > = {}
-
-    for (const result of analysisResponse.results) {
-      const key = PROVIDER_KEY_MAP[result.provider]
-      if (!key) continue
-
-      if (result.success) {
-        // 구조화 출력 또는 텍스트를 Record<string, string>으로 변환
-        const data: Record<string, string> = result.structuredOutput
-          ? Object.fromEntries(
-              Object.entries(result.structuredOutput).map(([k, v]) => [
-                k,
-                String(v),
-              ]),
-            )
-          : { 분석결과: result.content ?? '' }
-
-        outputs[key] = { data, generated: true }
-      } else {
-        // 실패 시 에러 메시지를 데이터로 포함
-        outputs[key] = {
-          data: { 오류: result.error ?? '분석 중 오류가 발생했습니다' },
-          generated: true,
-        }
-      }
-    }
+    const outputs = getOutputs(analysisResponse.results)
 
     // 히스토리 아이템 생성
     const historyItem = getHistoryItem(files, config, outputs)
