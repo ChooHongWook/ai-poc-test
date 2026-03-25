@@ -6,7 +6,8 @@ import { NextResponse } from 'next/server'
 import { loadDocument } from '@/lib/langchain/document-loader'
 import { analyzeDocuments } from '@/lib/langchain/analysis-chain'
 import { UnsupportedFileTypeError } from '@/lib/langchain/types'
-import type { AIOutput, HistoryItem } from '@/lib/types'
+import type { AIOutput } from '@/lib/types'
+import { getHistoryItem } from './_utils'
 import { validateUploadRequest } from './_validate'
 
 // ProviderResult.provider 이름과 UploadAnalyzeResult 키 매핑
@@ -79,28 +80,7 @@ export async function POST(request: Request) {
     }
 
     // 히스토리 아이템 생성
-    const historyItem: HistoryItem = {
-      id: Date.now().toString(),
-      timestamp: new Date(),
-      systemPrompt: config.systemPrompt,
-      userPrompt:
-        config.userPrompt ||
-        `[파일 분석] ${files.map((f) => f.name).join(', ')}`,
-      schema: config.schema,
-      inputFields: files.map((file, i) => ({
-        id: `file-${i}`,
-        label: file.name,
-        value: `${(file.size / 1024).toFixed(1)}KB`,
-      })),
-      chatgptOutput: outputs.chatgptOutput,
-      geminiOutput: outputs.geminiOutput,
-      claudeOutput: outputs.claudeOutput,
-      models: {
-        ...(outputs.chatgptOutput ? { chatgpt: config.chatgpt.model } : {}),
-        ...(outputs.geminiOutput ? { gemini: config.gemini.model } : {}),
-        ...(outputs.claudeOutput ? { claude: config.claude.model } : {}),
-      },
-    }
+    const historyItem = getHistoryItem(files, config, outputs)
 
     return NextResponse.json({
       chatgptOutput: outputs.chatgptOutput,
