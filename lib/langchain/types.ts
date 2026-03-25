@@ -33,7 +33,6 @@ export interface ProviderConfig {
 export interface ProviderResult {
   provider: string
   success: boolean
-  content?: string
   structuredOutput?: Record<string, unknown>
   error?: string
 }

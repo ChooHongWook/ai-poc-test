@@ -30,10 +30,10 @@ export function getOutputs(results: ProviderResult[]): OutputMap {
     if (!key) continue
 
     if (result.success) {
-      // 구조화 출력 또는 텍스트를 Record<string, string>으로 변환
-      const data: Record<string, string> = result.structuredOutput
-        ? getStringifyValues(result.structuredOutput)
-        : { 분석결과: result.content ?? '' }
+      // 구조화 출력을 Record<string, string>으로 변환
+      const data: Record<string, string> = getStringifyValues(
+        result.structuredOutput ?? { 분석결과: '없음' },
+      )
 
       outputs[key] = { data, generated: true }
     } else {

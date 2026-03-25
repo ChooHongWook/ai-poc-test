@@ -3,14 +3,19 @@
 // @MX:REASON: API 라우트 핸들러에서 직접 호출하는 서비스 레이어 진입점
 
 import type { Document } from '@langchain/core/documents'
-import { StringOutputParser } from '@langchain/core/output_parsers'
 import { ChatPromptTemplate } from '@langchain/core/prompts'
+import { z } from 'zod'
 import type {
   AnalysisRequest,
   AnalysisResponse,
   ProviderConfig,
   ProviderResult,
 } from './types'
+
+// schema 미지정 시 사용하는 기본 스키마
+const DEFAULT_SCHEMA = z.object({
+  분석결과: z.string().describe('분석 결과 텍스트'),
+})
 
 // 토큰 절단 임계값 (약 12,000자 = 약 4,000 토큰)
 const MAX_CONTENT_LENGTH = 12_000
@@ -75,26 +80,20 @@ async function analyzeWithProvider(
   const invokeArgs = { systemPrompt, userPrompt, context }
 
   try {
-    if (schema) {
-      // 구조화 출력: prompt → structuredModel (function calling)
-      const chain = prompt.pipe(provider.model.withStructuredOutput(schema))
-      const result = await chain.invoke(invokeArgs)
+    // 구조화 출력: prompt → structuredModel (function calling)
+    // schema 미지정 시 DEFAULT_SCHEMA 사용 → { 분석결과: string }
+    // NOTE: withStructuredOutput은 function calling 지원 모델만 사용 가능
+    //       미지원 모델은 prompt → model → StringOutputParser 체인으로 분기 필요
+    const effectiveSchema = schema ?? DEFAULT_SCHEMA
+    const chain = prompt.pipe(
+      provider.model.withStructuredOutput(effectiveSchema),
+    )
+    const result = await chain.invoke(invokeArgs)
 
-      return {
-        provider: provider.name,
-        success: true,
-        structuredOutput: result as Record<string, unknown>,
-      }
-    } else {
-      // 일반 텍스트 출력: prompt → model → StringOutputParser
-      const chain = prompt.pipe(provider.model).pipe(new StringOutputParser())
-      const result = await chain.invoke(invokeArgs)
-
-      return {
-        provider: provider.name,
-        success: true,
-        content: result,
-      }
+    return {
+      provider: provider.name,
+      success: true,
+      structuredOutput: result as Record<string, unknown>,
     }
   } catch (error) {
     return {
