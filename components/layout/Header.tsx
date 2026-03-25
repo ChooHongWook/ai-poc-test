@@ -1,27 +1,49 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Sparkles, Moon, Sun } from 'lucide-react'
+import { Sparkles, Moon, Sun, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 // 헤더 네비게이션 링크 목록
 const navLinks = [
   { href: '/', label: '홈' },
-  { href: '/upload-test', label: '파일 분석 테스트' },
   { href: '/history', label: '히스토리' },
   { href: '/settings', label: '설정' },
 ]
 
+// 파일 분석 서브 메뉴
+const fileAnalysisLinks = [
+  { href: '/upload-test', label: '저용량 파일 분석' },
+  { href: '/upload-test-large', label: '대용량 파일 분석' },
+]
+
 export default function Header() {
   const pathname = usePathname()
+  const router = useRouter()
   const { theme, setTheme } = useTheme()
 
   // 다크/라이트 모드 토글
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark')
   }
+
+  // 파일 분석 페이지 활성 여부
+  const isFileAnalysisActive = fileAnalysisLinks.some(
+    (link) => pathname === link.href,
+  )
+
+  // 현재 선택된 파일 분석 메뉴 라벨
+  const currentFileAnalysisLabel =
+    fileAnalysisLinks.find((link) => pathname === link.href)?.label ??
+    '파일 분석 테스트'
 
   return (
     <header className="bg-card border-b">
@@ -54,6 +76,33 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
+
+              {/* 파일 분석 드롭다운 */}
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-sm transition-colors ${
+                    isFileAnalysisActive
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                  }`}
+                >
+                  {currentFileAnalysisLabel}
+                  <ChevronDown className="h-3 w-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {fileAnalysisLinks.map((link) => (
+                    <DropdownMenuItem
+                      key={link.href}
+                      onClick={() => router.push(link.href)}
+                      className={
+                        pathname === link.href ? 'bg-accent font-medium' : ''
+                      }
+                    >
+                      {link.label}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </nav>
 
             {/* 다크모드 토글 버튼 */}
