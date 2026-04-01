@@ -1,0 +1,25 @@
+# pgvector PostgreSQL - RAG 벡터 검색용
+version: '3.8'
+
+services:
+  pgvector:
+    image: pgvector/pgvector:pg16
+    container_name: ai-poc-pgvector
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-ai_poc}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ai_poc_password}
+      POSTGRES_DB: ${POSTGRES_DB:-ai_poc_rag}
+    volumes:
+      - pgvector_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-ai_poc}']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgvector_data:
