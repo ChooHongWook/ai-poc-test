@@ -1,5 +1,7 @@
 ---
-paths: "**/.claude/agents/**,**/.moai/worktrees/**"
+paths:
+  - "**/.claude/agents/**"
+  - "**/.moai/worktrees/**"
 ---
 
 # Worktree Integration Guide

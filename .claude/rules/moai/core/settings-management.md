@@ -1,5 +1,9 @@
 ---
-paths: "**/.moai/config/**,**/.mcp.json,**/.claude/settings.json,**/.claude/settings.local.json"
+paths:
+  - "**/.moai/config/**"
+  - "**/.mcp.json"
+  - "**/.claude/settings.json"
+  - "**/.claude/settings.local.json"
 ---
 
 # Settings Management

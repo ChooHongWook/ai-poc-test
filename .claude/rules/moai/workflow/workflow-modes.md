@@ -1,5 +1,7 @@
 ---
-paths: "**/.moai/specs/**,**/.moai/config/sections/quality.yaml"
+paths:
+  - "**/.moai/specs/**"
+  - "**/.moai/config/sections/quality.yaml"
 ---
 
 # Workflow Modes

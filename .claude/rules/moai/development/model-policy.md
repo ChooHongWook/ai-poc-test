@@ -1,5 +1,6 @@
 ---
-paths: "**/.claude/agents/**"
+paths:
+  - "**/.claude/agents/**"
 ---
 
 # Model Policy

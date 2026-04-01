@@ -1,5 +1,7 @@
 ---
-paths: "**/.claude/agents/**,**/.claude/hooks/**"
+paths:
+  - "**/.claude/agents/**"
+  - "**/.claude/hooks/**"
 ---
 
 # Agent Hooks

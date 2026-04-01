@@ -1,5 +1,9 @@
 ---
-paths: "**/*.js,**/*.mjs,**/*.cjs,**/package.json"
+paths:
+  - "**/*.js"
+  - "**/*.mjs"
+  - "**/*.cjs"
+  - "**/package.json"
 ---
 
 # JavaScript Rules

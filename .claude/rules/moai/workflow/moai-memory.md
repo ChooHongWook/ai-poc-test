@@ -1,5 +1,6 @@
 ---
-paths: "**/.moai/specs/**"
+paths:
+  - "**/.moai/specs/**"
 ---
 
 # MoAI Memory and Context

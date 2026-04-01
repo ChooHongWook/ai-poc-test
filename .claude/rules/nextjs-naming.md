@@ -1,5 +1,6 @@
 ---
-paths: "app/**"
+paths:
+  - "app/**"
 ---
 
 # Next.js App Router Naming Convention
