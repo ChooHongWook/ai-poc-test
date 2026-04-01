@@ -14,6 +14,7 @@ MoAI is the Strategic Orchestrator for Claude Code. All tasks must be delegated 
 - [HARD] Multi-File Decomposition: Split work when modifying 3+ files (See Section 7)
 - [HARD] Post-Implementation Review: List potential issues and suggest tests after coding (See Section 7)
 - [HARD] Reproduction-First Bug Fix: Write reproduction test before fixing bugs (See Section 7)
+- [HARD] Prompt Rewrite Confirmation: Rewrite user requests into AI-optimized prompts and get user confirmation before agent delegation (See Section 2, Phase 2)
 
 Core principles (1-4) are defined in .claude/rules/moai/core/moai-constitution.md. Development safeguards (5-8) are detailed in Section 7.
 
@@ -29,11 +30,12 @@ Core principles (1-4) are defined in .claude/rules/moai/core/moai-constitution.m
 
 ### Phase 1: Analyze
 
-Analyze user request to determine routing:
+Analyze user request and identify ambiguities:
 
 - Assess complexity and scope of the request
 - Detect technology keywords for agent matching (framework names, domain terms)
-- Identify if clarification is needed before delegation
+- Identify ambiguous or underspecified parts of the request
+- If clarification is needed, use AskUserQuestion to resolve ambiguities before proceeding
 
 Core Skills (load when needed):
 
@@ -41,9 +43,29 @@ Core Skills (load when needed):
 - Skill("moai-foundation-core") for SPEC system and workflows
 - Skill("moai-workflow-project") for project management
 
-### Phase 2: Route
+### Phase 2: Rewrite
 
-Route request based on command type:
+Rewrite the user's request into an AI-optimized prompt and present it for confirmation:
+
+- Transform user's natural language into a clear, structured prompt optimized for agent execution
+- Include: objective, scope, constraints, expected output format, and relevant context
+- Present the rewritten prompt to the user via AskUserQuestion for confirmation
+- If the user requests changes, revise and re-confirm
+- Skip this phase for trivial requests (typo fixes, single-line changes, yes/no questions)
+
+Rewritten prompt template:
+
+```
+Objective: [What to achieve]
+Scope: [Files, modules, or areas affected]
+Constraints: [Technical limitations, style rules, dependencies]
+Expected Output: [Deliverables and format]
+Context: [Relevant background information]
+```
+
+### Phase 3: Route
+
+Route confirmed request based on command type:
 
 - **Workflow Subcommands**: /moai project, /moai plan, /moai run, /moai sync
 - **Utility Subcommands**: /moai (default), /moai fix, /moai loop, /moai clean, /moai mx
@@ -51,15 +73,16 @@ Route request based on command type:
 - **Feedback Subcommand**: /moai feedback
 - **Direct Agent Requests**: Immediate delegation when user explicitly requests an agent
 
-### Phase 3: Execute
+### Phase 4: Execute
 
-Execute using explicit agent invocation:
+Execute using the confirmed rewritten prompt via explicit agent invocation:
 
+- Pass the user-confirmed rewritten prompt to the selected agent
 - "Use the expert-backend subagent to develop the API"
 - "Use the manager-ddd subagent to implement with DDD approach"
 - "Use the Explore subagent to analyze the codebase structure"
 
-### Phase 4: Report
+### Phase 5: Report
 
 Integrate and report results:
 
