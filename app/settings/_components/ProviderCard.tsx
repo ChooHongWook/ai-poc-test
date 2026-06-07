@@ -2,6 +2,7 @@
 
 // AI 제공자 설정 카드 컴포넌트 - API Key 테스트 기능 포함
 // @MX:NOTE: quick 모드(인증 확인만)와 ping 모드(실제 모델 호출) 지원
+// @MX:NOTE: 모델 체크박스는 항상 표시 (모드와 무관)
 
 import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
@@ -18,8 +19,13 @@ import {
   GEMINI_MODEL_OPTIONS,
   CLAUDE_MODEL_OPTIONS,
 } from '@/lib/constants/ai-models'
-import { isTestDisabled, toggleModel } from '@/app/settings/_lib/test-key-ui'
+import {
+  isTestDisabled,
+  toggleModel,
+  addCustomModel,
+} from '@/app/settings/_lib/test-key-ui'
 import { TestResultPanel } from './TestResultPanel'
+import { SelectedModelsSummary } from './SelectedModelsSummary'
 import type { TestKeyResponse, Provider } from '@/app/api/test-key/_validate'
 
 interface ProviderCardProps {
@@ -31,7 +37,9 @@ interface ProviderCardProps {
  * AI 제공자 설정 카드
  * - API Key 입력 및 활성화 토글
  * - quick/ping 모드 선택
- * - 모델 체크박스 목록 (ping 모드에서 표시)
+ * - 모델 체크박스 목록 (항상 표시)
+ * - 기타(커스텀) 모델 추가: 텍스트 입력 + 추가 버튼 (Enter 지원)
+ * - 선택된 모델 요약 섹션: chip + × 제거
  * - Test 버튼 및 결과 표시
  */
 export function ProviderCard({ name, label }: ProviderCardProps) {
@@ -52,11 +60,29 @@ export function ProviderCard({ name, label }: ProviderCardProps) {
   const [loading, setLoading] = useState(false)
   const [testResult, setTestResult] = useState<TestKeyResponse | null>(null)
 
+  // 기타(커스텀) 모델 입력 상태
+  const [customModelInput, setCustomModelInput] = useState('')
+
   const disabled = isTestDisabled({
     enabled: state.enabled,
     apiKey: state.apiKey,
     loading,
   })
+
+  // 커스텀 모델 추가 핸들러
+  function handleAddCustomModel() {
+    const next = addCustomModel(selectedModels, customModelInput)
+    setSelectedModels(next)
+    setCustomModelInput('')
+  }
+
+  // Enter 키 핸들러
+  function handleCustomInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleAddCustomModel()
+    }
+  }
 
   // 테스트 버튼 핸들러
   async function handleTest() {
@@ -158,28 +184,55 @@ export function ProviderCard({ name, label }: ProviderCardProps) {
           </div>
         </div>
 
-        {/* ping 모드: 모델 체크박스 목록 */}
-        {testMode === 'ping' && (
-          <div className="space-y-2">
-            <Label>테스트할 모델 선택</Label>
-            <div className="grid grid-cols-2 gap-2">
-              {modelOptions.map((opt) => (
-                <label
-                  key={opt.value}
-                  className="flex items-center gap-2 text-sm"
-                >
-                  <Checkbox
-                    checked={selectedModels.includes(opt.value)}
-                    onCheckedChange={() =>
-                      setSelectedModels(toggleModel(selectedModels, opt.value))
-                    }
-                  />
-                  {opt.label}
-                </label>
-              ))}
-            </div>
+        {/* 모델 체크박스 목록 - 항상 표시 (모드와 무관) */}
+        <div className="space-y-2">
+          <Label>테스트할 모델 선택</Label>
+          <div className="grid grid-cols-2 gap-2">
+            {modelOptions.map((opt) => (
+              <label
+                key={opt.value}
+                className="flex items-center gap-2 text-sm"
+              >
+                <Checkbox
+                  checked={selectedModels.includes(opt.value)}
+                  onCheckedChange={() =>
+                    setSelectedModels(toggleModel(selectedModels, opt.value))
+                  }
+                />
+                {opt.label}
+              </label>
+            ))}
           </div>
-        )}
+        </div>
+
+        {/* 기타(커스텀) 모델 추가 */}
+        <div className="space-y-2">
+          <Label>기타 모델 직접 추가</Label>
+          <div className="flex gap-2">
+            <Input
+              placeholder="모델 ID를 직접 입력하세요"
+              value={customModelInput}
+              onChange={(e) => setCustomModelInput(e.target.value)}
+              onKeyDown={handleCustomInputKeyDown}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleAddCustomModel}
+            >
+              추가
+            </Button>
+          </div>
+        </div>
+
+        {/* 선택된 모델 요약 (빌트인 + 커스텀) */}
+        <SelectedModelsSummary
+          selected={selectedModels}
+          options={modelOptions}
+          onRemove={(value) =>
+            setSelectedModels(toggleModel(selectedModels, value))
+          }
+        />
 
         {/* Test 버튼 */}
         <Button

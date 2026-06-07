@@ -198,4 +198,126 @@ describe('ProviderCard', () => {
       })
     })
   })
+
+  // ── 새 기능 테스트 (RED 페이즈) ──────────────────────────────
+  describe('모델 체크박스 항상 표시', () => {
+    it('quick 모드에서도 모델 체크박스가 렌더링된다', () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      // quick 모드가 기본값이므로 체크박스가 즉시 보여야 함
+      const checkboxes = screen.getAllByRole('checkbox')
+      expect(checkboxes.length).toBeGreaterThan(0)
+    })
+
+    it('ping 모드에서도 모델 체크박스가 렌더링된다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+      const pingRadio = screen.getByRole('radio', { name: /ping/i })
+      await user.click(pingRadio)
+      const checkboxes = screen.getAllByRole('checkbox')
+      expect(checkboxes.length).toBeGreaterThan(0)
+    })
+  })
+
+  describe('기타(커스텀) 모델 추가', () => {
+    it('기타 입력창에 타이핑 후 추가 버튼 클릭 시 선택 요약에 모델이 나타난다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      const customInput = screen.getByPlaceholderText(/기타|직접 입력|모델 ID/i)
+      await user.type(customInput, 'my-custom-model')
+
+      const addButton = screen.getByRole('button', { name: /추가/i })
+      await user.click(addButton)
+
+      // 선택된 모델 요약 영역에 커스텀 모델이 나타나야 함
+      await waitFor(() => {
+        expect(screen.getByTestId('selected-models-summary')).toBeInTheDocument()
+        expect(screen.getByText('my-custom-model')).toBeInTheDocument()
+      })
+    })
+
+    it('Enter 키로도 커스텀 모델을 추가할 수 있다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      const customInput = screen.getByPlaceholderText(/기타|직접 입력|모델 ID/i)
+      await user.type(customInput, 'enter-model{Enter}')
+
+      await waitFor(() => {
+        expect(screen.getByText('enter-model')).toBeInTheDocument()
+      })
+    })
+
+    it('추가 후 입력창이 비워진다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      const customInput = screen.getByPlaceholderText(/기타|직접 입력|모델 ID/i)
+      await user.type(customInput, 'some-model')
+      await user.click(screen.getByRole('button', { name: /추가/i }))
+
+      await waitFor(() => {
+        expect(customInput).toHaveValue('')
+      })
+    })
+
+    it('중복 커스텀 모델을 추가해도 두 번 나타나지 않는다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      const customInput = screen.getByPlaceholderText(/기타|직접 입력|모델 ID/i)
+      await user.type(customInput, 'dup-model')
+      await user.click(screen.getByRole('button', { name: /추가/i }))
+      await user.type(customInput, 'dup-model')
+      await user.click(screen.getByRole('button', { name: /추가/i }))
+
+      await waitFor(() => {
+        const chips = screen.getAllByText('dup-model')
+        expect(chips).toHaveLength(1)
+      })
+    })
+  })
+
+  describe('빌트인 모델 선택 후 요약 표시', () => {
+    it('빌트인 모델 체크박스 선택 시 요약 섹션에 해당 모델 label이 나타난다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      // GPT-4o 체크박스를 클릭 (label 텍스트로 찾기)
+      const gpt4oLabel = screen.getByText('GPT-4o')
+      await user.click(gpt4oLabel)
+
+      await waitFor(() => {
+        const summary = screen.getByTestId('selected-models-summary')
+        expect(summary).toBeInTheDocument()
+        // 요약 안에 GPT-4o 텍스트가 있어야 함
+        expect(summary).toHaveTextContent('GPT-4o')
+      })
+    })
+  })
+
+  describe('요약 섹션 × 제거 기능', () => {
+    it('요약 섹션의 × 버튼 클릭 시 해당 모델 chip이 제거된다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      // 커스텀 모델 추가
+      const customInput = screen.getByPlaceholderText(/기타|직접 입력|모델 ID/i)
+      await user.type(customInput, 'remove-me')
+      await user.click(screen.getByRole('button', { name: /추가/i }))
+
+      // chip이 나타날 때까지 기다림
+      await waitFor(() => {
+        expect(screen.getByText('remove-me')).toBeInTheDocument()
+      })
+
+      // × 버튼 클릭
+      const removeBtn = screen.getByRole('button', { name: /remove-me 제거|×/i })
+      await user.click(removeBtn)
+
+      await waitFor(() => {
+        expect(screen.queryByText('remove-me')).not.toBeInTheDocument()
+      })
+    })
+  })
 })
