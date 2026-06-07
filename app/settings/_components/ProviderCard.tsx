@@ -18,6 +18,7 @@ import {
   OPENAI_MODEL_OPTIONS,
   GEMINI_MODEL_OPTIONS,
   CLAUDE_MODEL_OPTIONS,
+  MODEL_SOURCE_DOCS,
 } from '@/lib/constants/ai-models'
 import {
   isTestDisabled,
@@ -53,6 +54,7 @@ export function ProviderCard({ name, label }: ProviderCardProps) {
   }
 
   const { state, setter, modelOptions } = providerMap[name]
+  const sourceDoc = MODEL_SOURCE_DOCS[name]
 
   // 테스트 상태
   const [testMode, setTestMode] = useState<'quick' | 'ping'>('quick')
@@ -203,6 +205,18 @@ export function ProviderCard({ name, label }: ProviderCardProps) {
               </label>
             ))}
           </div>
+          {/* 모델 목록 출처 공식 문서 링크 */}
+          <p className="text-xs text-muted-foreground">
+            모델 목록 출처:{' '}
+            <a
+              href={sourceDoc.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              {sourceDoc.label}
+            </a>
+          </p>
         </div>
 
         {/* 기타(커스텀) 모델 추가 */}

@@ -283,16 +283,28 @@ describe('ProviderCard', () => {
       render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
       const user = userEvent.setup()
 
-      // GPT-4o 체크박스를 클릭 (label 텍스트로 찾기)
-      const gpt4oLabel = screen.getByText('GPT-4o')
-      await user.click(gpt4oLabel)
+      // GPT-5.5 체크박스를 클릭 (label 텍스트로 찾기)
+      const gptLabel = screen.getByText('GPT-5.5')
+      await user.click(gptLabel)
 
       await waitFor(() => {
         const summary = screen.getByTestId('selected-models-summary')
         expect(summary).toBeInTheDocument()
-        // 요약 안에 GPT-4o 텍스트가 있어야 함
-        expect(summary).toHaveTextContent('GPT-4o')
+        // 요약 안에 GPT-5.5 텍스트가 있어야 함
+        expect(summary).toHaveTextContent('GPT-5.5')
       })
+    })
+  })
+
+  describe('모델 목록 출처 링크', () => {
+    it('공식 문서 출처 링크가 올바른 href로 렌더링된다', () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const link = screen.getByRole('link', { name: /OpenAI 공식 모델 문서/i })
+      expect(link).toHaveAttribute(
+        'href',
+        'https://developers.openai.com/api/docs/models',
+      )
+      expect(link).toHaveAttribute('target', '_blank')
     })
   })
 
