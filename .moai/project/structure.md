@@ -13,12 +13,21 @@ v2_ai-poc-test/
 │   ├── globals.css               # 통합 글로벌 스타일
 │   ├── page.tsx                  # / 메인 페이지 (문서 생성)
 │   ├── api/
-│   │   └── generate/
-│   │       └── route.ts          # POST /api/generate Route Handler
+│   │   ├── generate/
+│   │   │   └── route.ts          # POST /api/generate Route Handler
+│   │   └── test-key/
+│   │       ├── route.ts          # POST /api/test-key Route Handler (API key validation & model ping)
+│   │       ├── _validate.ts      # Zod schema for request validation
+│   │       └── _adapters.ts      # Provider-specific auth & ping adapters (LangChain integration)
 │   ├── history/
 │   │   └── page.tsx              # /history 생성 이력
 │   ├── settings/
-│   │   └── page.tsx              # /settings AI 제공자 설정
+│   │   ├── page.tsx              # /settings AI 제공자 설정
+│   │   ├── _components/          # Settings 페이지 전용 컴포넌트
+│   │   │   ├── ProviderCard.tsx  # Provider config UI with test button & inline results
+│   │   │   └── TestResultPanel.tsx # Test result display (auth-only / ping mode)
+│   │   └── _lib/
+│   │       └── test-key-ui.ts    # UI helpers (mode selection, status formatting)
 │   └── (main)/
 │       └── _components/          # 메인 페이지 전용 컴포넌트
 │           ├── ConfigurationPanel.tsx
