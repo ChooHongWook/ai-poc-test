@@ -40,9 +40,12 @@
 | 포매팅 | Prettier + prettier-plugin-tailwindcss | - |
 | 타입 체크 | TypeScript strict mode | - |
 | 테스트 프레임워크 | Vitest | ^4.1.0 |
-| 테스트 환경 | jsdom | ^26.1.0 |
-| 테스트 React | @vitejs/plugin-react | ^4.5.2 |
-| API Mocking | MSW (Mock Service Worker) | ^2.8.4 |
+| 테스트 환경 | jsdom | ^29.0.1 |
+| 테스트 React | @testing-library/react | ^16.3.2 |
+| 테스트 사용자 이벤트 | @testing-library/user-event | ^14.6.1 |
+| 테스트 Matcher | @testing-library/jest-dom | ^6.9.1 |
+| Vite React 플러그인 | @vitejs/plugin-react | ^6.0.1 |
+| API Mocking | MSW (Mock Service Worker) | ^2.12.14 |
 | Next.js 설정 | next.config.ts | - |
 
 ## 주요 패턴
