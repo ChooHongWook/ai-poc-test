@@ -10,48 +10,48 @@ export interface ModelOption {
 // https://developers.openai.com/api/docs/models (2026-06 기준 frontier 모델)
 // 그 외 이전 세대 모델은 설정 화면의 "기타" 직접 입력으로 사용 가능
 export const OPENAI_MODELS = {
-  GPT_5_5: 'gpt-5.5',
-  GPT_5_4: 'gpt-5.4',
-  GPT_5_4_MINI: 'gpt-5.4-mini',
-  GPT_5_4_NANO: 'gpt-5.4-nano',
+  GPT_5_5: { value: 'gpt-5.5', label: 'GPT-5.5' },
+  GPT_5_4: { value: 'gpt-5.4', label: 'GPT-5.4' },
+  GPT_5_4_MINI: { value: 'gpt-5.4-mini', label: 'GPT-5.4 mini' },
+  GPT_5_4_NANO: { value: 'gpt-5.4-nano', label: 'GPT-5.4 nano' },
 } as const
 
-export type OpenAIModel = (typeof OPENAI_MODELS)[keyof typeof OPENAI_MODELS]
+export type OpenAIModel = (typeof OPENAI_MODELS)[keyof typeof OPENAI_MODELS]['value']
 
-export const OPENAI_DEFAULT_MODEL: OpenAIModel = OPENAI_MODELS.GPT_5_4_MINI
+export const OPENAI_DEFAULT_MODEL: OpenAIModel = OPENAI_MODELS.GPT_5_4_MINI.value
 
 export const OPENAI_MODEL_OPTIONS: ModelOption[] = [
-  { value: OPENAI_MODELS.GPT_5_5, label: 'GPT-5.5' },
-  { value: OPENAI_MODELS.GPT_5_4, label: 'GPT-5.4' },
-  { value: OPENAI_MODELS.GPT_5_4_MINI, label: 'GPT-5.4 mini' },
-  { value: OPENAI_MODELS.GPT_5_4_NANO, label: 'GPT-5.4 nano' },
+  OPENAI_MODELS.GPT_5_5,
+  OPENAI_MODELS.GPT_5_4,
+  OPENAI_MODELS.GPT_5_4_MINI,
+  OPENAI_MODELS.GPT_5_4_NANO,
 ]
 
 // ─── Google Gemini ───────────────────────────────────────
 // 모델 목록 출처: Google Gemini API 공식 문서
 // https://ai.google.dev/gemini-api/docs/models (2026-06 기준 stable + preview)
 export const GEMINI_MODELS = {
-  GEMINI_3_5_FLASH: 'gemini-3.5-flash',
-  GEMINI_3_1_PRO_PREVIEW: 'gemini-3.1-pro-preview',
-  GEMINI_3_1_FLASH_LITE: 'gemini-3.1-flash-lite',
-  GEMINI_3_FLASH_PREVIEW: 'gemini-3-flash-preview',
-  GEMINI_2_5_PRO: 'gemini-2.5-pro',
-  GEMINI_2_5_FLASH: 'gemini-2.5-flash',
-  GEMINI_2_5_FLASH_LITE: 'gemini-2.5-flash-lite',
+  GEMINI_3_5_FLASH: { value: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash' },
+  GEMINI_3_1_PRO_PREVIEW: { value: 'gemini-3.1-pro-preview', label: 'Gemini 3.1 Pro (Preview)' },
+  GEMINI_3_1_FLASH_LITE: { value: 'gemini-3.1-flash-lite', label: 'Gemini 3.1 Flash Lite' },
+  GEMINI_3_FLASH_PREVIEW: { value: 'gemini-3-flash-preview', label: 'Gemini 3 Flash (Preview)' },
+  GEMINI_2_5_PRO: { value: 'gemini-2.5-pro', label: 'Gemini 2.5 Pro' },
+  GEMINI_2_5_FLASH: { value: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+  GEMINI_2_5_FLASH_LITE: { value: 'gemini-2.5-flash-lite', label: 'Gemini 2.5 Flash Lite' },
 } as const
 
-export type GeminiModel = (typeof GEMINI_MODELS)[keyof typeof GEMINI_MODELS]
+export type GeminiModel = (typeof GEMINI_MODELS)[keyof typeof GEMINI_MODELS]['value']
 
-export const GEMINI_DEFAULT_MODEL: GeminiModel = GEMINI_MODELS.GEMINI_2_5_FLASH
+export const GEMINI_DEFAULT_MODEL: GeminiModel = GEMINI_MODELS.GEMINI_2_5_FLASH.value
 
 export const GEMINI_MODEL_OPTIONS: ModelOption[] = [
-  { value: GEMINI_MODELS.GEMINI_3_5_FLASH, label: 'Gemini 3.5 Flash' },
-  { value: GEMINI_MODELS.GEMINI_3_1_PRO_PREVIEW, label: 'Gemini 3.1 Pro (Preview)' },
-  { value: GEMINI_MODELS.GEMINI_3_1_FLASH_LITE, label: 'Gemini 3.1 Flash Lite' },
-  { value: GEMINI_MODELS.GEMINI_3_FLASH_PREVIEW, label: 'Gemini 3 Flash (Preview)' },
-  { value: GEMINI_MODELS.GEMINI_2_5_PRO, label: 'Gemini 2.5 Pro' },
-  { value: GEMINI_MODELS.GEMINI_2_5_FLASH, label: 'Gemini 2.5 Flash' },
-  { value: GEMINI_MODELS.GEMINI_2_5_FLASH_LITE, label: 'Gemini 2.5 Flash Lite' },
+  GEMINI_MODELS.GEMINI_3_5_FLASH,
+  GEMINI_MODELS.GEMINI_3_1_PRO_PREVIEW,
+  GEMINI_MODELS.GEMINI_3_1_FLASH_LITE,
+  GEMINI_MODELS.GEMINI_3_FLASH_PREVIEW,
+  GEMINI_MODELS.GEMINI_2_5_PRO,
+  GEMINI_MODELS.GEMINI_2_5_FLASH,
+  GEMINI_MODELS.GEMINI_2_5_FLASH_LITE,
 ]
 
 // ─── Anthropic Claude ────────────────────────────────────
@@ -59,27 +59,27 @@ export const GEMINI_MODEL_OPTIONS: ModelOption[] = [
 // https://platform.claude.com/docs/ko/about-claude/models/overview
 // (2026-06 기준 최신 + 사용 가능 레거시. 폐기 예정 Sonnet 4/Opus 4/Haiku 3 제외)
 export const CLAUDE_MODELS = {
-  CLAUDE_OPUS_4_7: 'claude-opus-4-7',
-  CLAUDE_SONNET_4_6: 'claude-sonnet-4-6',
-  CLAUDE_HAIKU_45: 'claude-haiku-4-5-20251001',
-  CLAUDE_OPUS_4_6: 'claude-opus-4-6',
-  CLAUDE_OPUS_4_5: 'claude-opus-4-5-20251101',
-  CLAUDE_SONNET_4_5: 'claude-sonnet-4-5-20250929',
-  CLAUDE_OPUS_4_1: 'claude-opus-4-1-20250805',
+  CLAUDE_OPUS_4_7: { value: 'claude-opus-4-7', label: 'Claude Opus 4.7' },
+  CLAUDE_SONNET_4_6: { value: 'claude-sonnet-4-6', label: 'Claude Sonnet 4.6' },
+  CLAUDE_HAIKU_45: { value: 'claude-haiku-4-5-20251001', label: 'Claude Haiku 4.5' },
+  CLAUDE_OPUS_4_6: { value: 'claude-opus-4-6', label: 'Claude Opus 4.6' },
+  CLAUDE_OPUS_4_5: { value: 'claude-opus-4-5-20251101', label: 'Claude Opus 4.5' },
+  CLAUDE_SONNET_4_5: { value: 'claude-sonnet-4-5-20250929', label: 'Claude Sonnet 4.5' },
+  CLAUDE_OPUS_4_1: { value: 'claude-opus-4-1-20250805', label: 'Claude Opus 4.1' },
 } as const
 
-export type ClaudeModel = (typeof CLAUDE_MODELS)[keyof typeof CLAUDE_MODELS]
+export type ClaudeModel = (typeof CLAUDE_MODELS)[keyof typeof CLAUDE_MODELS]['value']
 
-export const CLAUDE_DEFAULT_MODEL: ClaudeModel = CLAUDE_MODELS.CLAUDE_SONNET_4_6
+export const CLAUDE_DEFAULT_MODEL: ClaudeModel = CLAUDE_MODELS.CLAUDE_SONNET_4_6.value
 
 export const CLAUDE_MODEL_OPTIONS: ModelOption[] = [
-  { value: CLAUDE_MODELS.CLAUDE_OPUS_4_7, label: 'Claude Opus 4.7' },
-  { value: CLAUDE_MODELS.CLAUDE_SONNET_4_6, label: 'Claude Sonnet 4.6' },
-  { value: CLAUDE_MODELS.CLAUDE_HAIKU_45, label: 'Claude Haiku 4.5' },
-  { value: CLAUDE_MODELS.CLAUDE_OPUS_4_6, label: 'Claude Opus 4.6' },
-  { value: CLAUDE_MODELS.CLAUDE_OPUS_4_5, label: 'Claude Opus 4.5' },
-  { value: CLAUDE_MODELS.CLAUDE_SONNET_4_5, label: 'Claude Sonnet 4.5' },
-  { value: CLAUDE_MODELS.CLAUDE_OPUS_4_1, label: 'Claude Opus 4.1' },
+  CLAUDE_MODELS.CLAUDE_OPUS_4_7,
+  CLAUDE_MODELS.CLAUDE_SONNET_4_6,
+  CLAUDE_MODELS.CLAUDE_HAIKU_45,
+  CLAUDE_MODELS.CLAUDE_OPUS_4_6,
+  CLAUDE_MODELS.CLAUDE_OPUS_4_5,
+  CLAUDE_MODELS.CLAUDE_SONNET_4_5,
+  CLAUDE_MODELS.CLAUDE_OPUS_4_1,
 ]
 
 // ─── 기본 모델 맵 ────────────────────────────────────────
