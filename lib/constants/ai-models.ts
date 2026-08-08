@@ -108,3 +108,23 @@ export const MODEL_SOURCE_DOCS: Record<
     url: 'https://platform.claude.com/docs/ko/about-claude/models/overview',
   },
 }
+
+// ─── Batch(배치) 처리 공식 문서 출처 ─────────────────────
+// 배치 테스트/요금 관련 provider별 공식 문서. UI(/settings)에서 링크로 노출
+export const BATCH_DOCS: Record<
+  'chatgpt' | 'gemini' | 'claude',
+  { label: string; url: string }
+> = {
+  chatgpt: {
+    label: 'OpenAI Batch 요금 문서',
+    url: 'https://developers.openai.com/api/docs/pricing?latest-pricing=batch',
+  },
+  gemini: {
+    label: 'Gemini Batch API 문서',
+    url: 'https://ai.google.dev/gemini-api/docs/batch-api',
+  },
+  claude: {
+    label: 'Claude 배치 처리 문서',
+    url: 'https://platform.claude.com/docs/ko/build-with-claude/batch-processing',
+  },
+}

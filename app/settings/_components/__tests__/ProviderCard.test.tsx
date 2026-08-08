@@ -18,6 +18,7 @@ vi.mock('sonner', () => ({
   toast: {
     success: vi.fn(),
     error: vi.fn(),
+    info: vi.fn(),
   },
 }))
 
@@ -305,6 +306,336 @@ describe('ProviderCard', () => {
         'https://developers.openai.com/api/docs/models',
       )
       expect(link).toHaveAttribute('target', '_blank')
+    })
+  })
+
+  describe('배치(Batch) 문서 링크', () => {
+    it.each([
+      [
+        'chatgpt',
+        'ChatGPT (OpenAI)',
+        /OpenAI Batch 요금 문서/i,
+        'https://developers.openai.com/api/docs/pricing?latest-pricing=batch',
+      ],
+      [
+        'gemini',
+        'Gemini (Google)',
+        /Gemini Batch API 문서/i,
+        'https://ai.google.dev/gemini-api/docs/batch-api',
+      ],
+      [
+        'claude',
+        'Claude (Anthropic)',
+        /Claude 배치 처리 문서/i,
+        'https://platform.claude.com/docs/ko/build-with-claude/batch-processing',
+      ],
+    ])(
+      '%s 카드에 배치 문서 링크가 올바른 href로 렌더링된다',
+      (provider, label, linkName, expectedHref) => {
+        render(
+          <ProviderCard name={provider as 'chatgpt' | 'gemini' | 'claude'} label={label} />,
+        )
+        const link = screen.getByRole('link', { name: linkName })
+        expect(link).toHaveAttribute('href', expectedHref)
+        expect(link).toHaveAttribute('target', '_blank')
+        expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+      },
+    )
+  })
+
+  describe('Batch 테스트 모드', () => {
+    it('Batch 라디오 버튼이 렌더링된다', () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      expect(screen.getByLabelText('batch')).toBeInTheDocument()
+    })
+
+    it('Batch 모드를 선택하면 과금 경고가 표시된다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      expect(screen.queryByTestId('chatgpt-batch-warning')).not.toBeInTheDocument()
+
+      await user.click(screen.getByLabelText('batch'))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('chatgpt-batch-warning')).toBeInTheDocument()
+      })
+    })
+
+    it('Batch 모드에서 모델을 선택하지 않으면 Test 버튼이 비활성화된다', async () => {
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      const testButton = screen.getByRole('button', { name: /^Test$/i })
+      expect(testButton).toBeEnabled()
+
+      await user.click(screen.getByLabelText('batch'))
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /^Test$/i })).toBeDisabled()
+      })
+    })
+
+    it('배치 제출 결과의 잡 목록과 jobId 가 표시된다', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            keyValid: true,
+            batchJobs: [
+              {
+                model: 'gpt-5.5',
+                jobId: 'batch_abc123',
+                status: 'pending',
+                rawStatus: 'submitted',
+              },
+            ],
+          }),
+          { status: 200 },
+        ),
+      )
+
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      await user.click(screen.getByLabelText('batch'))
+      await user.click(screen.getByText('GPT-5.5'))
+      await user.click(screen.getByRole('button', { name: /^Test$/i }))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('batch-result-panel')).toBeInTheDocument()
+        expect(screen.getByTestId('batch-job-gpt-5.5')).toHaveTextContent('batch_abc123')
+        expect(screen.getByTestId('batch-job-gpt-5.5')).toHaveTextContent('진행 중')
+      })
+    })
+
+    it('mode=batch 와 선택 모델을 요청 본문에 담아 보낸다', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce(
+        new Response(JSON.stringify({ keyValid: true, batchJobs: [] }), { status: 200 }),
+      )
+
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      await user.click(screen.getByLabelText('batch'))
+      await user.click(screen.getByText('GPT-5.5'))
+      await user.click(screen.getByRole('button', { name: /^Test$/i }))
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith('/api/test-key', expect.anything())
+      })
+      const [, init] = vi.mocked(fetch).mock.calls[0]!
+      const sent = JSON.parse(String((init as RequestInit).body))
+      expect(sent.mode).toBe('batch')
+      expect(sent.models).toEqual(['gpt-5.5'])
+    })
+
+    it('상태 새로고침 버튼이 batch-status 를 호출하고 결과를 병합한다', async () => {
+      vi.mocked(fetch)
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              keyValid: true,
+              batchJobs: [{ model: 'gpt-5.5', jobId: 'batch_abc', status: 'pending' }],
+            }),
+            { status: 200 },
+          ),
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              jobs: [
+                {
+                  model: 'gpt-5.5',
+                  jobId: 'batch_abc',
+                  status: 'succeeded',
+                  preview: '안녕하세요',
+                },
+              ],
+            }),
+            { status: 200 },
+          ),
+        )
+
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      await user.click(screen.getByLabelText('batch'))
+      await user.click(screen.getByText('GPT-5.5'))
+      await user.click(screen.getByRole('button', { name: /^Test$/i }))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('batch-result-panel')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /상태 새로고침/i }))
+
+      await waitFor(() => {
+        const row = screen.getByTestId('batch-job-gpt-5.5')
+        expect(row).toHaveTextContent('완료')
+        expect(row).toHaveTextContent('안녕하세요')
+      })
+
+      expect(fetch).toHaveBeenLastCalledWith(
+        '/api/test-key/batch-status',
+        expect.anything(),
+      )
+    })
+
+    it('제출 직후에는 전송 시각과 수신 대기 중이 표시된다', async () => {
+      const submittedAt = new Date(2026, 7, 8, 9, 30, 0).toISOString()
+      vi.mocked(fetch).mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            keyValid: true,
+            batchJobs: [
+              { model: 'gpt-5.5', jobId: 'batch_abc', status: 'pending', submittedAt },
+            ],
+          }),
+          { status: 200 },
+        ),
+      )
+
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      await user.click(screen.getByLabelText('batch'))
+      await user.click(screen.getByText('GPT-5.5'))
+      await user.click(screen.getByRole('button', { name: /^Test$/i }))
+
+      await waitFor(() => {
+        const times = screen.getByTestId('batch-time-gpt-5.5')
+        expect(times).toHaveTextContent('전송 09:30:00')
+        expect(times).toHaveTextContent('수신 대기 중')
+      })
+    })
+
+    it('완료되면 수신 시각과 소요 시간이 표시된다', async () => {
+      const submittedAt = new Date(2026, 7, 8, 9, 30, 0).toISOString()
+      const completedAt = new Date(2026, 7, 8, 9, 33, 20).toISOString()
+
+      vi.mocked(fetch)
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              keyValid: true,
+              batchJobs: [
+                { model: 'gpt-5.5', jobId: 'batch_abc', status: 'pending', submittedAt },
+              ],
+            }),
+            { status: 200 },
+          ),
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              jobs: [
+                {
+                  model: 'gpt-5.5',
+                  jobId: 'batch_abc',
+                  status: 'succeeded',
+                  preview: 'Hi',
+                  submittedAt,
+                  completedAt,
+                },
+              ],
+            }),
+            { status: 200 },
+          ),
+        )
+
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      await user.click(screen.getByLabelText('batch'))
+      await user.click(screen.getByText('GPT-5.5'))
+      await user.click(screen.getByRole('button', { name: /^Test$/i }))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('batch-result-panel')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /상태 새로고침/i }))
+
+      await waitFor(() => {
+        const times = screen.getByTestId('batch-time-gpt-5.5')
+        expect(times).toHaveTextContent('전송 09:30:00')
+        expect(times).toHaveTextContent('수신 09:33:20')
+        expect(times).toHaveTextContent('소요 3분 20초')
+      })
+    })
+
+    it('폴링 응답에 submittedAt 이 없어도 전송 시각이 유지된다', async () => {
+      const submittedAt = new Date(2026, 7, 8, 9, 30, 0).toISOString()
+
+      vi.mocked(fetch)
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              keyValid: true,
+              batchJobs: [
+                { model: 'gpt-5.5', jobId: 'batch_abc', status: 'pending', submittedAt },
+              ],
+            }),
+            { status: 200 },
+          ),
+        )
+        .mockResolvedValueOnce(
+          new Response(
+            JSON.stringify({
+              jobs: [
+                { model: 'gpt-5.5', jobId: 'batch_abc', status: 'succeeded', preview: 'Hi' },
+              ],
+            }),
+            { status: 200 },
+          ),
+        )
+
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      await user.click(screen.getByLabelText('batch'))
+      await user.click(screen.getByText('GPT-5.5'))
+      await user.click(screen.getByRole('button', { name: /^Test$/i }))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('batch-result-panel')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByRole('button', { name: /상태 새로고침/i }))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('batch-job-gpt-5.5')).toHaveTextContent('완료')
+      })
+      expect(screen.getByTestId('batch-time-gpt-5.5')).toHaveTextContent('전송 09:30:00')
+    })
+
+    it('모드를 전환하면 이전 배치 결과가 사라진다', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            keyValid: true,
+            batchJobs: [{ model: 'gpt-5.5', jobId: 'batch_abc', status: 'pending' }],
+          }),
+          { status: 200 },
+        ),
+      )
+
+      render(<ProviderCard name="chatgpt" label="ChatGPT (OpenAI)" />)
+      const user = userEvent.setup()
+
+      await user.click(screen.getByLabelText('batch'))
+      await user.click(screen.getByText('GPT-5.5'))
+      await user.click(screen.getByRole('button', { name: /^Test$/i }))
+
+      await waitFor(() => {
+        expect(screen.getByTestId('batch-result-panel')).toBeInTheDocument()
+      })
+
+      await user.click(screen.getByLabelText('quick'))
+
+      await waitFor(() => {
+        expect(screen.queryByTestId('batch-result-panel')).not.toBeInTheDocument()
+      })
     })
   })
 

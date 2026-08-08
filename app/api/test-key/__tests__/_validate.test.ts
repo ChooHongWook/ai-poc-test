@@ -67,9 +67,24 @@ describe('TestKeyRequestSchema', () => {
   })
 
   // ── mode 검증 ─────────────────────────────────────────────────
-  it('quick 과 ping 이외의 모드는 거부한다', () => {
+  it('quick, ping, batch 이외의 모드는 거부한다', () => {
     const req = { ...validQuickRequest, mode: 'full' }
     expect(TestKeyRequestSchema.safeParse(req).success).toBe(false)
+  })
+
+  it('batch 모드를 허용한다', () => {
+    const req = { ...validQuickRequest, mode: 'batch', models: ['gpt-5.4-mini'] }
+    expect(TestKeyRequestSchema.safeParse(req).success).toBe(true)
+  })
+
+  it('batch 모드에서 models가 비어 있으면 거부한다', () => {
+    const req = { ...validQuickRequest, mode: 'batch', models: [] }
+    expect(TestKeyRequestSchema.safeParse(req).success).toBe(false)
+  })
+
+  it('quick 모드에서는 models가 비어 있어도 허용한다', () => {
+    const req = { ...validQuickRequest, mode: 'quick', models: [] }
+    expect(TestKeyRequestSchema.safeParse(req).success).toBe(true)
   })
 
   // ── models 검증 ───────────────────────────────────────────────
@@ -88,7 +103,7 @@ describe('TestKeyRequestSchema', () => {
     const result = TestKeyRequestSchema.parse(validPingRequest)
     // 타입 체크: provider는 유니온 리터럴이어야 함
     const provider: 'chatgpt' | 'gemini' | 'claude' = result.provider
-    const mode: 'quick' | 'ping' = result.mode
+    const mode: 'quick' | 'ping' | 'batch' = result.mode
     expect(provider).toBe('gemini')
     expect(mode).toBe('ping')
   })

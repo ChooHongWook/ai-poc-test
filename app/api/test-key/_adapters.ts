@@ -20,8 +20,10 @@ const MAX_PREVIEW_LENGTH = 200
  * 에러 메시지에서 apiKey 원문을 [REDACTED]로 치환
  * - 정규식 전역 치환으로 메시지 내 모든 출현 위치를 마스킹
  * - 특수문자 이스케이프로 정규식 주입 방지
+ * @MX:ANCHOR: apiKey 마스킹의 단일 진입점. _batch-adapters.ts에서도 재사용
+ * @MX:REASON: 키 노출 방지 계약이 여러 어댑터에 흩어지면 누락 위험이 커짐
  */
-function redactApiKey(message: string, apiKey: string): string {
+export function redactApiKey(message: string, apiKey: string): string {
   const escaped = apiKey.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   return message.replace(new RegExp(escaped, 'g'), '[REDACTED]')
 }
