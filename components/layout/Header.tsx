@@ -23,7 +23,7 @@ const navLinks = [
 const fileAnalysisLinks = [
   { href: '/upload-test', label: '기본 파일 분석' },
   { href: '/upload-test-large/files-api', label: '대용량 - Files API' },
-  { href: '/upload-test-large/rag', label: '대용량 - RAG' },
+  { href: '/upload-test-large/rag', label: '대용량 - RAG (DB)' },
 ]
 
 export default function Header() {
