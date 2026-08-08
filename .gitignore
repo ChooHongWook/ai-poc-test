@@ -182,6 +182,13 @@ secret-*.*
 .moai/memory/
 .moai/worktrees/
 
+# Session runtime state (session id, locks, drift cache) - machine-local
+.moai/state/*
+!.moai/state/.gitkeep
+
+# Usage telemetry - machine-local
+.moai/evolution/
+
 # ===========================================
 # Node.js (for docs/Nextra)
 # ===========================================
