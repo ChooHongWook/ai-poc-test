@@ -188,6 +188,8 @@ secret-*.*
 
 # Usage telemetry - machine-local
 .moai/evolution/
+.moai/harness/
+.moai/lessons-inbox.jsonl
 
 # ===========================================
 # Node.js (for docs/Nextra)
